@@ -48,6 +48,7 @@ def paste(request):
             "".join(random.sample(string.letters + string.digits, 15)))
     os.mkdir(repodir)
 
+    owner = None
     if request.user.is_authenticated():
         owner = request.user
 
@@ -114,7 +115,9 @@ def paste(request):
 def paste_view(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
-    favorited = Favorite.objects.filter(set=paste_set, user=request.user)
+    favorited = [] 
+    if request.user.is_authenticated():
+        favorited = Favorite.objects.filter(set=paste_set, user=request.user)
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
