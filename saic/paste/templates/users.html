@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %} Login {% endblock %}
+
+{% block jsheader %}
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/favorites.css'>
+{% endblock %}
+
+{% block content %}
+<div id='favorites'>
+<h1>The Community</h1>
+    <div class='entry'>
+        <div>
+            {% for user in users %}
+            <div><a href='{% url user_pastes owner=user.pk %}'>{{ user }}</a>
+                <br>
+                {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
+            </div>
+            {% endfor %}
+        </div>
+        <div class='clear'></div>
+    </div>
+</div>
+{% endblock %}

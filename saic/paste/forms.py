@@ -20,7 +20,6 @@ class SetForm(forms.Form):
                 'default': 'add a paste description...'
             }))
 
-class PasteForm(forms.Form):
     def clean_description(self):
         d = self.cleaned_data.get('description')
         if d is None:
@@ -29,6 +28,8 @@ class PasteForm(forms.Form):
             return ''
         return d
 
+
+class PasteForm(forms.Form):
     filename = forms.CharField(max_length=256, required=False,
             widget=forms.widgets.TextInput(attrs={
                 'default': 'add a file name...',

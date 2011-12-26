@@ -331,4 +331,8 @@ def user_pastes(request, owner):
     return render_to_response('user-pastes.html',
             { 'sets': sets, 'owner': owner }, RequestContext(request))
 
+def users(request):
+    users = User.objects.all()
+    return render_to_response('users.html',
+            { 'users': users }, RequestContext(request))
 
