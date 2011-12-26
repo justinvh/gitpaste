@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 from django.contrib import auth
 
 from django.forms import ValidationError
@@ -314,8 +315,20 @@ def login(request):
 
     return redirect('paste')
 
-
 def logout(request):
     auth.logout(request)
     return redirect('login')
+
+@login_required
+def favorites(request):
+    favorites = Favorite.objects.filter(user=request.user)
+    return render_to_response('favorites.html',
+            { 'favorites': favorites }, RequestContext(request))
+
+def user_pastes(request, owner):
+    sets = Set.objects.filter(owner=owner)
+    owner = User.objects.get(pk=owner)
+    return render_to_response('user-pastes.html',
+            { 'sets': sets, 'owner': owner }, RequestContext(request))
+
 

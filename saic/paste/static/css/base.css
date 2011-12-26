@@ -67,6 +67,7 @@ div.clear {
   width: 90%;
   padding: 5px;
   font-size: 12px;
+  margin-bottom: 10px;
 }
 
 div.entryless,
@@ -212,3 +213,41 @@ div.small {
 .alert {
   color: #A63E45;
 }
+
+#log h1 {
+  font-size: 16px;
+  border-bottom: 1px solid #DDD;
+  width: 90%;
+  margin-top: 0;
+}
+
+#log ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  width: 90%;
+}
+
+#log li {
+  padding: 3px;
+}
+
+span.author {
+  font-weight: bold;
+}
+
+span.date {
+  color: #999;
+}
+
+span.description {
+  color: #444;
+}
+
+li.active {
+  background-color: #D2E9FF;
+  border-radius: 5px;
+}
+
+

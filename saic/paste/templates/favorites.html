@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %} Login {% endblock %}
+
+{% block jsheader %}
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/favorites.css'>
+{% endblock %}
+
+{% block content %}
+<div id='favorites'>
+  <h1>Favorites</h1>
+    <div class='entry'>
+        <div>
+            {% for favorite in favorites %}
+            <div><a href='{% url paste_view pk=favorite.set.pk %}'>{{ favorite.set.description }}</a>
+                <br>
+                {% if favorite.set.owner %} 
+                By <a href='{% url user_pastes owner=favorite.set.owner.pk %}'>{{ favorite.set.owner }}</a>.
+                {% else %}
+                By Anonymous.
+                {% endif %}
+
+                {{ favorite.set.commit_set.all.count }} commit{{ favorite.set.commit_set.all.count|pluralize }}.
+            </div>
+            {% endfor %}
+        </div>
+        <div class='clear'></div>
+    </div>
+</div>
+{% endblock %}
