@@ -1,10 +1,12 @@
 from django.conf.urls.defaults import patterns, include, url
+from django.views.generic.simple import redirect_to
 
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^paste/', include('saic.paste.urls')),
+    (r'^', redirect_to, { 'url': '/paste/' }),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/password_reset/$', 'django.contrib.auth.views.password_reset', name='password_reset'),
