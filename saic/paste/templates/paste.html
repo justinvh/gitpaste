@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block jsheader %}
+<script src='/static/js/jquery.formset.min.js'></script>
+{% endblock %}
+
+{% block content %}
+<div id='log'>
+    <div id='paste-description'>
+        <strong>Paste</strong> is a simple way to <strong>share snippets and pastes</strong> with others. 
+        All pastes are git repositories, so they are automatically <strong>versioned, forkable</strong> and usable as a <strong>git repository</strong>.
+    </div>
+    {% if pastes %}
+        <h1>Your Most Recent Pastes</h1>
+        {% for paste in pastes %}
+        {{ paste }}
+        {% endfor %}
+    {% else %}
+        {% if request.user.is_authenticated %}
+        <h1>Hey!</h1>
+        <p>You don't have any pastes yet, but you will eventually.</p>
+        {% else %}
+        <h1>Hey, you're anonymous.</h1>
+        <p>You should <a href='#'>register</a> to organize your pastes.</p>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div id='pastes'>
+    <form method='POST' action='{% url paste %}' id='paste-form'>
+        {% for form in forms %}
+        <div class='entry'>
+            <div class='description'>
+                <div>
+                    {{ form.description }}
+                </div>
+            </div>
+            <div class='file'>
+                <div>
+                    <div class='language'>
+                        <label>Language:</label>
+                        {{ form.language }}
+                    </div>
+                    {{ form.filename }}
+                </div>
+            </div>
+            <div class='paste'>
+                <div>
+                    {{ form.paste }}
+                </div>
+            </div>
+        </div>
+        <div class='clear'></div>
+
+        <div class='submit'>
+            <input type='submit' value='Create Paste'>
+        </div>
+        {% endfor %}
+
+        {% csrf_token %}
+        {{ forms.management_form }}
+    </form>
+</div>
+<script src='/static/js/paste.js'></script>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel='stylesheet' media='screen' type='text/css' href='/static/css/base.css'>
+        <script src='/static/js/jquery-1.7.1.min.js'></script>
+        {% block jsheader %}{% endblock %}
+    </head>
+    <body>
+        <div id='header'>
+            <img src='/static/img/quark-paste.png'>
+            <div id='navigation'>
+                <ul>
+                    <li>New Paste</li>
+                    <li>Find Paste</li>
+                    {% if request.user.is_authenticated %}
+                    <li>Your Pastes</li>
+                    <li>Logout</li>
+                    {% else %}
+                    <li>Login</li>
+                    <li>Register</li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class='clear'></div>
+        </div>
+        <div id='content'>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
