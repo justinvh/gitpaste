@@ -12,7 +12,7 @@
             <div id='navigation'>
                 <ul>
                     <li><a href='{% url paste %}'>New Paste</a></li>
-                    <li><a href='{% url find %}'>Find Paste</a></li>
+                    <!-- <li><a href='{% url find %}'>Find Paste</a></li> -->
                     {% if user.is_authenticated %}
                     <li><a href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
                     <li><a href='{% url favorites %}'>Favorites ({{ user.favorite_set.all.count }})</a></li>

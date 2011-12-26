@@ -2,6 +2,7 @@ body, html {
   margin: 0;
   padding: 0;
   line-height: 1.1em;
+  font-family: Arial, "Bitstream Vera sans", FreeSans, sans-serif;
 }
 
 #header {
