@@ -1,0 +1,42 @@
+div.entry input {
+  width: 200px !important;
+  margin-right: 15px;
+  float: left;
+}
+
+div.entry label {
+  float: left;
+  width: 90px;
+  border-top: 0;
+}
+
+div.entry {
+  padding: 10px;
+}
+
+div.entry > div > div {
+  margin-bottom: 5px;
+}
+
+#login {
+  width: 400px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+div.register {
+  text-align: right;
+}
+
+span.small {
+  font-size: 8px;
+}
+
+ul.errorlist {
+  list-style: none;
+  color: #A63E45;
+  margin: 0;
+  padding: 0;
+  clear: both;
+}
+

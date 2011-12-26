@@ -13,12 +13,11 @@
                 <ul>
                     <li><a href='{% url paste %}'>New Paste</a></li>
                     <li><a href='{% url find %}'>Find Paste</a></li>
-                    {% if request.user.is_authenticated %}
-                    <li>Your Pastes</li>
-                    <li>Logout</li>
+                    {% if user.is_authenticated %}
+                    <li><a href='{% url logout %}'>Logout</a></li>
                     {% else %}
-                    <li>Login</li>
-                    <li>Register</li>
+                    <li><a href='{% url login %}'>Login</a></li>
+                    <li><a href='{% url register %}'>Register</a></li>
                     {% endif %}
                 </ul>
             </div>

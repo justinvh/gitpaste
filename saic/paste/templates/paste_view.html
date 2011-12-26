@@ -18,8 +18,8 @@
         {% endif %}
         <a href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
         <span class='author'>
-            {% if commit.set.owner %}
-            {{ commit.set.owner }}
+            {% if commit.owner %}
+            {{ commit.owner }}
             {% else %}
             Anonymous
             {% endif %}
@@ -28,19 +28,46 @@
         <span class='date'>{{ commit.created }}</span> </li>
         {% endfor %}
     </ul>
+    {% if user.is_authenticated %}
+        <br>
+        {% if not commit_current.set.owner %}
+        <span class='alert'>Hey! This paste is not owned by anyone. 
+            <a href='{% url paste_adopt pk=commit_current.set.pk %}'>Adopt it!</a>
+        </span>
+        {% endif %}
+        {% if commit_current.set.owner == user %}
+        <a class='alert' href='{% url paste_delete pk=commit_current.set.pk %}'>delete this entire paste</a>
+        {% endif %}
+    {% endif %}
+
+
 </div>
 
 <div id='pastes'>
     <div class='entryless'>
         <div class='small'>
-            <span class='header'>paste: {{ paste_set.pk }}</span>
-                <a href='{% url paste_edit pk=paste_set.pk %}'>(edit)</a>
-                <a href='{% url paste_download pk=paste_set.pk %}'>(download)</a>
-                {% if request.user.is_authenticated %}
-                    <a href='{% url paste_favorite pk=paste_set.pk %}'>(favorite)</a>
+            {% if user.is_authenticated %}
+            <span favorite={{ favorited }} id='favorite-toggle'>
+                {% if favorited %}
+                    <img align='right' height='32px' src='/static/img/favorite.png'>
+                {% else %}
+                    <img align='right' height='32px' src='/static/img/not-favorite.png'>
+                {% endif %}
+            </span>
+            {% endif %}
+            <span class='header'>paste: {{ paste_set.pk }} ({{ commit_current.commit|slice:":8" }})</span>
+            <a href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(edit)</a>
+            <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a>
+                {% if user.is_authenticated %}
+                    {% if not commit_current.owner %}
+                    <a href='{% url commit_adopt pk=commit_current.pk %}'>(adopt)</a>
+                    {% endif %}
                 {% endif %}
                 <br>
-            {{ paste_set.description }}
+            "{{ paste_set.description }}"
+            {% if commit_current.owner %}
+                by <strong>{{ commit_current.owner }}</strong>
+            {% endif %}
         </div>
     </div>
     {% for paste in pastes %}
@@ -64,4 +91,6 @@
     <div class='clear'></div>
     {% endfor %}
 </div>
+<script>var set = "{{ commit_current.set.pk }}";</script>
+<script src='/static/js/view.js'></script>
 {% endblock %}

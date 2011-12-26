@@ -49,3 +49,25 @@ class PasteForm(forms.Form):
             widget=forms.Select(attrs={
                 'tabindex': -1
             }))
+
+class UserCreationForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args,
+**kwargs)
+
+    class Meta:
+        model = User
+        exclude = ('username', 'date_joined', 'last_login', 'password')
+
+    username = forms.EmailField() 
+
+    def save(self, commit=True):
+        """See ProfileForm for this error."""
+        model = super(UserCreationForm, self).save(commit=False)
+        model.username = self.cleaned_data['username']
+
+        if commit:
+            model.save()
+
+        return model
+

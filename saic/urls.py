@@ -7,4 +7,8 @@ urlpatterns = patterns('',
     url(r'^paste/', include('saic.paste.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/password_reset/$', 'django.contrib.auth.views.password_reset', name='password_reset'),
+    (r'^password_reset/done/$', 'django.contrib.auth.views.password_reset_done'),
+    url(r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm'),
+    (r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
 )

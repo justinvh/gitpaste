@@ -208,3 +208,7 @@ div.entryless label {
 div.small {
   font-size: 12px;
 }
+
+.alert {
+  color: #A63E45;
+}

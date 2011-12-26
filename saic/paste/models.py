@@ -10,6 +10,7 @@ class Commit(models.Model):
     commit = models.CharField(max_length=255)
     set = models.ForeignKey(Set)
     created = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, null=True, blank=True, default=None)
 
 class Paste(models.Model):
     absolute_path = models.CharField(max_length=2048)
@@ -18,3 +19,7 @@ class Paste(models.Model):
     paste_formatted = models.TextField()
     language = models.CharField(max_length=15)
     revision = models.ForeignKey(Commit) 
+
+class Favorite(models.Model):
+    set = models.ForeignKey(Set)
+    user = models.ForeignKey(User)

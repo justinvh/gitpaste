@@ -1,13 +1,16 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import auth
 
 from django.forms import ValidationError
 
-from forms import PasteForm, SetForm
-from models import Set, Paste, Commit
+from forms import PasteForm, SetForm, UserCreationForm
+from models import Set, Paste, Commit, Favorite
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -43,11 +46,16 @@ def paste(request):
             settings.REPO_DIR,
             "".join(random.sample(string.letters + string.digits, 15)))
     os.mkdir(repodir)
+
+    if request.user.is_authenticated():
+        owner = request.user
+
     s = Set.objects.create(repo=repodir, 
+            owner=owner,
             description=set_form.cleaned_data.get('description'))
     repo = git.Repo.init(repodir)
     index = repo.index
-    commit = Commit.objects.create(set=s, commit='')
+    commit = Commit.objects.create(set=s, commit='', owner=owner)
 
     for form_index, form in enumerate(forms):
         d = form.cleaned_data
@@ -81,6 +89,7 @@ def paste(request):
         lex = globals()[lang_lex]
         paste_formatted = highlight(paste, lex(), 
                 HtmlFormatter(
+                    style='colorful',
                     linenos="table", 
                     lineanchors='line-%s' % form_index,
                     anchorlinenos=True))
@@ -104,6 +113,7 @@ def paste(request):
 def paste_view(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
+    favorited = Favorite.objects.filter(set=paste_set, user=request.user)
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
@@ -113,12 +123,18 @@ def paste_view(request, pk):
         'paste_set': paste_set,
         'pastes': pastes,
         'commit_current': commit,
+        'favorited': len(favorited) > 0,
     }, RequestContext(request))
 
 
 def paste_edit(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
-    commit = paste_set.commit_set.latest('id')
+    requested_commit = request.GET.get('commit')
+
+    if requested_commit is None:
+        commit = paste_set.commit_set.latest('id')
+    else:
+        commit = get_object_or_404(Commit, commit=requested_commit)
 
     initial_data = []
     for paste in commit.paste_set.all():
@@ -147,7 +163,12 @@ def paste_edit(request, pk):
     repo = git.Repo(repodir)
     index = repo.index
     s = paste_set
-    commit = Commit.objects.create(set=s, commit='')
+
+    owner = None
+    if request.user.is_authenticated():
+        owner = request.user
+
+    commit = Commit.objects.create(set=s, commit='', owner=owner)
 
     for form_index, form in enumerate(forms):
         d = form.cleaned_data
@@ -181,6 +202,7 @@ def paste_edit(request, pk):
         lex = globals()[lang_lex]
         paste_formatted = highlight(paste, lex(), 
                 HtmlFormatter(
+                    style='colorful',
                     linenos="table", 
                     lineanchors='line-%s' % form_index,
                     anchorlinenos=True))
@@ -200,12 +222,100 @@ def paste_edit(request, pk):
         commit.save()
     return redirect('paste_view', pk=s.pk)
 
+@login_required
 def paste_delete(request, pk):
-    pass
-
+    s = get_object_or_404(Set, pk=pk)
+    if s.owner != request.user:
+        return HttpResponse('This is not yours to delete.')
+    s.delete()
+    return redirect('paste')
 
 def paste_download(request, pk):
     pass
 
+@login_required
+def paste_favorite(request, pk):
+    s = get_object_or_404(Set, pk=pk)
+    try:
+        f = Favorite.objects.get(set=s, user=request.user)
+        f.delete()
+    except Favorite.DoesNotExist:
+        Favorite.objects.create(set=s, user=request.user)
+    return HttpResponse()
+
+@login_required
+def paste_adopt(request, pk):
+    s = get_object_or_404(Set, pk=pk)
+    if s.owner is not None:
+        return HttpResponse('This is not yours to own.')
+    s.owner = request.user
+    s.save()
+    return redirect('paste_view', pk=s.pk)
+
+def commit_adopt(request, pk):
+    commit = get_object_or_404(Commit, pk=pk)
+    if commit.owner is not None:
+        return HttpResponse('This is not yours to own.')
+    owner = None
+    if request.user.is_authenticated():
+        owner = request.user
+    commit.owner = owner
+    commit.save()
+    return redirect('paste_view', pk=commit.set.pk)
+    
+
 def find(request):
     pass
+
+def register(request):
+    """Handles the logic for registering a user into the system."""
+    if request.method != 'POST':
+        form = UserCreationForm()
+        return render_to_response('register.html', 
+                { 'form': form },
+                RequestContext(request))
+
+    form = UserCreationForm(data=request.POST)
+
+    if not form.is_valid():
+        return render_to_response('register.html', 
+            { 'form': form },
+            RequestContext(request))
+
+    auth.logout(request)
+
+    user = form.save(commit=False)
+    user.email = user.username
+    user.is_active = True
+    user.save()
+
+    authed_user = auth.authenticate(username=user.username, password=form.cleaned_data['password1'])
+    auth.login(request, authed_user)
+
+    return redirect('paste')
+
+def login(request):
+    """Handles the logic for logging a user into the system."""
+    if request.method != 'POST':
+        form = AuthenticationForm()
+        return render_to_response('login.html', 
+                { 'form': form }, RequestContext(request))
+
+    form = AuthenticationForm(data=request.POST)
+    if not form.is_valid():
+        return render_to_response('login.html', 
+            { 'form': form }, RequestContext(request))
+
+    auth.login(request, form.get_user())
+    
+    next = request.POST.get('next')
+    if next:
+        return redirect(next)
+
+    return redirect('paste')
+
+
+def logout(request):
+    auth.logout(request)
+    return redirect('login')
+
