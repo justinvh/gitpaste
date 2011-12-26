@@ -11,8 +11,8 @@
             <img src='/static/img/quark-paste.png'>
             <div id='navigation'>
                 <ul>
-                    <li>New Paste</li>
-                    <li>Find Paste</li>
+                    <li><a href='{% url paste %}'>New Paste</a></li>
+                    <li><a href='{% url find %}'>Find Paste</a></li>
                     {% if request.user.is_authenticated %}
                     <li>Your Pastes</li>
                     <li>Logout</li>

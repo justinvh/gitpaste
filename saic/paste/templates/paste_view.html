@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block jsheader %}
+<script src='/static/js/jquery.formset.min.js'></script>
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/highlights.css'>
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/view.css'>
+{% endblock %}
+
+{% block content %}
+<div id='log'>
+    <h1>Revisions</h1>
+    <ul class='revisions'>
+        {% for commit in paste_set.commit_set.all reversed %}
+        {% if commit.commit == commit_current.commit %}
+        <li class='active'>
+        {% else %}
+        <li>
+        {% endif %}
+        <a href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
+        <span class='author'>
+            {% if commit.set.owner %}
+            {{ commit.set.owner }}
+            {% else %}
+            Anonymous
+            {% endif %}
+        </span> 
+        
+        <span class='date'>{{ commit.created }}</span> </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div id='pastes'>
+    <div class='entryless'>
+        <div class='small'>
+            <span class='header'>paste: {{ paste_set.pk }}</span>
+                <a href='{% url paste_edit pk=paste_set.pk %}'>(edit)</a>
+                <a href='{% url paste_download pk=paste_set.pk %}'>(download)</a>
+                {% if request.user.is_authenticated %}
+                    <a href='{% url paste_favorite pk=paste_set.pk %}'>(favorite)</a>
+                {% endif %}
+                <br>
+            {{ paste_set.description }}
+        </div>
+    </div>
+    {% for paste in pastes %}
+    <div class='entry'>
+        <div class='description'>
+            <div>
+                {{ paste.description }}
+            </div>
+        </div>
+        <div class='file'>
+            <div id='file-{{ paste.pk }}'>
+                {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>
+            </div>
+        </div>
+        <div class='paste'>
+            <div>
+                {{ paste.paste_formatted|safe }}
+            </div>
+        </div>
+    </div>
+    <div class='clear'></div>
+    {% endfor %}
+</div>
+{% endblock %}

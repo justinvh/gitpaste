@@ -27,14 +27,16 @@
 </div>
 
 <div id='pastes'>
-    <form method='POST' action='{% url paste %}' id='paste-form'>
-        {% for form in forms %}
-        <div class='entry'>
+    <form method='POST' id='paste-form'>
+        <div class='entryless'>
             <div class='description'>
                 <div>
-                    {{ form.description }}
+                    {{ set_form.description }}
                 </div>
             </div>
+        </div>
+        {% for form in forms %}
+        <div class='entry'>
             <div class='file'>
                 <div>
                     <div class='language'>
@@ -51,12 +53,10 @@
             </div>
         </div>
         <div class='clear'></div>
-
+        {% endfor %}
         <div class='submit'>
             <input type='submit' value='Create Paste'>
         </div>
-        {% endfor %}
-
         {% csrf_token %}
         {{ forms.management_form }}
     </form>

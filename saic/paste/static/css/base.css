@@ -52,7 +52,7 @@ div.clear {
 }
 
 #log {
-  width: 30%;
+  width: 32%;
   float: right;
 }
 
@@ -69,17 +69,34 @@ div.clear {
   font-size: 12px;
 }
 
+div.entryless,
 div.entry {
   position: relative;
   width: 95%;
   margin: 0 auto;
-  border: 2px solid #DDD;
   background-color: #EFEFEF;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+  border: 2px solid #DDD;
 }
 
-div.entry + div.entry {
+div.entry {
+  border-radius: 5px;
+}
+
+div.entryless + div.entry {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 0;
+}
+
+div.entryless {
+  border: 2px solid #DDD;
+  border-bottom: 0 !important;
+  border-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+div.clear + div.entry {
   margin-top: 10px;
 }
 
@@ -101,6 +118,12 @@ div.entry > div > div {
   margin: 2px 5px;
 }
 
+div.entryless > div {
+  margin-left: 5px;
+}
+
+
+div.entryless input,
 div.entry textarea,
 div.entry select,
 div.entry input {
@@ -168,4 +191,20 @@ div.delete-row {
 
 a.delete-row {
   color: #A60000;
+}
+
+span.header {
+  font-size: 18px;
+  color: #333;
+}
+
+div.entryless label {
+  font-size: 12px; 
+  float: left; 
+  width: 80px;
+  color: #777;
+}
+
+div.small {
+  font-size: 12px;
 }

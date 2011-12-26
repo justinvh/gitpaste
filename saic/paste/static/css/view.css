@@ -1,0 +1,78 @@
+div.highlight {
+  background-color: #FFF;
+  border-radius: 5px;
+}
+
+div.highlight > pre {
+  width: 100%;
+  padding: 0px 10px;
+  padding-top: 0;
+}
+
+div.paste table {
+  width: 100%;
+}
+
+div.entryless,
+div.entry {
+  background-color: #E9E9E9;
+  border-radius: 5px !important;
+  border: 2px solid #DDD !important;
+}
+
+div.entry {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+pre > a {
+  text-decoration: none;
+}
+
+a {
+  font-size: inherit;
+}
+
+div.description,
+div.file {
+  border: 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #666;
+}
+
+div.paste > div {
+  margin: 0 10px !important;
+}
+
+#log h1 {
+  font-size: 16px;
+  border-bottom: 1px solid #DDD;
+  width: 90%;
+  margin-top: 0;
+}
+
+#log ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  width: 90%;
+}
+
+#log li {
+  padding: 3px;
+}
+
+span.author {
+  font-weight: bold;
+}
+
+span.date {
+  color: #999;
+}
+
+li.active {
+  background-color: #D2E9FF;
+  border-radius: 5px;
+}
