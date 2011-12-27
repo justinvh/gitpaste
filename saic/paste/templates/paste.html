@@ -21,7 +21,7 @@
         {% if user.is_authenticated %}
         {% if not user.parent_set_set.all.count %}
         <h1>Hey!</h1>
-        <p>You don't have any pastes yet, but you will eventually.</p>
+        <p>You have not created any pastes, but you will eventually.</p>
         {% else %}
         <h1>Your Contributions</h1>
         <ul>
