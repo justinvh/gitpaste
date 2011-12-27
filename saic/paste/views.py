@@ -71,7 +71,12 @@ def paste(request):
         os.environ['USER'] = owner.username
 
     # Initialize a commit, git repository, and pull the current index.
-    commit = Commit.objects.create(set=paste_set, commit='', owner=owner)
+    commit = Commit.objects.create(
+            parent_set=paste_set, 
+            commit='', 
+            owner=owner
+    )
+
     git_repo = git.Repo.init(repo_dir)
     index = git_repo.index
 
@@ -157,7 +162,7 @@ def paste_view(request, pk):
     favorited = False
     if request.user.is_authenticated():
         favorited = Favorite.objects.filter(
-                set=paste_set,
+                parent_set=paste_set,
                 user=request.user).exists()
 
     # A requested commit allows us to navigate in history
@@ -220,7 +225,11 @@ def paste_edit(request, pk):
     if owner:
         os.environ['USER'] = owner.username
 
-    commit = Commit.objects.create(set=paste_set, commit='', owner=owner)
+    commit = Commit.objects.create(
+            parent_set=paste_set, 
+            commit='', 
+            owner=owner
+    )
 
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
@@ -308,9 +317,9 @@ def paste_download(request, pk):
 def paste_favorite(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     try:
-        Favorite.objects.get(set=paste_set, user=request.user).delete()
+        Favorite.objects.get(parent_set=paste_set, user=request.user).delete()
     except Favorite.DoesNotExist:
-        Favorite.objects.create(set=paste_set, user=request.user)
+        Favorite.objects.create(parent_set=paste_set, user=request.user)
     return HttpResponse()
 
 
