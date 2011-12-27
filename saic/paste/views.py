@@ -298,18 +298,18 @@ def paste_favorite(request, pk):
     try:
         Favorite.objects.get(set=paste_set, user=request.user).delete()
     except Favorite.DoesNotExist:
-        Favorite.objects.create(set=s, user=request.user)
+        Favorite.objects.create(set=paste_set, user=request.user)
     return HttpResponse()
 
 
 @login_required
 def paste_adopt(request, pk):
-    s = get_object_or_404(Set, pk=pk)
-    if s.owner is not None:
+    paste_set = get_object_or_404(Set, pk=pk)
+    if paste_set.owner is not None:
         return HttpResponse('This is not yours to own.')
-    s.owner = request.user
-    s.save()
-    return redirect('paste_view', pk=s.pk)
+    paste_set.owner = request.user
+    paste_set.save()
+    return redirect('paste_view', pk=paste_set.pk)
 
 
 @login_required

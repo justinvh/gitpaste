@@ -81,6 +81,11 @@ div.entry {
 }
 
 div.entry {
+    margin-top: 10px;
+}
+
+
+div.entry {
   border-radius: 5px;
 }
 
@@ -88,6 +93,7 @@ div.entryless + div.entry {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-top: 0;
+  margin-top: 0;
 }
 
 div.entryless {
