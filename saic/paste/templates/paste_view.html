@@ -10,7 +10,7 @@
 <div id='log'>
     <h1>Revisions</h1>
     <ul class='revisions'>
-        {% for commit in paste_set.commit_set.all reversed %}
+        {% for commit in paste_set.commit_set.all %}
         {% if commit.commit == commit_current.commit %}
         <li class='active'>
         {% else %}
