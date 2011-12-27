@@ -67,6 +67,11 @@
                     {{ form.paste }}
                 </div>
             </div>
+            <div class='anoncheck'>
+                {% if set_form %}
+                <pre>Anonymous?{{ form.make_anon }}</pre>
+                {% endif %}
+            </div>
         </div>
         <div class='clear'></div>
         {% endfor %}
