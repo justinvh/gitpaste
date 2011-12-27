@@ -20,8 +20,8 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.forms import ValidationError
 
-from forms import PasteForm, SetForm, UserCreationForm
-from models import Set, Paste, Commit, Favorite
+from forms import PasteForm, SetForm, UserCreationForm, CommentForm
+from models import Set, Paste, Commit, Favorite, Comment
 
 PasteSet = formset_factory(PasteForm)
 PasteSetEdit = formset_factory(PasteForm, extra=0)
@@ -172,12 +172,24 @@ def paste_view(request, pk):
     else:
         commit = get_object_or_404(Commit, parent_set=paste_set, commit=requested_commit)
 
+    if request.method != 'POST':
+        comment_form = CommentForm()
+    else:
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid() and request.user.is_authenticated():
+            comment = Comment.objects.create(
+                    commit=commit,
+                    owner=request.user,
+                    comment=comment_form.cleaned_data['comment']
+            )
+
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
         'pastes': commit.paste_set.all().order_by('id'),
         'commit_current': commit,
         'favorited': favorited,
-        'editable': latest_commit == commit
+        'editable': latest_commit == commit,
+        'comment_form': comment_form
     }, RequestContext(request))
 
 

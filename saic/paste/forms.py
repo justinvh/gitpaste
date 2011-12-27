@@ -51,6 +51,7 @@ class PasteForm(forms.Form):
                 'tabindex': -1
             }))
 
+
 class UserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(UserCreationForm, self).__init__(*args,
@@ -72,3 +73,6 @@ class UserCreationForm(UserCreationForm):
 
         return model
 
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(required=True, widget=forms.Textarea)

@@ -103,6 +103,26 @@
     </div>
     <div class='clear'></div>
     {% endfor %}
+    <div class='entry comment'>
+      <h1>Comments</h1>
+      {% for comment in commit_current.comment_set.all %}
+      <div name='comment-{{ comment.pk }}' class='comment-index'>
+        <h1><a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a></h1>
+          <pre>{{ comment.comment }}</pre>
+        </div>
+      {% endfor %}
+  </div>
+    {% if user.is_authenticated %}
+    <div class='entry comment'>
+      <h1>Comment</h1>
+      <form method='POST'>
+        {{ comment_form.comment }}
+        {% csrf_token %}
+        <input type='submit' value='Add Comment'>
+      </form>
+    </div>
+    {% endif %}
+
 </div>
 <script>var set = "{{ commit_current.parent_set.pk }}";</script>
 <script src='/static/js/view.js'></script>

@@ -131,10 +131,10 @@ div.entryless > div {
 }
 
 
-div.entryless input,
-div.entry textarea,
-div.entry select,
-div.entry input {
+div.entryless div > input,
+div.entry div > textarea,
+div.entry div > select,
+div.entry div > input {
   border: 1px solid #999;
   font-size: 15px;
   background-color: #FAFAFA;
