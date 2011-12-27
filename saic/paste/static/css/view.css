@@ -48,10 +48,10 @@ div.paste > div {
   cursor: pointer;
 }
 
-div.paste {
+pre {
     overflow: auto;
 }
 
 .linenos {
-    width: 30px;
+    width: 30px !important;
 }

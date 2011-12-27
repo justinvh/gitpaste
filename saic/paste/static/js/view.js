@@ -11,4 +11,9 @@ $(document).ready(function () {
             $this.attr('favorite', "True");
         }
     });
+
+    // yuk yuk yuk
+    $(window).resize(function () {
+        $('div.highlight > pre').width($('div.paste:first').width() - 90);
+    }).resize()
 });
