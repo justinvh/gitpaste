@@ -19,7 +19,7 @@ class SetForm(forms.Form):
             widget=forms.widgets.TextInput(attrs={
                 'default': 'add a paste description...'
             }))
-
+    
     def clean_description(self):
         d = self.cleaned_data.get('description')
         if d is None:
@@ -50,6 +50,7 @@ class PasteForm(forms.Form):
             widget=forms.Select(attrs={
                 'tabindex': -1
             }))
+    make_anon = forms.BooleanField(required=False)
 
 
 class UserCreationForm(UserCreationForm):
