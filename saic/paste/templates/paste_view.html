@@ -110,6 +110,10 @@
         <h1><a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a></h1>
           <pre>{{ comment.comment }}</pre>
         </div>
+      {% empty %}
+      <div name='comment-blank' class='comment-index'>
+        <pre>If only there were comments... Maybe <a href='{% url login %}'>login</a> and add one?</pre>
+      </div>
       {% endfor %}
   </div>
     {% if user.is_authenticated %}
