@@ -2,6 +2,8 @@ import os
 
 REPO_DIR = '%s/repositories' % os.path.dirname(__file__)
 
+os.environ['USER'] = 'justinvh'
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
