@@ -50,12 +50,14 @@ def paste(request):
         "".join(random.sample(string.letters + string.digits, 15))
     ])
 
+    make_anon = paste_forms.cleaned_data[0]['make_anon']
+
     os.mkdir(repo_dir)
 
     owner = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and not make_anon:
         owner = request.user
-
+    
     # Create a new paste set so we can reference our paste.
     description = set_form.cleaned_data.get('description')
     paste_set = Set.objects.create(
@@ -87,7 +89,7 @@ def paste(request):
         filename = data['filename']
         language, language_lex = data['language'].split(';')
         paste = data['paste']
-
+        
         # If we don't specify a filename, then obviously it is lonely
         if not len(filename):
             filename = 'a-lonely-file'
