@@ -23,7 +23,7 @@
 
         {% if result.content_type == "paste.paste" %}
           <li>
-            <a href="{% url paste_view pk=result.object.pk %}">"{{ result.paste|slice:":80"}}... "</a> by 
+            <a href="{% url paste_view pk=result.object.revision.parent_set.pk %}">"{{ result.paste|slice:":80"}}... "</a> by 
             {% if result.object.owner %}
               <a href='{% url owner_pastes owner=result.object.owner.pk %}'>{{ result.object.owner }}</a>
             {% else %}
