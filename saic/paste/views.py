@@ -168,7 +168,7 @@ def paste_view(request, pk):
 
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
-        'pastes': commit.paste_set.all(),
+        'pastes': commit.paste_set.order_by('-id').all(),
         'commit_current': commit,
         'favorited': favorited,
     }, RequestContext(request))
