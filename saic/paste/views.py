@@ -21,6 +21,7 @@ from django.contrib import auth
 from django.forms import ValidationError
 
 from forms import PasteForm, SetForm, UserCreationForm, CommentForm
+from forms import CommitMetaForm
 from models import Set, Paste, Commit, Favorite, Comment
 
 PasteSet = formset_factory(PasteForm)
@@ -31,16 +32,21 @@ def paste(request):
     if request.method != 'POST':
         return render_to_response('paste.html', {
             'forms': PasteSet(),
-            'set_form': SetForm()
+            'set_form': SetForm(),
+            'commit_meta_form': CommitMetaForm()
         }, RequestContext(request))
 
     paste_forms = PasteSet(request.POST)
     set_form = SetForm(request.POST)
+    commit_meta_form = CommitMetaForm(request.POST)
 
-    if not paste_forms.is_valid() or not set_form.is_valid():
+    if (not paste_forms.is_valid() or 
+            not set_form.is_valid() or
+            not commit_meta_form.is_valid()):
         return render_to_response('paste.html', {
             'forms': paste_forms,
             'set_form': set_form,
+            'commit_meta_form': commit_meta_form
         }, RequestContext(request))
 
     # Repositories are just a random sequence of letters and digits
@@ -50,12 +56,12 @@ def paste(request):
         "".join(random.sample(string.letters + string.digits, 15))
     ])
 
-    make_anon = paste_forms.cleaned_data[0]['make_anon']
+    anonymous = commit_meta_form.cleaned_data['anonymous']
 
     os.mkdir(repo_dir)
 
     owner = None
-    if request.user.is_authenticated() and not make_anon:
+    if request.user.is_authenticated() and not anonymous:
         owner = request.user
     
     # Create a new paste set so we can reference our paste.
@@ -218,11 +224,13 @@ def paste_edit(request, pk):
     if request.method != 'POST':
         return render_to_response('paste.html', {
             'forms': PasteSetEdit(initial=initial_data),
+            'commit_meta_form': CommitMetaForm()
         }, RequestContext(request))
 
     forms = PasteSetEdit(request.POST, initial=initial_data)
+    commit_meta_form = CommitMetaForm(request.POST)
 
-    if not forms.is_valid():
+    if not forms.is_valid() or not commit_meta_form.is_valid():
         return render_to_response('paste.html', {
             'forms': forms,
         }, RequestContext(request))
@@ -232,8 +240,10 @@ def paste_edit(request, pk):
     repo = git.Repo(repo_dir)
     index = repo.index
 
+    anonymous = commit_meta_form.cleaned_data['anonymous']
+
     owner = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and not anonymous:
         owner = request.user
 
     # Yes, this is horrible. I know. But there is a bug with Python Git.

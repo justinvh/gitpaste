@@ -61,17 +61,18 @@
                         {{ form.language }}
                     </div>
                     {{ form.filename }}
+                    {% if user.is_authenticated %}
+                    <div class='anonymous'>
+                        <label>Remain Anonymous?</label>
+                        {{ commit_meta_form.anonymous }}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class='paste'>
                 <div>
                     {{ form.paste }}
                 </div>
-            </div>
-            <div class='anoncheck'>
-                {% if set_form %}
-                <pre>Anonymous?{{ form.make_anon }}</pre>
-                {% endif %}
             </div>
         </div>
         <div class='clear'></div>

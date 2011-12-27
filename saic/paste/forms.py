@@ -14,6 +14,12 @@ for i in lexers.LEXERS:
 languages.sort()
 languages.insert(0, ('.txt;TextLexer', 'Plain Text'))
 
+
+class CommitMetaForm(forms.Form):
+    """These correspond to a particular commit or iteration of a paste.""" 
+    anonymous = forms.BooleanField(required=False)
+
+
 class SetForm(forms.Form):
     description = forms.CharField(max_length=256, required=False,
             widget=forms.widgets.TextInput(attrs={
@@ -44,13 +50,12 @@ class PasteForm(forms.Form):
             return ''
         return d
 
-
     paste = forms.CharField(widget=forms.Textarea, required=False)
-    language = forms.ChoiceField(choices=languages, required=False,
-            widget=forms.Select(attrs={
-                'tabindex': -1
-            }))
-    make_anon = forms.BooleanField(required=False)
+    language = forms.ChoiceField(
+            choices=languages, 
+            required=False,
+            widget=forms.Select(attrs={ 'tabindex': -1 })
+    )
 
 
 class UserCreationForm(UserCreationForm):
