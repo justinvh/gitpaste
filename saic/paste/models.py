@@ -12,6 +12,9 @@ class Commit(models.Model):
     created = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
 
+    class Meta:
+        ordering = ['-created']
+
 class Paste(models.Model):
     absolute_path = models.CharField(max_length=2048)
     filename = models.CharField(max_length=255)

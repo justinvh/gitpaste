@@ -56,7 +56,9 @@
             </span>
             {% endif %}
             <span class='header'>paste: {{ paste_set.pk }} ({{ commit_current.commit|slice:":8" }})</span>
+            {% if editable %}
             <a href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(edit)</a>
+            {% endif %}
             <!-- <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a> -->
                 {% if user.is_authenticated %}
                     {% if not commit_current.owner %}

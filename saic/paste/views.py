@@ -166,8 +166,9 @@ def paste_view(request, pk):
                 user=request.user).exists()
 
     # A requested commit allows us to navigate in history
+    latest_commit = paste_set.commit_set.latest('created')
     if requested_commit is None:
-        commit = paste_set.commit_set.latest('id')
+        commit = latest_commit
     else:
         commit = get_object_or_404(Commit, commit=requested_commit)
 
@@ -176,6 +177,7 @@ def paste_view(request, pk):
         'pastes': commit.paste_set.all().order_by('id'),
         'commit_current': commit,
         'favorited': favorited,
+        'editable': latest_commit == commit
     }, RequestContext(request))
 
 
