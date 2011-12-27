@@ -11,6 +11,10 @@
 <h1>The Community</h1>
     <div class='entry'>
         <div>
+            <div><a href='{% url anon_pastes %}'>Anonymous</a>
+              <br>
+              {{ anons.all.count }} paste{{ anons.all.count|pluralize }}.
+            </div>
             {% for user in users %}
             <div><a href='{% url user_pastes owner=user.pk %}'>{{ user }}</a>
                 <br>

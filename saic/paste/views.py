@@ -384,14 +384,17 @@ def favorites(request):
             {'favorites': favorites}, RequestContext(request))
 
 
-def user_pastes(request, owner):
+def user_pastes(request, owner=None):
     sets = Set.objects.filter(owner=owner)
-    owner = User.objects.get(pk=owner)
+    owner = None
+    if owner:
+        owner = User.objects.get(pk=owner)
     return render_to_response('user-pastes.html',
             {'sets': sets, 'owner': owner}, RequestContext(request))
 
 
 def users(request):
     users = User.objects.all()
+    anons = Set.objects.filter(owner__isnull=True)
     return render_to_response('users.html',
-            {'users': users}, RequestContext(request))
+            {'users': users, 'anons': anons}, RequestContext(request))
