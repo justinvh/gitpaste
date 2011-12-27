@@ -9,6 +9,9 @@ class CommitIndex(RealTimeSearchIndex):
     created = DateField(model_attr='created')
     user = CharField(model_attr='owner', null=True)
 
+    def index_queryset(self):
+        return Commit.objects.all()
+
 
 class PasteIndex(RealTimeSearchIndex):
     text = CharField(document=True, use_template=True)
@@ -16,6 +19,9 @@ class PasteIndex(RealTimeSearchIndex):
     filename = CharField(model_attr='filename')
     language = CharField(model_attr='language')
     commit = CharField(model_attr='revision__commit')
+
+    def index_queryset(self):
+        return Paste.objects.all()
 
 
 site.register(Paste, PasteIndex)
