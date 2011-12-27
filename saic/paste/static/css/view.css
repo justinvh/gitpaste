@@ -51,3 +51,7 @@ div.paste > div {
 div.paste {
     overflow: auto;
 }
+
+.linenos {
+    width: 30px;
+}
