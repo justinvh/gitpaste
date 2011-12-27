@@ -50,6 +50,7 @@ $(document).ready(function (doc) {
         'addText': 'add another file to this paste',
         'deleteText': 'delete this file',
         'added': function () {
+            $('div.entry:last div.anonymous').remove();
             $('textarea').tabby({'tabString': '    '});
             $('div.entry:last input').val('');
             $('div.entry:last select').val('');

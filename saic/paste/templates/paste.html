@@ -42,6 +42,12 @@
 <div id='pastes'>
     <form method='POST' id='paste-form'>
         <div class='entryless'>
+            {% if user.is_authenticated %}
+            <div class='anonymous'>
+                <label>Remain Anonymous?</label>
+                {{ commit_meta_form.anonymous }}
+            </div>
+            {% endif %}
             <div class='description'>
                 <div>
                   {% if set_form %}
@@ -61,12 +67,6 @@
                         {{ form.language }}
                     </div>
                     {{ form.filename }}
-                    {% if user.is_authenticated %}
-                    <div class='anonymous'>
-                        <label>Remain Anonymous?</label>
-                        {{ commit_meta_form.anonymous }}
-                    </div>
-                    {% endif %}
                 </div>
             </div>
             <div class='paste'>
