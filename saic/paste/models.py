@@ -8,7 +8,7 @@ class Set(models.Model):
 
 class Commit(models.Model):
     commit = models.CharField(max_length=255)
-    set = models.ForeignKey(Set)
+    parent_set = models.ForeignKey(Set)
     created = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
 
@@ -20,6 +20,9 @@ class Paste(models.Model):
     language = models.CharField(max_length=100)
     revision = models.ForeignKey(Commit) 
 
+    class Meta:
+        ordering = ['-pk']
+
 class Favorite(models.Model):
-    set = models.ForeignKey(Set)
+    parent_set = models.ForeignKey(Set)
     user = models.ForeignKey(User)

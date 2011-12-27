@@ -168,7 +168,7 @@ def paste_view(request, pk):
 
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
-        'pastes': commit.paste_set.order_by('-id').all(),
+        'pastes': commit.paste_set.all(),
         'commit_current': commit,
         'favorited': favorited,
     }, RequestContext(request))
@@ -332,7 +332,7 @@ def commit_adopt(request, pk):
     owner = request.user
     commit.owner = owner
     commit.save()
-    return redirect('paste_view', pk=commit.set.pk)
+    return redirect('paste_view', pk=commit.parent_set.pk)
 
 
 def find(request):
