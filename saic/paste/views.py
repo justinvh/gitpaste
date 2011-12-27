@@ -40,7 +40,7 @@ def paste(request):
     set_form = SetForm(request.POST)
     commit_meta_form = CommitMetaForm(request.POST)
 
-    if (not paste_forms.is_valid() or 
+    if (not paste_forms.is_valid() or
             not set_form.is_valid() or
             not commit_meta_form.is_valid()):
         return render_to_response('paste.html', {
@@ -63,7 +63,7 @@ def paste(request):
     owner = None
     if request.user.is_authenticated() and not anonymous:
         owner = request.user
-    
+
     # Create a new paste set so we can reference our paste.
     description = set_form.cleaned_data.get('description')
     paste_set = Set.objects.create(
@@ -80,8 +80,8 @@ def paste(request):
 
     # Initialize a commit, git repository, and pull the current index.
     commit = Commit.objects.create(
-            parent_set=paste_set, 
-            commit='', 
+            parent_set=paste_set,
+            commit='',
             owner=owner
     )
 
@@ -95,7 +95,7 @@ def paste(request):
         filename = data['filename']
         language, language_lex = data['language'].split(';')
         paste = data['paste']
-        
+
         # If we don't specify a filename, then obviously it is lonely
         if not len(filename):
             filename = 'a-lonely-file'
@@ -178,7 +178,8 @@ def paste_view(request, pk):
     if requested_commit is None:
         commit = latest_commit
     else:
-        commit = get_object_or_404(Commit, parent_set=paste_set, commit=requested_commit)
+        commit = get_object_or_404(Commit,
+                parent_set=paste_set, commit=requested_commit)
 
     if request.method != 'POST':
         comment_form = CommentForm()
@@ -209,7 +210,7 @@ def paste_edit(request, pk):
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
-        commit = get_object_or_404(Commit, 
+        commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
 
     # Populate our initial data
@@ -253,8 +254,8 @@ def paste_edit(request, pk):
         os.environ['USER'] = owner.username
 
     commit = Commit.objects.create(
-            parent_set=paste_set, 
-            commit='', 
+            parent_set=paste_set,
+            commit='',
             owner=owner
     )
 
@@ -371,7 +372,8 @@ def paste_fork(request, pk):
     if requested_commit is None:
         commit = latest_commit
     else:
-        commit = get_object_or_404(Commit, parent_set=paste_set, commit=requested_commit)
+        commit = get_object_or_404(Commit,
+                parent_set=paste_set, commit=requested_commit)
 
     # Open the existing repository and navigate to a new head
     repo = git.Repo(paste_set.repo)
@@ -386,10 +388,12 @@ def paste_fork(request, pk):
     paste_set.owner = owner
     paste_set.save()
 
+    # Using list() forces evaluation, i.e. no lazy queries.
+    # We want data.
     for old_commit in old_commits:
         pastes = list(old_commit.paste_set.all())
         old_commit.pk = None
-        old_commit.parent_set = paste_set 
+        old_commit.parent_set = paste_set
         old_commit.owner = owner
         old_commit.save()
         for paste in pastes:
@@ -397,7 +401,7 @@ def paste_fork(request, pk):
             paste.pk = None
             paste.save()
         if commit.commit == old_commit.commit:
-            break;
+            break
 
     return redirect('paste_view', pk=paste_set.pk)
 

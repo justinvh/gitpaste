@@ -2,9 +2,9 @@ import os
 
 REPO_DIR = os.sep.join([os.path.dirname(__file__), 'repositories'])
 
-HAYSTACK_SITECONF =  'saic.search_sites'
+HAYSTACK_SITECONF = 'saic.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
-HAYSTACK_WHOOSH_PATH = os.sep.join([os.path.dirname(__file__), 
+HAYSTACK_WHOOSH_PATH = os.sep.join([os.path.dirname(__file__),
                         'whoosh', 'search-index'])
 
 DEBUG = True
@@ -18,12 +18,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': 'paste.db',             # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'paste.db',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -109,11 +109,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'saic.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
+TEMPLATE_DIRS = ()
 
 INSTALLED_APPS = (
     'django.contrib.auth',
