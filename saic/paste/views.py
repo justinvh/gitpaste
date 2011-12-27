@@ -1,3 +1,14 @@
+import os
+import settings
+import string
+import random
+
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import *
+
+import git
+
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -7,127 +18,153 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib import auth
-
 from django.forms import ValidationError
 
 from forms import PasteForm, SetForm, UserCreationForm
 from models import Set, Paste, Commit, Favorite
 
-from pygments import highlight
-from pygments.formatters import HtmlFormatter
-from pygments.lexers import *
-
-import git
-
-import os
-import settings
-import string
-import random
-
 PasteSet = formset_factory(PasteForm)
 PasteSetEdit = formset_factory(PasteForm, extra=0)
+
 
 def paste(request):
     if request.method != 'POST':
         return render_to_response('paste.html', {
-        'forms': PasteSet(),
-        'set_form': SetForm()
+            'forms': PasteSet(),
+            'set_form': SetForm()
         }, RequestContext(request))
 
-    forms = PasteSet(request.POST)
+    paste_forms = PasteSet(request.POST)
     set_form = SetForm(request.POST)
 
-    if not forms.is_valid() or not set_form.is_valid():
+    if not paste_forms.is_valid() or not set_form.is_valid():
         return render_to_response('paste.html', {
-        'forms': forms,
-        'set_form': set_form,
+            'forms': paste_forms,
+            'set_form': set_form,
         }, RequestContext(request))
 
-    repodir = '%s/%s' % (
-            settings.REPO_DIR,
-            "".join(random.sample(string.letters + string.digits, 15)))
-    os.mkdir(repodir)
+    # Repositories are just a random sequence of letters and digits
+    # We store the reference repository for editing the pastes.
+    repo_dir = os.sep.join([
+        settings.REPO_DIR,
+        "".join(random.sample(string.letters + string.digits, 15))
+    ])
+
+    os.mkdir(repo_dir)
 
     owner = None
     if request.user.is_authenticated():
         owner = request.user
 
-    s = Set.objects.create(repo=repodir, 
+    # Create a new paste set so we can reference our paste.
+    description = set_form.cleaned_data.get('description')
+    paste_set = Set.objects.create(
+            repo=repo_dir,
             owner=owner,
-            description=set_form.cleaned_data.get('description'))
-    repo = git.Repo.init(repodir)
-    index = repo.index
-    commit = Commit.objects.create(set=s, commit='', owner=owner)
+            description=description
+    )
 
-    for form_index, form in enumerate(forms):
-        d = form.cleaned_data
-        filename_original = d['filename']
-        language, lang_lex = d['language'].split(';')
-        paste=d['paste']
+    # Initialize a commit, git repository, and pull the current index.
+    commit = Commit.objects.create(set=paste_set, commit='', owner=owner)
+    git_repo = git.Repo.init(repo_dir)
+    index = git_repo.index
 
-        filename = filename_original
+    # We enumerate over the forms so we can have a way to reference
+    # the line numbers in a unique way relevant to the pastes.
+    for form_index, form in enumerate(paste_forms):
+        data = form.cleaned_data
+        filename = data['filename']
+        language, language_lex = data['language'].split(';')
+        paste = data['paste']
+
+        # If we don't specify a filename, then obviously it is lonely
         if not len(filename):
             filename = 'a-lonely-file'
-            filename_original = 'a-lonely-file'
 
+        # Construct a more logical filename for our commit
         filename_base, ext = os.path.splitext(filename)
-        filename = slugify(filename[:len(ext)])
-        absolute_path = '%s/%s%s' % (repodir, filename, ext)
-        filename_base, ext = os.path.splitext(absolute_path)
+        filename_slugify = slugify(filename[:len(ext)])
+        filename_absolute = os.sep.join([
+            repo_dir,
+            filename
+        ])
+        filename_absolute += ext
+        filename_base, ext = os.path.splitext(filename_absolute)
 
+        # If no extension was specified in the file, then we can append
+        # the extension from the lexer.
         if not len(ext):
-            absolute_path += language
+            filename_absolute += language
             ext = language
 
+        # Gists doesn't allow for the same filename, we do.
+        # Just append a number to the filename and call it good.
         i = 1
-        while os.path.exists(absolute_path):
-            absolute_path = '%s-%d%s' % (filename_base, i, ext)
+        while os.path.exists(filename_absolute):
+            filename_absolute = '%s-%d%s' % (filename_base, i, ext)
             i += 1
 
-        f = open(absolute_path, "w")
+        # Open the file, write the paste, call it good.
+        f = open(filename_absolute, "w")
         f.write(paste)
         f.close()
 
-        lex = globals()[lang_lex]
-        paste_formatted = highlight(paste, lex(), 
+        # This is a bit nasty and a get_by_ext something exist in pygments.
+        # However, globals() is just much more fun.
+        lex = globals()[language_lex]
+        paste_formatted = highlight(
+                paste,
+                lex(),
                 HtmlFormatter(
                     style='colorful',
-                    linenos="table", 
+                    linenos='table',
                     lineanchors='line-%s' % form_index,
-                    anchorlinenos=True))
+                    anchorlinenos=True)
+        )
 
-        index.add([absolute_path])
-
+        # Add the file to the index and create the paste
+        index.add([filename_absolute])
         p = Paste.objects.create(
-                filename=filename_original,
-                absolute_path=absolute_path,
+                filename=filename,
+                absolute_path=filename_absolute,
                 paste=paste,
                 paste_formatted=paste_formatted,
-                language=d['language'],
-                revision=commit)
+                language=data['language'],
+                revision=commit
+        )
 
+        # Create the commit from the index
         new_commit = index.commit('Initial paste.')
         commit.commit = new_commit
         commit.save()
-    return redirect('paste_view', pk=s.pk)
+
+    return redirect('paste_view', pk=paste_set.pk)
 
 
 def paste_view(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
-    favorited = [] 
+
+    # Meh, this could be done better and I am a bit disappointed that you
+    # can't filter on the request.user if it is AnonymousUser, so we have
+    # to do this request.user.is_authenticated()
+    favorited = False
     if request.user.is_authenticated():
-        favorited = Favorite.objects.filter(set=paste_set, user=request.user)
+        favorited = Favorite.objects.filter(
+                set=paste_set,
+                user=request.user).exists()
+
+    # A requested commit allows us to navigate in history
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
         commit = get_object_or_404(Commit, commit=requested_commit)
-    pastes = commit.paste_set.all()
+
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
-        'pastes': pastes,
+        'pastes': commit.paste_set.all(),
         'commit_current': commit,
-        'favorited': len(favorited) > 0,
+        'favorited': favorited,
     }, RequestContext(request))
 
 
@@ -135,11 +172,13 @@ def paste_edit(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
 
+    # You can technically modify anything in history and update it
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
         commit = get_object_or_404(Commit, commit=requested_commit)
 
+    # Populate our initial data
     initial_data = []
     for paste in commit.paste_set.all():
         initial_data.append({
@@ -150,102 +189,118 @@ def paste_edit(request, pk):
 
     if request.method != 'POST':
         return render_to_response('paste.html', {
-        'forms': PasteSetEdit(initial=initial_data),
-        'set_form': SetForm(initial={ 'description': paste_set.description })
+            'forms': PasteSetEdit(initial=initial_data),
         }, RequestContext(request))
 
     forms = PasteSetEdit(request.POST, initial=initial_data)
-    set_form = SetForm(request.POST, initial={ 'description': paste_set.description })
 
-    if not forms.is_valid() or not set_form.is_valid():
+    if not forms.is_valid():
         return render_to_response('paste.html', {
-        'forms': forms,
-        'set_form': set_form,
+            'forms': forms,
         }, RequestContext(request))
 
-    repodir = paste_set.repo
-    repo = git.Repo(repodir)
+    # Update the repo
+    repo_dir = paste_set.repo
+    repo = git.Repo(repo_dir)
     index = repo.index
-    s = paste_set
 
     owner = None
     if request.user.is_authenticated():
         owner = request.user
 
-    commit = Commit.objects.create(set=s, commit='', owner=owner)
+    commit = Commit.objects.create(set=paste_set, commit='', owner=owner)
 
+    # We enumerate over the forms so we can have a way to reference
+    # the line numbers in a unique way relevant to the pastes.
     for form_index, form in enumerate(forms):
-        d = form.cleaned_data
-        filename_original = d['filename']
-        language, lang_lex = d['language'].split(';')
-        paste=d['paste']
+        data = form.cleaned_data
+        filename = data['filename']
+        language, language_lex = data['language'].split(';')
+        paste = data['paste']
 
-        filename = filename_original
+        # If we don't specify a filename, then obviously it is lonely
         if not len(filename):
             filename = 'a-lonely-file'
-            filename_original = 'a-lonely-file'
 
+        # Construct a more logical filename for our commit
         filename_base, ext = os.path.splitext(filename)
-        filename = slugify(filename[:len(ext)])
-        absolute_path = '%s/%s%s' % (repodir, filename, ext)
-        filename_base, ext = os.path.splitext(absolute_path)
+        filename_slugify = slugify(filename[:len(ext)])
+        filename_absolute = os.sep.join([
+            repo_dir,
+            filename
+        ])
+        filename_absolute += ext
+        filename_base, ext = os.path.splitext(filename_absolute)
 
+        # If no extension was specified in the file, then we can append
+        # the extension from the lexer.
         if not len(ext):
-            absolute_path += language
+            filename_absolute += language
             ext = language
 
+        # Gists doesn't allow for the same filename, we do.
+        # Just append a number to the filename and call it good.
         i = 1
-        while os.path.exists(absolute_path):
-            absolute_path = '%s-%d%s' % (filename_base, i, ext)
+        while os.path.exists(filename_absolute):
+            filename_absolute = '%s-%d%s' % (filename_base, i, ext)
             i += 1
 
-        f = open(absolute_path, "w")
+        # Open the file, write the paste, call it good.
+        f = open(filename_absolute, "w")
         f.write(paste)
         f.close()
 
-        lex = globals()[lang_lex]
-        paste_formatted = highlight(paste, lex(), 
+        # This is a bit nasty and a get_by_ext something exist in pygments.
+        # However, globals() is just much more fun.
+        lex = globals()[language_lex]
+        paste_formatted = highlight(
+                paste,
+                lex(),
                 HtmlFormatter(
                     style='colorful',
-                    linenos="table", 
+                    linenos='table',
                     lineanchors='line-%s' % form_index,
-                    anchorlinenos=True))
+                    anchorlinenos=True)
+        )
 
-        index.add([absolute_path])
-
+        # Add the file to the index and create the paste
+        index.add([filename_absolute])
         p = Paste.objects.create(
-                filename=filename_original,
-                absolute_path=absolute_path,
+                filename=filename,
+                absolute_path=filename_absolute,
                 paste=paste,
                 paste_formatted=paste_formatted,
-                language=d['language'],
-                revision=commit)
+                language=data['language'],
+                revision=commit
+        )
 
+        # Create the commit from the index
         new_commit = index.commit('Modified.')
         commit.commit = new_commit
         commit.save()
-    return redirect('paste_view', pk=s.pk)
+
+    return redirect('paste_view', pk=paste_set.pk)
+
 
 @login_required
 def paste_delete(request, pk):
-    s = get_object_or_404(Set, pk=pk)
-    if s.owner != request.user:
-        return HttpResponse('This is not yours to delete.')
-    s.delete()
+    get_object_or_404(Set, pk=pk, owner=request.user).delete()
     return redirect('paste')
+
 
 def paste_download(request, pk):
     pass
 
+
 @login_required
 def paste_favorite(request, pk):
-    s = get_object_or_404(Set, pk=pk)
+    paste_set = get_object_or_404(Set, pk=pk)
     try:
-        f = Favorite.objects.get(set=s, user=request.user)
-        f.delete()
+        Favorite.objects.get(set=paste_set, user=request.user).delete()
     except Favorite.DoesNotExist:
         Favorite.objects.create(set=s, user=request.user)
     return HttpResponse()
+
 
 @login_required
 def paste_adopt(request, pk):
@@ -256,35 +311,34 @@ def paste_adopt(request, pk):
     s.save()
     return redirect('paste_view', pk=s.pk)
 
+
+@login_required
 def commit_adopt(request, pk):
     commit = get_object_or_404(Commit, pk=pk)
     if commit.owner is not None:
         return HttpResponse('This is not yours to own.')
-    owner = None
-    if request.user.is_authenticated():
-        owner = request.user
+    owner = request.user
     commit.owner = owner
     commit.save()
     return redirect('paste_view', pk=commit.set.pk)
-    
+
 
 def find(request):
     pass
+
 
 def register(request):
     """Handles the logic for registering a user into the system."""
     if request.method != 'POST':
         form = UserCreationForm()
-        return render_to_response('register.html', 
-                { 'form': form },
-                RequestContext(request))
+        return render_to_response('register.html',
+                {'form': form}, RequestContext(request))
 
     form = UserCreationForm(data=request.POST)
 
     if not form.is_valid():
-        return render_to_response('register.html', 
-            { 'form': form },
-            RequestContext(request))
+        return render_to_response('register.html',
+                {'form': form}, RequestContext(request))
 
     auth.logout(request)
 
@@ -293,49 +347,51 @@ def register(request):
     user.is_active = True
     user.save()
 
-    authed_user = auth.authenticate(username=user.username, password=form.cleaned_data['password1'])
-    auth.login(request, authed_user)
+    authed_user = auth.authenticate(
+            username=user.username,
+            password=form.cleaned_data['password1']
+    )
 
+    auth.login(request, authed_user)
     return redirect('paste')
+
 
 def login(request):
     """Handles the logic for logging a user into the system."""
     if request.method != 'POST':
         form = AuthenticationForm()
-        return render_to_response('login.html', 
-                { 'form': form }, RequestContext(request))
+        return render_to_response('login.html',
+                {'form': form}, RequestContext(request))
 
     form = AuthenticationForm(data=request.POST)
     if not form.is_valid():
-        return render_to_response('login.html', 
-            { 'form': form }, RequestContext(request))
+        return render_to_response('login.html',
+                {'form': form}, RequestContext(request))
 
     auth.login(request, form.get_user())
-    
-    next = request.POST.get('next')
-    if next:
-        return redirect(next)
+    return redirect(request.POST.get('next', 'paste'))
 
-    return redirect('paste')
 
 def logout(request):
     auth.logout(request)
     return redirect('login')
 
+
 @login_required
 def favorites(request):
     favorites = Favorite.objects.filter(user=request.user)
     return render_to_response('favorites.html',
-            { 'favorites': favorites }, RequestContext(request))
+            {'favorites': favorites}, RequestContext(request))
+
 
 def user_pastes(request, owner):
     sets = Set.objects.filter(owner=owner)
     owner = User.objects.get(pk=owner)
     return render_to_response('user-pastes.html',
-            { 'sets': sets, 'owner': owner }, RequestContext(request))
+            {'sets': sets, 'owner': owner}, RequestContext(request))
+
 
 def users(request):
     users = User.objects.all()
     return render_to_response('users.html',
-            { 'users': users }, RequestContext(request))
-
+            {'users': users}, RequestContext(request))

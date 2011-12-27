@@ -48,3 +48,7 @@ div.paste > div {
 #favorite-toggle {
   cursor: pointer;
 }
+
+div.paste {
+    overflow: auto;
+}

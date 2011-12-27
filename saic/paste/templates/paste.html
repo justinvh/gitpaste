@@ -43,7 +43,11 @@
         <div class='entryless'>
             <div class='description'>
                 <div>
+                  {% if set_form %}
                     {{ set_form.description }}
+                  {% else %}
+                  <strong>Updating Paste</strong>
+                  {% endif %}
                 </div>
             </div>
         </div>
@@ -67,7 +71,11 @@
         <div class='clear'></div>
         {% endfor %}
         <div class='submit'>
+            {% if not set_form %}
+            <input type='submit' value='Submit Changeset'>
+            {% else %}
             <input type='submit' value='Create Paste'>
+            {% endif %}
         </div>
         {% csrf_token %}
         {{ forms.management_form }}
