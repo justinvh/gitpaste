@@ -18,7 +18,7 @@
             {% for user in users %}
             <div><a href='{% url user_pastes owner=user.pk %}'>{{ user }}</a>
                 <br>
-                {{ user.parent_set_set.all.count }} paste{{ user.parent_set_set.all.count|pluralize }}.
+                {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
             </div>
             {% endfor %}
         </div>
