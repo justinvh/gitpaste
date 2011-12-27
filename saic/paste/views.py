@@ -64,6 +64,12 @@ def paste(request):
             description=description
     )
 
+    # Yes, this is horrible. I know. But there is a bug with Python Git.
+    # See: https://github.com/gitpython-developers/GitPython/issues/39
+    os.environ['USER'] = "Anonymous"
+    if owner:
+        os.environ['USER'] = owner.username
+
     # Initialize a commit, git repository, and pull the current index.
     commit = Commit.objects.create(set=paste_set, commit='', owner=owner)
     git_repo = git.Repo.init(repo_dir)
@@ -207,6 +213,12 @@ def paste_edit(request, pk):
     owner = None
     if request.user.is_authenticated():
         owner = request.user
+
+    # Yes, this is horrible. I know. But there is a bug with Python Git.
+    # See: https://github.com/gitpython-developers/GitPython/issues/39
+    os.environ['USER'] = "Anonymous"
+    if owner:
+        os.environ['USER'] = owner.username
 
     commit = Commit.objects.create(set=paste_set, commit='', owner=owner)
 
