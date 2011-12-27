@@ -108,6 +108,7 @@ div.clear + div.entry {
   margin-top: 10px;
 }
 
+div.anonymous,
 div.file,
 div.description {
   border-bottom: 1px solid #DDD;
