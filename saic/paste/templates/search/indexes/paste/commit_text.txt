@@ -1,0 +1,4 @@
+{{ object.commit }}
+{{ object.commit|slice:":8"}}
+{{ object.created }}
+{{ object.owner }}

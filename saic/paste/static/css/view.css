@@ -65,6 +65,7 @@ div.submit input {
 
 .comment textarea {
     height: 100px;
+    background-color: #FAFAFA;
 }
 
 .comment form {

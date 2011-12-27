@@ -6,6 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^paste/', include('saic.paste.urls')),
+    (r'^search/', include('haystack.urls')),
     (r'^', redirect_to, { 'url': '/paste/' }),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),

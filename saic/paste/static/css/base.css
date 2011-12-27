@@ -131,6 +131,7 @@ div.entryless > div {
 }
 
 
+form p input,
 div.entryless div > input,
 div.entry div > textarea,
 div.entry div > select,
@@ -158,6 +159,7 @@ div.entry textarea {
   height: 300px;
   font-family: Consolas, Monaco, "Bitstream Vera sans Mono", monospace;
   font-size: 15px;
+  background-color: #FAFAFA;
 }
 
 div.submit {
@@ -206,6 +208,7 @@ span.header {
   color: #333;
 }
 
+div.entry label,
 div.entryless label {
   font-size: 12px; 
   float: left; 
@@ -259,4 +262,25 @@ li.active {
 
 .light {
     color: #555;
+}
+
+div.results {
+    width: 60%;
+    margin: 0 auto;
+}
+
+div.results h1 {
+    margin-left: 20px;
+}
+
+form p {
+    padding: 0 5px;
+}
+
+form ul {
+    list-style: none;
+}
+
+div.search-submit {
+    margin-left: 20px;
 }

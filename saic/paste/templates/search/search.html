@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class='results'>
+  <h1>Search</h1>
+  <form method='GET'>
+    <div class='entry'>
+      {{ form.as_p}}
+      <br>
+    </div>
+    <div class='search-submit'>
+      <input type="submit" value="Search">
+    </div>
+  </form>
+</div>
+
+{% if query %}
+<div class='results'>
+  <h1>Results</h1>
+  <div class='entry'>
+    <ol>
+      {% for result in page.object_list %}
+
+        {% if result.content_type == "paste.paste" %}
+          <li>
+            <a href="{% url paste_view pk=result.object.pk %}">"{{ result.paste|slice:":80"}}... "</a> by 
+            {% if result.object.owner %}
+              <a href='{% url owner_pastes owner=result.object.owner.pk %}'>{{ result.object.owner }}</a>
+            {% else %}
+              <a href='{% url anon_pastes %}'>Anonymous</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        {% if result.content_type == "paste.commit" %}
+          <li>
+            <a href="{% url paste_view pk=result.object.parent_set.pk %}?commit={{ result.object.commit }}">
+            {{ result.object.commit|slice:":8" }}</a>
+          
+            {% if result.object.parent_set.description %}
+              from
+              <a href='{% url paste_view pk=result.object.parent_set.pk %}'>{{result.object.parent_set.description }}</a>
+            {% endif %}
+            by
+            {% if result.object.owner %}
+              <a href='{% url owner_pastes owner=result.object.owner.pk %}'>{{ result.object.owner }}</a>
+            {% else %}
+              <a href='{% url anon_pastes %}'>Anonymous</a>
+            {% endif %}
+          </li>
+        {% endif %}
+      {% empty %}
+      <p>No results found.</p>
+      {% endfor %}
+    </ol>
+    {% if page.has_previous or page.has_next %}
+      <div>
+        {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+        |
+        {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

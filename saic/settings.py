@@ -1,6 +1,11 @@
 import os
 
-REPO_DIR = '%s/repositories' % os.path.dirname(__file__)
+REPO_DIR = os.sep.join([os.path.dirname(__file__), 'repositories'])
+
+HAYSTACK_SITECONF =  'saic.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'whoosh'
+HAYSTACK_WHOOSH_PATH = os.sep.join([os.path.dirname(__file__), 
+                        'whoosh', 'search-index'])
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -120,6 +125,7 @@ INSTALLED_APPS = (
     'saic.paste',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'haystack',
 )
 
 # A sample logging configuration. The only tangible logging
