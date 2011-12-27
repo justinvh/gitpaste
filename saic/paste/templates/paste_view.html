@@ -103,8 +103,8 @@
     </div>
     <div class='clear'></div>
     {% endfor %}
-    <div class='entry comment'>
-      <h1>Comments</h1>
+    <div class='entry-comment comment'>
+      <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
       {% for comment in commit_current.comment_set.all %}
       <div name='comment-{{ comment.pk }}' class='comment-index'>
         <h1><a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a></h1>
