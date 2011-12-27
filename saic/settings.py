@@ -118,6 +118,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'saic.paste',
     'django.contrib.admin',
     'django.contrib.admindocs',

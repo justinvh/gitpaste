@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load elapsed %}
 
 {% block jsheader %}
 <script src='/static/js/jquery.formset.min.js'></script>
@@ -8,7 +9,9 @@
 
 {% block content %}
 <div id='log'>
-    <h1>Revisions</h1>
+  <h1>
+    {{ paste_set.commit_set.all.count }}
+    Revision{{ paste_set.commit_set.all.count|pluralize }}</h1>
     <ul class='revisions'>
         {% for commit in paste_set.commit_set.all %}
         {% if commit.commit == commit_current.commit %}
@@ -25,7 +28,7 @@
             {% endif %}
         </span> 
         
-        <span class='date'>{{ commit.created }}</span> </li>
+        <span class='date'>{{ commit.created|elapsed }}</span> </li>
         {% endfor %}
     </ul>
     {% if user.is_authenticated %}
@@ -67,10 +70,11 @@
                     {% endif %}
                 {% endif %}
                 <br>
-            "{{ paste_set.description }}"
+            {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
             {% if commit_current.owner %}
                 by <strong>{{ commit_current.owner }}</strong>
             {% endif %}
+            <span class='date'>{{ commit_current.created|elapsed }}</span>
             {% if paste_set.fork %}
             <br>
             <em class='light'>Fork of                {% if paste_set.fork.parent_set.owner %}
