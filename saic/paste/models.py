@@ -21,7 +21,7 @@ class Paste(models.Model):
     revision = models.ForeignKey(Commit) 
 
     class Meta:
-        ordering = ['-pk']
+        ordering = ['-id']
 
 class Favorite(models.Model):
     parent_set = models.ForeignKey(Set)
