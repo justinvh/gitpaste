@@ -22,6 +22,10 @@
 
                 {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}.
             </div>
+            {% empty %}
+            <div>
+              <h1>Your requests echo far, but nothing happens.</h1>
+            <div>
             {% endfor %}
         </div>
         <div class='clear'></div>
