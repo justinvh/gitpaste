@@ -50,10 +50,13 @@ $(document).ready(function (doc) {
         'addText': 'add another file to this paste',
         'deleteText': 'delete this file',
         'added': function () {
+            $('textarea').tabby({'tabString': '    '});
             $('div.entry:last input').val('');
             $('div.entry:last select').val('');
             $('div.entry:last textarea').html('');
             $('input').blur();
         }
     })
+
+    $('textarea').tabby({'tabString': '    '});
 });
