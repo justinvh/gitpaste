@@ -12,15 +12,15 @@
     <div class='entry'>
         <div>
             {% for favorite in favorites %}
-            <div><a href='{% url paste_view pk=favorite.set.pk %}'>{{ favorite.set.description }}</a>
+            <div><a href='{% url paste_view pk=favorite.parent_set.pk %}'>{{ favorite.parent_set.description }}</a>
                 <br>
-                {% if favorite.set.owner %} 
-                By <a href='{% url user_pastes owner=favorite.set.owner.pk %}'>{{ favorite.set.owner }}</a>.
+                {% if favorite.parent_set.owner %} 
+                By <a href='{% url user_pastes owner=favorite.parent_set.owner.pk %}'>{{ favorite.parent_set.owner }}</a>.
                 {% else %}
                 By Anonymous.
                 {% endif %}
 
-                {{ favorite.set.commit_set.all.count }} commit{{ favorite.set.commit_set.all.count|pluralize }}.
+                {{ favorite.parent_set.commit_set.all.count }} commit{{ favorite.parent_set.commit_set.all.count|pluralize }}.
             </div>
             {% endfor %}
         </div>

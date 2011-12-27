@@ -6,7 +6,7 @@
 
 {% block content %}
 <div id='log'>
-    {% if not user.set_set.all.count %}
+    {% if not user.parent_set_set.all.count %}
     <div id='paste-description'>
         <strong>Paste</strong> is a simple way to <strong>share snippets and pastes</strong> with others. 
         All pastes are git repositories, so they are automatically <strong>versioned</strong>.
@@ -19,13 +19,13 @@
         {% endfor %}
     {% else %}
         {% if user.is_authenticated %}
-        {% if not user.set_set.all.count %}
+        {% if not user.parent_set_set.all.count %}
         <h1>Hey!</h1>
         <p>You don't have any pastes yet, but you will eventually.</p>
         {% else %}
         <h1>Your Contributions</h1>
         <ul>
-            {% for set in user.set_set.all %}
+            {% for set in user.parent_set_set.all %}
             <li><a href='{% url paste_view pk=set.pk %}'>paste {{ set.pk }}:</a>
             <span class='description'>{{ set.description }}</li>
             {% endfor %}

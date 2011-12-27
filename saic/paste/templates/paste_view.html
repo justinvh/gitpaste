@@ -30,13 +30,13 @@
     </ul>
     {% if user.is_authenticated %}
         <br>
-        {% if not commit_current.set.owner %}
+        {% if not commit_current.parent_set.owner %}
         <span class='alert'>Hey! This paste is not owned by anyone. 
-            <a href='{% url paste_adopt pk=commit_current.set.pk %}'>Adopt it!</a>
+            <a href='{% url paste_adopt pk=commit_current.parent_set.pk %}'>Adopt it!</a>
         </span>
         {% endif %}
-        {% if commit_current.set.owner == user %}
-        <a class='alert' href='{% url paste_delete pk=commit_current.set.pk %}'>delete this entire paste</a>
+        {% if commit_current.parent_set.owner == user %}
+        <a class='alert' href='{% url paste_delete pk=commit_current.parent_set.pk %}'>delete this entire paste</a>
         {% endif %}
     {% endif %}
 
@@ -91,6 +91,6 @@
     <div class='clear'></div>
     {% endfor %}
 </div>
-<script>var set = "{{ commit_current.set.pk }}";</script>
+<script>var set = "{{ commit_current.parent_set.pk }}";</script>
 <script src='/static/js/view.js'></script>
 {% endblock %}
