@@ -170,7 +170,7 @@ def paste_view(request, pk):
     if requested_commit is None:
         commit = latest_commit
     else:
-        commit = get_object_or_404(Commit, commit=requested_commit)
+        commit = get_object_or_404(Commit, parent_set=paste_set, commit=requested_commit)
 
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
@@ -189,7 +189,8 @@ def paste_edit(request, pk):
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
-        commit = get_object_or_404(Commit, commit=requested_commit)
+        commit = get_object_or_404(Commit, 
+                parent_set=paste_set, commit=requested_commit)
 
     # Populate our initial data
     initial_data = []
@@ -323,6 +324,58 @@ def paste_favorite(request, pk):
     except Favorite.DoesNotExist:
         Favorite.objects.create(parent_set=paste_set, user=request.user)
     return HttpResponse()
+
+
+def paste_fork(request, pk):
+    paste_set = get_object_or_404(Set, pk=pk)
+
+    # Create the new repository
+    repo_dir = os.sep.join([
+        settings.REPO_DIR,
+        "".join(random.sample(string.letters + string.digits, 15))
+    ])
+    os.mkdir(repo_dir)
+
+    # Set the new owner
+    owner = None
+    if request.user.is_authenticated():
+        owner = request.user
+
+    # A requested commit allows us to navigate in history
+    requested_commit = request.GET.get('commit')
+    latest_commit = paste_set.commit_set.latest('created')
+    if requested_commit is None:
+        commit = latest_commit
+    else:
+        commit = get_object_or_404(Commit, parent_set=paste_set, commit=requested_commit)
+
+    # Open the existing repository and navigate to a new head
+    repo = git.Repo(paste_set.repo)
+    clone = repo.clone(repo_dir)
+    clone.git.reset(commit.commit)
+
+    # Set the new owners
+    old_commits = list(paste_set.commit_set.all().order_by('created'))
+    paste_set.repo = repo_dir
+    paste_set.fork = commit
+    paste_set.pk = None
+    paste_set.owner = owner
+    paste_set.save()
+
+    for old_commit in old_commits:
+        pastes = list(old_commit.paste_set.all())
+        old_commit.pk = None
+        old_commit.parent_set = paste_set 
+        old_commit.owner = owner
+        old_commit.save()
+        for paste in pastes:
+            paste.revision = old_commit
+            paste.pk = None
+            paste.save()
+        if commit.commit == old_commit.commit:
+            break;
+
+    return redirect('paste_view', pk=paste_set.pk)
 
 
 @login_required

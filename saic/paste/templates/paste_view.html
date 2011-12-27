@@ -59,6 +59,7 @@
             {% if editable %}
             <a href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(edit)</a>
             {% endif %}
+            <a href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(fork)</a>
             <!-- <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a> -->
                 {% if user.is_authenticated %}
                     {% if not commit_current.owner %}
@@ -69,6 +70,16 @@
             "{{ paste_set.description }}"
             {% if commit_current.owner %}
                 by <strong>{{ commit_current.owner }}</strong>
+            {% endif %}
+            {% if paste_set.fork %}
+            <br>
+            <em class='light'>Fork of                {% if paste_set.fork.parent_set.owner %}
+                <a href='{% url user_pastes owner=paste_set.fork.parent_set.owner %}'>{{ paste_set.fork.parent_set.owner }}</a>
+                {% else %}
+                <a href='{% url anon_pastes %}'>Anonymous</a>
+                {% endif %} at commit 
+                <a href='{% url paste_view pk=paste_set.fork.parent_set.pk %}?commit={{ paste_set.fork.commit }}'>{{ paste_set.fork.commit|slice:":8" }}</a>
+            </em>
             {% endif %}
         </div>
     </div>

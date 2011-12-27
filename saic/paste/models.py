@@ -5,6 +5,7 @@ class Set(models.Model):
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
     description = models.CharField(max_length=255)
     repo = models.CharField(max_length=100)
+    fork = models.ForeignKey('Commit', null=True, blank=True, default=None)
 
 class Commit(models.Model):
     commit = models.CharField(max_length=255)
