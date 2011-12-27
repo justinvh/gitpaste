@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Set(models.Model):
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
     description = models.CharField(max_length=255)
-    repo = models.CharField(max_length=15)
+    repo = models.CharField(max_length=100)
 
 class Commit(models.Model):
     commit = models.CharField(max_length=255)
@@ -17,7 +17,7 @@ class Paste(models.Model):
     filename = models.CharField(max_length=255)
     paste = models.TextField()
     paste_formatted = models.TextField()
-    language = models.CharField(max_length=15)
+    language = models.CharField(max_length=100)
     revision = models.ForeignKey(Commit) 
 
 class Favorite(models.Model):
