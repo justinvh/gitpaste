@@ -112,7 +112,11 @@
         </div>
       {% empty %}
       <div name='comment-blank' class='comment-index'>
-        <pre>If only there were comments... Maybe <a href='{% url login %}'>login</a> and add one?</pre>
+		{% if user.is_authenticated %}
+            <pre>If only there were comments...</pre>
+        {% else %}
+            <pre>If only there were comments... Maybe <a href='{% url login %}'>login</a> and add one?</pre>
+        {% endif %}
       </div>
       {% endfor %}
   </div>
