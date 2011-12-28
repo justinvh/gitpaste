@@ -152,10 +152,10 @@ def paste(request):
                 revision=commit
         )
 
-        # Create the commit from the index
-        new_commit = index.commit('Initial paste.')
-        commit.commit = new_commit
-        commit.save()
+    # Create the commit from the index
+    new_commit = index.commit('Initial paste.')
+    commit.commit = new_commit
+    commit.save()
 
     return redirect('paste_view', pk=paste_set.pk)
 
@@ -204,8 +204,8 @@ def paste_view(request, pk):
         if requested_diff:
             diff = highlight(
                     repo.git.diff(
-                        active_commit.hexsha, 
-                        transversed_commit.hexsha),
+                        transversed_commit.hexsha,
+                        active_commit.hexsha),
                     DiffLexer(),
                     HtmlFormatter(
                         style='colorful',
@@ -234,12 +234,18 @@ def paste_edit(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
 
+
     # You can technically modify anything in history and update it
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
         commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
+
+
+    previous_files = []
+    for f in commit.paste_set.all():
+        previous_files.append(os.path.basename(f.absolute_path))
 
     # Populate our initial data
     initial_data = []
@@ -289,6 +295,7 @@ def paste_edit(request, pk):
 
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
+    form_files = []
     for form_index, form in enumerate(forms):
         data = form.cleaned_data
         filename = data['filename']
@@ -296,7 +303,9 @@ def paste_edit(request, pk):
         paste = data['paste']
 
         # If we don't specify a filename, then obviously it is lonely
+        no_filename = False
         if not len(filename):
+            no_filename = True
             filename = 'a-lonely-file'
 
         # Construct a more logical filename for our commit
@@ -318,9 +327,12 @@ def paste_edit(request, pk):
         # Gists doesn't allow for the same filename, we do.
         # Just append a number to the filename and call it good.
         i = 1
-        while os.path.exists(filename_absolute):
-            filename_absolute = '%s-%d%s' % (filename_base, i, ext)
-            i += 1
+        if no_filename:
+            while os.path.exists(filename_absolute):
+                filename_absolute = '%s-%d%s' % (filename_base, i, ext)
+                i += 1
+
+        form_files.append(os.path.basename(filename_absolute))
 
         # Open the file, write the paste, call it good.
         f = open(filename_absolute, "w")
@@ -351,10 +363,17 @@ def paste_edit(request, pk):
                 revision=commit
         )
 
-        # Create the commit from the index
-        new_commit = index.commit('Modified.')
-        commit.commit = new_commit
-        commit.save()
+    # Create the commit from the index
+    intersected = set(form_files).intersection(previous_files)
+    removed_files = list(set(previous_files) - intersected)
+    for f in removed_files:
+        index.remove([os.sep.join([
+            repo_dir,
+            f
+        ])])
+    new_commit = index.commit('Modified.')
+    commit.commit = new_commit
+    commit.save()
 
     return redirect('paste_view', pk=paste_set.pk)
 
