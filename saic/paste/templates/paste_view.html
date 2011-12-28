@@ -74,7 +74,7 @@
             {% if commit_current.owner %}
                 by <strong>{{ commit_current.owner }}</strong>
             {% endif %}
-            <span class='date'>{{ commit_current.created|elapsed }}</span>
+            <span class='date' title="{{ commit_current.created }}">{{ commit_current.created|elapsed }}</span>
             {% if paste_set.fork %}
             <br>
             <em class='light'>Fork of                {% if paste_set.fork.parent_set.owner %}
