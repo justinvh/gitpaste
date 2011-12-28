@@ -28,6 +28,27 @@ PasteSet = formset_factory(PasteForm)
 PasteSetEdit = formset_factory(PasteForm, extra=0)
 
 
+def _git_diff(git_commit_object, repo):
+    diff = None
+    try:
+        transversed_commit = git_commit_object.traverse().next()
+        has_history = True
+        diff = highlight(
+                repo.git.diff(
+                    transversed_commit.hexsha,
+                    git_commit_object.hexsha),
+                DiffLexer(),
+                HtmlFormatter(
+                    style='colorful',
+                    linenos='table',
+                    lineanchors='diff',
+                    anchorlinenos=True),
+                )
+        return diff
+    except StopIteration, e:
+        return ""
+
+
 def paste(request):
     if request.method != 'POST':
         return render_to_response('paste.html', {
@@ -93,7 +114,7 @@ def paste(request):
     for form_index, form in enumerate(paste_forms):
         data = form.cleaned_data
         filename = data['filename']
-        language, language_lex = data['language'].split(';')
+        language_lex, language = data['language'].split(';')
         paste = data['paste']
 
         # If we don't specify a filename, then obviously it is lonely
@@ -152,10 +173,11 @@ def paste(request):
                 revision=commit
         )
 
-        # Create the commit from the index
-        new_commit = index.commit('Initial paste.')
-        commit.commit = new_commit
-        commit.save()
+    # Create the commit from the index
+    new_commit = index.commit('Initial paste.')
+    commit.diff = _git_diff(new_commit, git_repo)
+    commit.commit = new_commit
+    commit.save()
 
     return redirect('paste_view', pk=paste_set.pk)
 
@@ -181,9 +203,7 @@ def paste_view(request, pk):
         commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
 
-    if request.method != 'POST':
-        comment_form = CommentForm()
-    else:
+    if request.method == 'POST':
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid() and request.user.is_authenticated():
             comment = Comment.objects.create(
@@ -192,13 +212,15 @@ def paste_view(request, pk):
                     comment=comment_form.cleaned_data['comment']
             )
 
+    # Always clear the comment form
+    comment_form = CommentForm()
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
         'pastes': commit.paste_set.all().order_by('id'),
         'commit_current': commit,
         'favorited': favorited,
         'editable': latest_commit == commit,
-        'comment_form': comment_form
+        'comment_form': comment_form,
     }, RequestContext(request))
 
 
@@ -206,12 +228,18 @@ def paste_edit(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
 
+
     # You can technically modify anything in history and update it
     if requested_commit is None:
         commit = paste_set.commit_set.latest('id')
     else:
         commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
+
+
+    previous_files = []
+    for f in commit.paste_set.all():
+        previous_files.append(os.path.basename(f.absolute_path))
 
     # Populate our initial data
     initial_data = []
@@ -261,14 +289,17 @@ def paste_edit(request, pk):
 
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
+    form_files = []
     for form_index, form in enumerate(forms):
         data = form.cleaned_data
         filename = data['filename']
-        language, language_lex = data['language'].split(';')
+        language_lex, language = data['language'].split(';')
         paste = data['paste']
 
         # If we don't specify a filename, then obviously it is lonely
+        no_filename = False
         if not len(filename):
+            no_filename = True
             filename = 'a-lonely-file'
 
         # Construct a more logical filename for our commit
@@ -290,9 +321,12 @@ def paste_edit(request, pk):
         # Gists doesn't allow for the same filename, we do.
         # Just append a number to the filename and call it good.
         i = 1
-        while os.path.exists(filename_absolute):
-            filename_absolute = '%s-%d%s' % (filename_base, i, ext)
-            i += 1
+        if no_filename:
+            while os.path.exists(filename_absolute):
+                filename_absolute = '%s-%d%s' % (filename_base, i, ext)
+                i += 1
+
+        form_files.append(os.path.basename(filename_absolute))
 
         # Open the file, write the paste, call it good.
         f = open(filename_absolute, "w")
@@ -323,10 +357,18 @@ def paste_edit(request, pk):
                 revision=commit
         )
 
-        # Create the commit from the index
-        new_commit = index.commit('Modified.')
-        commit.commit = new_commit
-        commit.save()
+    # Create the commit from the index
+    intersected = set(form_files).intersection(previous_files)
+    removed_files = list(set(previous_files) - intersected)
+    for f in removed_files:
+        index.remove([os.sep.join([
+            repo_dir,
+            f
+        ])])
+    new_commit = index.commit('Modified.')
+    commit.commit = new_commit
+    commit.diff = _git_diff(new_commit, repo)
+    commit.save()
 
     return redirect('paste_view', pk=paste_set.pk)
 
@@ -406,6 +448,14 @@ def paste_fork(request, pk):
     return redirect('paste_view', pk=paste_set.pk)
 
 
+def paste_raw(request, pk):
+    paste = get_object_or_404(Paste, pk=pk)
+    filename = paste.filename
+    response = HttpResponse(paste.paste, mimetype='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    return response
+
+
 @login_required
 def paste_adopt(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
@@ -425,10 +475,6 @@ def commit_adopt(request, pk):
     commit.owner = owner
     commit.save()
     return redirect('paste_view', pk=commit.parent_set.pk)
-
-
-def find(request):
-    pass
 
 
 def register(request):

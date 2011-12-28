@@ -8,35 +8,30 @@
 
 {% block content %}
 <div id='login'>
-    <form method='POST' id='paste-form'>
-      <h1>Register</h1>
-        <div class='entry'>
-            <div>
-                <div> <label>Email: </label> {{ form.username }} </div>
-
-                {% if form.username.errors %}
-                <div>{{ form.username.errors }}</div>
-                {% endif %}
-
-                <div> <label>Password: </label> {{ form.password1 }} </div>
-
-                {% if form.password1.errors %}
-                <div>{{ form.password1.errors }}</div>
-                {% endif %}
-
-                <div> <label>Confirm: </label> {{ form.password2 }} </div>
-                {% if form.password2.errors %}
-                <div>{{ form.password2.errors }}</div>
-                {% endif %}
-
-            </div>
-            <div class='clear'></div>
-        </div>
-        <div class='register'>
-            <input type='submit' value='Register'>
-        </div>
-        {% csrf_token %}
-    </form>
+  <form method='POST' id='paste-form'>
+    <h1>Register</h1>
+    <div class='entry'>
+      <div>
+        <div> <label>Email: </label> {{ form.username }} </div>
+        {% if form.username.errors %}
+          <div>{{ form.username.errors }}</div>
+        {% endif %}
+        <div> <label>Password: </label> {{ form.password1 }} </div>
+        {% if form.password1.errors %}
+          <div>{{ form.password1.errors }}</div>
+        {% endif %}
+        <div> <label>Confirm: </label> {{ form.password2 }} </div>
+        {% if form.password2.errors %}
+          <div>{{ form.password2.errors }}</div>
+        {% endif %}
+      </div>
+      <div class='clear'></div>
+    </div>
+    <div class='register'>
+      <input type='submit' value='Register'>
+    </div>
+    {% csrf_token %}
+  </form>
 </div>
 <script src='/static/js/paste.js'></script>
 {% endblock %}

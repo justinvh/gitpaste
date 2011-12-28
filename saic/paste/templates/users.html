@@ -9,21 +9,25 @@
 
 {% block content %}
 <div id='favorites'>
-<h1>The Community</h1>
-    <div class='entry'>
-        <div>
-            <div><a href='{% url anon_pastes %}'>Anonymous</a>
-              <br>
-              {{ anons.all.count }} paste{{ anons.all.count|pluralize }}.
-            </div>
-            {% for user in users %}
-            <div><a href='{% url user_pastes owner=user.pk %}'>{{ user }}</a>
-                <br>
-                {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
-            </div>
-            {% endfor %}
+  <h1>A community of {{ users.count|apnumber }}</h1>
+  <div class='entry'>
+    <div>
+      <div><a href='{% url anon_pastes %}'>Anonymous</a>
+        <br>
+        {{ anons.all.count }} paste{{ anons.all.count|pluralize }}.
+      </div>
+      {% for user in users %}
+        <div><a href='{% url user_pastes owner=user.pk %}'>{{ user }}</a>
+          <br>
+          {% if user.set_set.all.count %}
+            {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
+          {% else %}
+            A pasteless user.
+          {% endif %}
         </div>
-        <div class='clear'></div>
+      {% endfor %}
     </div>
+    <div class='clear'></div>
+  </div>
 </div>
 {% endblock %}

@@ -8,30 +8,30 @@
 
 {% block content %}
 <div id='login'>
-    <form method='POST' id='paste-form'>
-      <h1>Login</h1>
-        <div class='entry'>
-            <div>
-                <div> <label>Email: </label> {{ form.username }} </div>
+  <form method='POST' id='paste-form'>
+    <h1>Login</h1>
+    <div class='entry'>
+      <div>
+        <div> <label>Email: </label> {{ form.username }} </div>
 
-                {% if form.username.errors %}
-                <div>{{ form.username.errors }}</div>
-                {% endif %}
+        {% if form.username.errors %}
+          <div>{{ form.username.errors }}</div>
+        {% endif %}
 
-                <div> <label>Password: </label> {{ form.password}} </div>
+        <div> <label>Password: </label> {{ form.password}} </div>
 
-                {% if form.password.errors %}
-                <div>{{ form.password.errors }}</div>
-                {% endif %}
+        {% if form.password.errors %}
+          <div>{{ form.password.errors }}</div>
+        {% endif %}
 
-            </div>
-            <div class='clear'></div>
-        </div>
-        <div class='register'>
-            <input type='submit' value='Login'>
-        </div>
-        {% csrf_token %}
-    </form>
+      </div>
+      <div class='clear'></div>
+    </div>
+    <div class='register'>
+      <input type='submit' value='Login'>
+    </div>
+    {% csrf_token %}
+  </form>
 </div>
 <script src='/static/js/paste.js'></script>
 {% endblock %}

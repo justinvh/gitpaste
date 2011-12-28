@@ -5,15 +5,54 @@ from django.contrib.auth.models import User
 from models import *
 
 from pygments import lexers
-languages = []
-for i in lexers.LEXERS:
-    language = lexers.LEXERS[i]
+
+# Add preferred lexers here. This list will not be explicitly sorted. 
+preferred_lexers = [
+        'TextLexer', 
+        'ActionScriptLexer', 
+        'CLexer', 
+        'CSharpLexer', 
+        'CppLexer', 
+        'CommonLispLexer', 
+        'CssLexer',
+        'DiffLexer',
+        'ErlangLexer',
+        'HaskellLexer',
+        'HtmlLexer',
+        'JavaLexer',
+        'JavascriptLexer',
+        'LuaLexer',
+        'ObjectiveCLexer',
+        'PerlLexer',
+        'PhpLexer',
+        'PythonLexer',
+        'RubyLexer',
+        'ScalaLexer',
+        'SchemeLexer',
+        'SqlLexer',
+        'TexLexer',
+        'XmlLexer',
+]
+
+def unwrap_lexer(lang):
+    language = lexers.LEXERS[lang]
     lex, name, alias, exts, mime = language
     if len(exts):
-        languages.append(('%s;%s' % (exts[0][1:], i), name))
-languages.sort()
-languages.insert(0, ('.txt;TextLexer', 'Plain Text'))
+        return ('%s;%s' % (lang, exts[0][1:]), name)
+    return ('%s;.txt' % lang, name)
 
+
+# Create our list of languages
+base_languages = map(unwrap_lexer, lexers.LEXERS)
+languages = map(unwrap_lexer, preferred_lexers)
+
+# Only sort the base languages because we assume the preferred list is
+# already in the desired sorting
+base_languages.sort()
+
+# Add the base cases and base languages
+languages.append(('TextLexer;.txt', '----'),)
+languages.extend(base_languages)
 
 class CommitMetaForm(forms.Form):
     """These correspond to a particular commit or iteration of a paste."""

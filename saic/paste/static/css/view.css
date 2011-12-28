@@ -1,51 +1,51 @@
 div.highlight {
-  background-color: #FFF;
-  border-radius: 5px;
+    background-color: #FFF;
+    border-radius: 5px;
 }
 
 div.highlight > pre {
-  width: 100%;
-  padding: 0px 10px;
-  padding-top: 0;
+    width: 100%;
+    padding: 0px 10px;
+    padding-top: 0;
 }
 
 div.paste table {
-  width: 100%;
+    width: 100%;
 }
 
 div.entryless,
 div.entry {
-  background-color: #E9E9E9;
-  border-radius: 5px !important;
-  border: 2px solid #DDD !important;
+    background-color: #E9E9E9;
+    border-radius: 5px !important;
+    border: 2px solid #DDD !important;
 }
 
 div.entryless + div.entry {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 pre > a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a {
-  font-size: inherit;
+    font-size: inherit;
 }
 
 div.description,
 div.file {
-  border: 0;
-  font-size: 14px;
-  font-weight: bold;
-  color: #666;
+    border: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
 }
 
 div.paste > div {
-  margin: 0 10px !important;
+    margin: 0 10px !important;
 }
 
 #favorite-toggle {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 pre {
@@ -73,20 +73,20 @@ div.submit input {
     margin: 0 auto;
 }
 
-.comment h1 {
-    width: 98%;
-    margin-left: auto;
-    margin-right: auto;
+.comment .author {
+    text-indent: 5px;
+    margin: 0;
     font-size: 16px;
-    color: #666;
+    color: #444;
+    background-color: #DDD;
+    padding: 5px;
 }
 
 .comment-index {
     width: 98%;
     margin: 0 auto;
     background-color: #FFF;
-    padding: 2px;
-    border: 1px solid #EFEFEF;
+    border: 1px solid #999;
     margin-bottom: 5px;
 }
 
@@ -95,6 +95,29 @@ div.submit input {
 }
 
 div.entry-comment {
-  width: 95%;
-  margin: 0 auto;
+    width: 95%;
+    margin: 0 auto;
+}
+
+div.file-download {
+    float: right;
+}
+
+div.comment-index {
+    border-radius: 5px;
+}
+
+div.comment h1.header {
+    text-indent: 10px;
+    margin-bottom: 5px;
+}
+
+div.comment h1.header + p {
+    margin: 0;
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+
+#id_comment {
+    height: 130px;
 }
