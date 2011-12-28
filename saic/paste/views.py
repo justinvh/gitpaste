@@ -111,6 +111,8 @@ def paste(request):
 
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
+    priority_filename = os.sep.join([repo_dir, 'priority.txt'])
+    priority_file = open(priority_filename, 'w')
     for form_index, form in enumerate(paste_forms):
         data = form.cleaned_data
         filename = data['filename']
@@ -148,6 +150,7 @@ def paste(request):
         f = open(filename_absolute, "w")
         f.write(paste)
         f.close()
+        priority_file.write('%s: %s\n' % (filename, data['priority']))
 
         # This is a bit nasty and a get_by_ext something exist in pygments.
         # However, globals() is just much more fun.
@@ -168,10 +171,15 @@ def paste(request):
                 filename=filename,
                 absolute_path=filename_absolute,
                 paste=paste,
+                priority=data['priority'],
                 paste_formatted=paste_formatted,
                 language=data['language'],
                 revision=commit
         )
+
+    # Add a priority file
+    priority_file.close()
+    index.add([priority_filename])
 
     # Create the commit from the index
     new_commit = index.commit('Initial paste.')
@@ -216,7 +224,7 @@ def paste_view(request, pk):
     comment_form = CommentForm()
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
-        'pastes': commit.paste_set.all().order_by('id'),
+        'pastes': commit.paste_set.all(),
         'commit_current': commit,
         'favorited': favorited,
         'editable': latest_commit == commit,
@@ -290,6 +298,8 @@ def paste_edit(request, pk):
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
     form_files = []
+    priority_filename = os.sep.join([repo_dir, 'priority.txt'])
+    priority_file = open(priority_filename, 'w')
     for form_index, form in enumerate(forms):
         data = form.cleaned_data
         filename = data['filename']
@@ -332,6 +342,7 @@ def paste_edit(request, pk):
         f = open(filename_absolute, "w")
         f.write(paste)
         f.close()
+        priority_file.write('%s: %s\n' % (filename, data['priority']))
 
         # This is a bit nasty and a get_by_ext something exist in pygments.
         # However, globals() is just much more fun.
@@ -352,6 +363,7 @@ def paste_edit(request, pk):
                 filename=filename,
                 absolute_path=filename_absolute,
                 paste=paste,
+                priority=data['priority'],
                 paste_formatted=paste_formatted,
                 language=data['language'],
                 revision=commit
@@ -365,6 +377,8 @@ def paste_edit(request, pk):
             repo_dir,
             f
         ])])
+    priority_file.close() 
+    index.add([priority_filename])
     new_commit = index.commit('Modified.')
     commit.commit = new_commit
     commit.diff = _git_diff(new_commit, repo)

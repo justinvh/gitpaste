@@ -45,7 +45,25 @@ $(document).ready(function (doc) {
         }
     });
 
-    $('#paste-form > div.entry').formset({
+    // HACK(justinvh): I don't want to go modify anymore libraries.
+    // This just handles our current theme and makes it work.
+    function reorder_deletes() {
+        $('li > div.delete-row').each(function () {
+            $(this).prev().prev().append(this);
+        });
+    }
+
+    function update_order() {
+        var i = 0;
+        $('div.entry > div.priority > input').each(function () {
+            // I am not crazy.
+            $(this).attr('value', i);
+            i++;
+        });
+    };
+
+
+    $('#sortable li').formset({
         'addText': 'add another file to this paste',
         'deleteText': 'delete this file',
         'added': function () {
@@ -55,8 +73,16 @@ $(document).ready(function (doc) {
             $('div.entry:last select').val('');
             $('div.entry:last textarea').html('');
             $('input').blur();
+            reorder_deletes();
+            update_order();
         }
-    })
+    });
 
+    $('#sortable').sortable({
+        'update': function () {
+            update_order();
+        }
+    });
     $('textarea').tabby({'tabString': '    '});
+    reorder_deletes();
 });

@@ -3,6 +3,8 @@
 {% block jsheader %}
 <script src='/static/js/jquery.formset.min.js'></script>
 <script src='/static/js/jquery.textarea.js'></script>
+<script src='/static/js/jquery-ui-1.8.16.custom.min.js'></script>
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/paste.css'>
 {% endblock %}
 
 {% block content %}
@@ -51,32 +53,41 @@
       <div class='description'>
         <div>
           {% if set_form %}
+            <span class='tiny gray'>Hint: You can reorder your pastes. Drag them around!</span>
             {{ set_form.description }}
           {% else %}
             <strong>Updating Paste</strong>
+            <span class='tiny gray'>Hint: You can reorder your pastes. Drag them around!</span>
           {% endif %}
         </div>
       </div>
     </div>
-    {% for form in forms %}
-      <div class='entry'>
-        <div class='file'>
-          <div>
-            <div class='language'>
-              <label>Language:</label>
-              {{ form.language }}
+    <ul id='sortable'>
+      {% for form in forms %}
+        <li>
+          <div class='entry'>
+            <div class='file'>
+              <div>
+                <div class='language'>
+                  <label>Language:</label>
+                  {{ form.language }}
+                </div>
+                {{ form.filename }}
+              </div>
             </div>
-            {{ form.filename }}
+            <div class='priority hidden'>
+              {{ form.priority }}
+            </div>
+            <div class='paste'>
+              <div>
+                  {{ form.paste }}
+              </div>
+            </div>
           </div>
-        </div>
-        <div class='paste'>
-          <div>
-              {{ form.paste }}
-          </div>
-        </div>
-      </div>
-      <div class='clear'></div>
-    {% endfor %}
+          <div class='clear'></div>
+        </li>
+      {% endfor %}
+    </ul>
     <div class='submit'>
       {% if not set_form %}
         <input type='submit' value='Submit Changeset'>

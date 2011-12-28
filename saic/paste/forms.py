@@ -75,6 +75,7 @@ class SetForm(forms.Form):
 
 
 class PasteForm(forms.Form):
+    priority = forms.IntegerField(initial=0)
     filename = forms.CharField(max_length=256, required=False,
             widget=forms.widgets.TextInput(attrs={
                 'default': 'add a file name...',

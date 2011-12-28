@@ -47,9 +47,10 @@ class Paste(models.Model):
     language = models.CharField(max_length=100)
     revision = models.ForeignKey(Commit)
     created = models.DateTimeField(auto_now=True)
+    priority = models.IntegerField()
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['priority']
 
     def __unicode__(self):
         return '%s: %s' % (self.filename, self.revision.commit)
