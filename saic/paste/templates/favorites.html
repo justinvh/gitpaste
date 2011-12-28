@@ -18,7 +18,7 @@
   <div class='entry'>
     <div>
       {% for favorite in favorites %}
-        <div><a href='{% url paste_view pk=favorite.parent_set.pk %}'>{{ favorite.parent_set.description }}</a>
+      <div><a href='{% url paste_view pk=favorite.parent_set.pk %}'>Paste {{ favorite.parent_set.pk }}</a> {{ favorite.parent_set.description }}
           <br>
           {% if favorite.parent_set.owner %} 
             By <a href='{% url user_pastes owner=favorite.parent_set.owner.pk %}'>{{ favorite.parent_set.owner }}</a>.
