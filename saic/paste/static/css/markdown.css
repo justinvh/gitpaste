@@ -1,0 +1,30 @@
+div.markdown {
+    margin-left: 10px;
+}
+
+div.markdown h1 {
+    font-size: 16px;
+    border-bottom: 1px solid #EFEFEF;
+}
+
+div.markdown h2 {
+    font-size: 15px;
+    border-bottom: 1px solid #EFEFEF;
+}
+
+div.markdown h3 {
+    font-size: 14px;
+    border-bottom: 1px solid #EFEFEF;
+}
+
+div.markdown pre {
+    border-left: 1px solid #CCC;
+    padding-left: 5px;
+}
+
+div.markdown p {
+    font-size: 14px;
+    color: #444;
+}
+
+
