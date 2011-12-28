@@ -9,26 +9,27 @@
 {% block content %}
 <div id='favorites'>
   <h1>Pastes by {% if owner %} {{ owner }} {% else %} Anonymous {% endif %}</h1>
-    <div class='entry'>
+  <div class='entry'>
+    <div>
+      {% for set in sets %}
         <div>
-            {% for set in sets %}
-            <div><a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
-                <br>
-                {% if set.owner %} 
-                By <a href='{% url user_pastes owner=set.owner.pk %}'>{{ set.owner }}</a>.
-                {% else %}
-                By Anonymous.
-                {% endif %}
-
-                {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}.
-            </div>
-            {% empty %}
-            <div>
-              <h1>Your requests echo far, but nothing happens.</h1>
-            <div>
-            {% endfor %}
+          <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
+          <br>
+          {% if set.owner %} 
+            By <a href='{% url user_pastes owner=set.owner.pk %}'>{{ set.owner }}</a>.
+          {% else %}
+            By Anonymous.
+          {% endif %}
+          {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}.
         </div>
-        <div class='clear'></div>
+      {% empty %}
+        <div>
+          <h1>Your requests echo far, but nothing happens.</h1>
+        </div>
+      {% endfor %}
+      </div>
     </div>
+    <div class='clear'></div>
+  </div>
 </div>
 {% endblock %}

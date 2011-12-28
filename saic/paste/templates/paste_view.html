@@ -11,120 +11,117 @@
 <div id='log'>
   <h1>
     {{ paste_set.commit_set.all.count }}
-    Revision{{ paste_set.commit_set.all.count|pluralize }}</h1>
-    <ul class='revisions'>
-        {% for commit in paste_set.commit_set.all %}
-        {% if commit.commit == commit_current.commit %}
+    Revision{{ paste_set.commit_set.all.count|pluralize }}
+  </h1>
+  <ul class='revisions'>
+    {% for commit in paste_set.commit_set.all %}
+      {% if commit.commit == commit_current.commit %}
         <li class='active'>
-        {% else %}
+      {% else %}
         <li>
+      {% endif %}
+      <a href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
+      <span class='author'>
+        {% if commit.owner %}
+          {{ commit.owner }}
+        {% else %}
+          Anonymous
         {% endif %}
-        <a href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
-        <span class='author'>
-            {% if commit.owner %}
-            {{ commit.owner }}
-            {% else %}
-            Anonymous
-            {% endif %}
-        </span> 
-        
-        <span class='date'>{{ commit.created|elapsed }}</span> </li>
-        {% endfor %}
-    </ul>
-    {% if user.is_authenticated %}
-        <br>
-        {% if not commit_current.parent_set.owner %}
-        <span class='alert'>Hey! This paste is not owned by anyone. 
-            <a href='{% url paste_adopt pk=commit_current.parent_set.pk %}'>Adopt it!</a>
-        </span>
-        {% endif %}
-        {% if commit_current.parent_set.owner == user %}
-        <a class='alert' href='{% url paste_delete pk=commit_current.parent_set.pk %}'>delete this entire paste</a>
-        {% endif %}
+      </span> 
+      <span class='date'>{{ commit.created|elapsed }}</span> </li>
+    {% endfor %}
+  </ul>
+  {% if user.is_authenticated %}
+    <br>
+    {% if not commit_current.parent_set.owner %}
+      <span class='alert'>Hey! This paste is not owned by anyone. 
+        <a href='{% url paste_adopt pk=commit_current.parent_set.pk %}'>Adopt it!</a>
+      </span>
     {% endif %}
-
-
+    {% if commit_current.parent_set.owner == user %}
+      <a class='alert' href='{% url paste_delete pk=commit_current.parent_set.pk %}'>delete this entire paste</a>
+    {% endif %}
+  {% endif %}
 </div>
-
 <div id='pastes'>
-    <div class='entryless'>
-        <div class='small'>
-            {% if user.is_authenticated %}
-            <span favorite={{ favorited }} id='favorite-toggle'>
-                {% if favorited %}
-                    <img align='right' height='32px' src='/static/img/favorite.png'>
-                {% else %}
-                    <img align='right' height='32px' src='/static/img/not-favorite.png'>
-                {% endif %}
-            </span>
-            {% endif %}
-            <span class='header'>paste: {{ paste_set.pk }} ({{ commit_current.commit|slice:":8" }})</span>
-            {% if editable %}
-            <a href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(edit)</a>
-            {% endif %}
-            <a href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(fork)</a>
-            <!-- <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a> -->
-                {% if user.is_authenticated %}
-                    {% if not commit_current.owner %}
-                    <a href='{% url commit_adopt pk=commit_current.pk %}'>(adopt)</a>
-                    {% endif %}
-                {% endif %}
-                <br>
-            {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
-            {% if commit_current.owner %}
-                by <strong>{{ commit_current.owner }}</strong>
-            {% endif %}
-            <span class='date'>{{ commit_current.created|elapsed }}</span>
-            {% if paste_set.fork %}
-            <br>
-            <em class='light'>Fork of                {% if paste_set.fork.parent_set.owner %}
-                <a href='{% url user_pastes owner=paste_set.fork.parent_set.owner %}'>{{ paste_set.fork.parent_set.owner }}</a>
-                {% else %}
-                <a href='{% url anon_pastes %}'>Anonymous</a>
-                {% endif %} at commit 
-                <a href='{% url paste_view pk=paste_set.fork.parent_set.pk %}?commit={{ paste_set.fork.commit }}'>{{ paste_set.fork.commit|slice:":8" }}</a>
-            </em>
-            {% endif %}
-        </div>
+  <div class='entryless'>
+    <div class='small'>
+      {% if user.is_authenticated %}
+        <span favorite={{ favorited }} id='favorite-toggle'>
+          {% if favorited %}
+            <img align='right' alt='favorite' height='32px' src='/static/img/favorite.png'>
+          {% else %}
+            <img align='right' alt='not-favorite' height='32px' src='/static/img/not-favorite.png'>
+          {% endif %}
+        </span>
+      {% endif %}
+      <span class='header'>paste: {{ paste_set.pk }} ({{ commit_current.commit|slice:":8" }})</span>
+      {% if editable %}
+        <a href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(edit)</a>
+      {% endif %}
+      <a href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(fork)</a>
+      <!-- <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a> -->
+      {% if user.is_authenticated and not commit_current.owner %}
+          <a href='{% url commit_adopt pk=commit_current.pk %}'>(adopt)</a>
+      {% endif %}
+      <br>
+      {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
+      {% if commit_current.owner %} by <strong>{{ commit_current.owner }}</strong> {% endif %}
+      <span class='date'>{{ commit_current.created|elapsed }}</span>
+      {% if paste_set.fork %}
+        <br>
+        <em class='light'>Fork of                
+          {% if paste_set.fork.parent_set.owner %}
+            <a href='{% url user_pastes owner=paste_set.fork.parent_set.owner %}'>{{ paste_set.fork.parent_set.owner }}</a>
+          {% else %}
+            <a href='{% url anon_pastes %}'>Anonymous</a>
+          {% endif %} at commit 
+          <a href='{% url paste_view pk=paste_set.fork.parent_set.pk %}?commit={{ paste_set.fork.commit }}'>{{ paste_set.fork.commit|slice:":8" }}</a>
+        </em>
+      {% endif %}
     </div>
-    {% for paste in pastes %}
+  </div>
+  {% for paste in pastes %}
     <div class='entry'>
-        <div class='description'>
-            <div>
-                {{ paste.description }}
-            </div>
+      <div class='description'>
+        <div>
+          {{ paste.description }}
         </div>
-        <div class='file'>
-            <div id='file-{{ paste.pk }}'>
-                {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>
-            </div>
+      </div>
+      <div class='file'>
+        <div id='file-{{ paste.pk }}'>
+          {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>
         </div>
-        <div class='paste'>
-            <div>
-                {{ paste.paste_formatted|safe }}
-            </div>
+      </div>
+      <div class='paste'>
+        <div>
+          {{ paste.paste_formatted|safe }}
         </div>
+      </div>
     </div>
     <div class='clear'></div>
-    {% endfor %}
-    <div class='entry-comment comment'>
-      <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
-      {% for comment in commit_current.comment_set.all %}
+  {% endfor %}
+  <div class='entry-comment comment'>
+    <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
+    {% for comment in commit_current.comment_set.all %}
       <div name='comment-{{ comment.pk }}' class='comment-index'>
-        <h1><a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a></h1>
-          <pre>{{ comment.comment }}</pre>
-        </div>
-      {% empty %}
+        <h1>
+          <a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> 
+          <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a>
+        </h1>
+        <pre>{{ comment.comment }}</pre>
+      </div>
+    {% empty %}
       <div name='comment-blank' class='comment-index'>
-		{% if user.is_authenticated %}
+        {% if user.is_authenticated %}
             <pre>If only there were comments...</pre>
         {% else %}
             <pre>If only there were comments... Maybe <a href='{% url login %}'>login</a> and add one?</pre>
         {% endif %}
       </div>
-      {% endfor %}
+    {% endfor %}
   </div>
-    {% if user.is_authenticated %}
+  {% if user.is_authenticated %}
     <div class='entry comment'>
       <h1>Comment</h1>
       <form method='POST'>
@@ -133,8 +130,7 @@
         <input type='submit' value='Add Comment'>
       </form>
     </div>
-    {% endif %}
-
+  {% endif %}
 </div>
 <script>var set = "{{ commit_current.parent_set.pk }}";</script>
 <script src='/static/js/view.js'></script>
