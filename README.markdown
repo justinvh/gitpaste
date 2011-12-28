@@ -37,6 +37,7 @@ You can **try it out** here: http://sharp-mist-7719.herokuapp.com/
     ✓ Allowing tabbing in the textarea (you now can tab in the textarea! Huzzah)
     ✓ Post as anonymous directly (now you can remain anonymous even logged in, thanks not_mad_just_upset
     ✓ Add markdown support for comments
+    ✓ Show diffs
    
     ☐ Fix some of the ordering issues
     ☐ Preferences to hide email address
@@ -44,7 +45,6 @@ You can **try it out** here: http://sharp-mist-7719.herokuapp.com/
     ☐ Refine the user pages
     ☐ Add merging between files
     ☐ Add cloning
-    ☐ Show diffs
 
 
 # Building
