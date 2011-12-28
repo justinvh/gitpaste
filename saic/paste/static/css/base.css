@@ -59,12 +59,12 @@ div.clear {
 
 
 #paste-description {
-  background-color: #8FB9E2;
-  border: 1px solid #477AAB;
+  background-color: #DDDDDD;
+  border: 1px solid #999999;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  color: #154B7F;
+  color: #555555;
   width: 90%;
   padding: 5px;
   font-size: 12px;
@@ -303,4 +303,20 @@ form ul {
 div.search-submit {
     clear: both;
     margin-left: 20px;
+}
+
+.tiny {
+    font-size: 10px;
+}
+
+.center {
+    text-align: center;
+}
+
+.gray {
+    color: #666;
+}
+
+.default-input {
+    color: #777 !important;
 }

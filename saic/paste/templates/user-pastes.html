@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %} Login {% endblock %}
 
@@ -8,7 +9,14 @@
 
 {% block content %}
 <div id='favorites'>
-  <h1>Pastes by {% if owner %} {{ owner }} {% else %} Anonymous {% endif %}</h1>
+  <h1>
+    {{ sets.count|apnumber }} Paste{{ sets.count|pluralize }} by 
+    {% if owner %} 
+      {{ owner }} 
+    {% else %} 
+      Anonymous 
+    {% endif %}
+  </h1>
   <div class='entry'>
     <div>
       {% for set in sets %}
@@ -24,7 +32,12 @@
         </div>
       {% empty %}
         <div>
-          <h1>Your requests echo far, but nothing happens.</h1>
+          <h1 class='center'>Your requests echo far, but nothing happens.</h1>
+          {% if user == owner %}
+            <p class='tiny gray center'>(a.k.a. you have not <a href='{% url paste %}'>created</a> any pastes)</p>
+          {% else %}
+            <p class='tiny gray center'>(a.k.a. this user has not <a href='{% url paste %}'>created</a> any pastes)</p>
+          {% endif %}
         </div>
       {% endfor %}
       </div>
