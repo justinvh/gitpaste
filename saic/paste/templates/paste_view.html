@@ -30,7 +30,7 @@
           Anonymous
         {% endif %}
       </span> 
-      <span class='date'>{{ commit.created|elapsed }}</span> </li>
+      <span class='date' title="{{ commit_current.created }}">{{ commit_current.created|elapsed }}</span> </li>
     {% endfor %}
   </ul>
   {% if user.is_authenticated %}
@@ -73,7 +73,7 @@
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
       {% if commit_current.owner %} by <strong>{{ commit_current.owner }}</strong> {% endif %}
-      <span class='date'>{{ commit_current.created|elapsed }}</span>
+      <span class='date' title="{{ commit_current.created }}">{{ commit_current.created|elapsed }}</span>
       {% if paste_set.fork %}
         <br>
         <em class='light'>Fork of                
