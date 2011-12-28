@@ -10,7 +10,7 @@
 {% block content %}
 <div id='favorites'>
   <h1>
-    {{ sets.count|apnumber }} Paste{{ sets.count|pluralize }} by 
+    {{ sets.count|apnumber|capfirst }} paste{{ sets.count|pluralize }} by 
     {% if owner %} 
       {{ owner }} 
     {% else %} 
