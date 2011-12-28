@@ -118,3 +118,6 @@ div.comment h1.header + p {
     margin-left: 10px;
 }
 
+#id_comment {
+    height: 130px;
+}

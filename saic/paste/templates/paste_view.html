@@ -126,7 +126,7 @@
     </div>
     <div class='clear'></div>
   {% endfor %}
-  {% if comment_current.comment_set.exists %}
+  {% if comment_current.comment_set.all.count %}
     <div class='entry-comment comment'>
       <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
       {% for comment in commit_current.comment_set.all %}
