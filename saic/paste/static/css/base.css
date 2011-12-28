@@ -146,6 +146,7 @@ div.entry div > input {
   font-size: 15px;
   background-color: #FAFAFA;
   color: #444;
+  border-radius: 5px;
 }
 
 div.description input {
@@ -166,6 +167,7 @@ div.entry textarea {
   font-family: Consolas, Monaco, "Bitstream Vera sans Mono", monospace;
   font-size: 15px;
   background-color: #FAFAFA;
+  border-radius: 5px;
 }
 
 div.submit {
