@@ -9,7 +9,7 @@
 
 {% block content %}
 <div id='favorites'>
-  <h1>The Community</h1>
+  <h1>A Community of {{ users.count|apnumber }}</h1>
   <div class='entry'>
     <div>
       <div><a href='{% url anon_pastes %}'>Anonymous</a>
@@ -19,7 +19,11 @@
       {% for user in users %}
         <div><a href='{% url user_pastes owner=user.pk %}'>{{ user }}</a>
           <br>
-          {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
+          {% if user.set_set.all.count %}
+            {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
+          {% else %}
+            A pasteless user.
+          {% endif %}
         </div>
       {% endfor %}
     </div>

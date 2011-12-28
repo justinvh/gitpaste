@@ -2,12 +2,14 @@ $(document).ready(function (doc) {
     $("input").live("focus", function (e) {
         var $this = $(this);
         if ($this.val() == $this.attr('default')) {
+            $this.removeClass('default-input');
             $this.val('');
         }
     }).live("blur", function (e) {
         var $this = $(this);
         if ($this.val() == "") {
             $this.val($this.attr('default'));
+            $this.addClass('default-input');
         }
     });
 

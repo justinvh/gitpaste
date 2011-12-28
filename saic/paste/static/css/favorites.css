@@ -46,3 +46,6 @@ ul.errorlist {
   clear: both;
 }
 
+#favorites h1 {
+    text-transform:capitalize
+}
