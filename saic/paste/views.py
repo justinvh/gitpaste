@@ -406,6 +406,14 @@ def paste_fork(request, pk):
     return redirect('paste_view', pk=paste_set.pk)
 
 
+def paste_raw(request, pk):
+    paste = get_object_or_404(Paste, pk=pk)
+    filename = paste.filename
+    response = HttpResponse(paste.paste, mimetype='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    return response
+
+
 @login_required
 def paste_adopt(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
@@ -425,10 +433,6 @@ def commit_adopt(request, pk):
     commit.owner = owner
     commit.save()
     return redirect('paste_view', pk=commit.parent_set.pk)
-
-
-def find(request):
-    pass
 
 
 def register(request):
