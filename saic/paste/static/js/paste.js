@@ -13,20 +13,21 @@ $(document).ready(function (doc) {
         }
     });
 
-    var languages = [
-        ['.cc', '.cpp;CppLexer'],
-        ['.cxx', '.cpp;CppLexer'],
-        ['.C', '.cpp;CppLexer'],
-        ['.C', '.c;CLexer'],
-        ['.h', '.c;CLexer'],
-        ['.hpp', '.cpp;CppLexer'],
-        ['.hxx', '.cpp;CppLexer'],
-        ['.java', '.java;JavaLexer']
-    ];
+    var languages = {
+        '.cc': '.cpp;CppLexer',
+        '.cxx': '.cpp;CppLexer',
+        '.C': '.cpp;CppLexer',
+        '.C': '.c;CLexer',
+        '.h': '.c;CLexer',
+        '.hpp': '.cpp;CppLexer',
+        '.hxx': '.cpp;CppLexer',
+        '.java': '.java;JavaLexer'
+    };
 
-    var $options = $('div.language:first select > option')
+    var $options = $('div.language:first select > option');
+
     for (var i = 0; i < $options.length; i++) {
-        languages.push([$options[i].value.split(';')[0], $options[i].value]);
+        languages[$options[i].value.split(';')[1]] = $options[i].value;
     }
 
     $("input").blur();
@@ -38,14 +39,10 @@ $(document).ready(function (doc) {
         var val = $this.val();
         var ext = val.split('.')
         ext = '.' + ext[ext.length - 1];
-
-        for (var i = 0; i < languages.length; i++) {
-            if (languages[i][0] == ext) {
-                $lang.val(languages[i][1]);
-                return;
-            }
+        var lexer = languages[ext];
+        if (lexer) { 
+            $lang.val(lexer);
         }
-        $lang.val('.txt');
     });
 
     $('#paste-form > div.entry').formset({
