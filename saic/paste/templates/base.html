@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% block title %}{% endblock %}</title>
-        <link rel='stylesheet' media='screen' type='text/css' href='/static/css/base.css'>
-        <script src='/static/js/jquery-1.7.1.min.js'></script>
-        {% block jsheader %}{% endblock %}
-    </head>
-    <body>
-        <div id='header'>
-          <a href='{% url paste %}'><img src='/static/img/quark-paste.png'></a>
-            <div id='navigation'>
-                <ul>
-                    <li><a href='{% url paste %}'>New Paste</a></li>
-                    <li><a href='/search/'>Search</a></li>
-                    <li><a href='{% url users %}'>Users</a></li>
-                    <!-- <li><a href='{% url find %}'>Find Paste</a></li> -->
-                    {% if user.is_authenticated %}
-                    <li><a href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
-                    <li><a href='{% url favorites %}'>Favorites ({{ user.favorite_set.all.count }})</a></li>
-                    <li><a href='{% url logout %}'>Logout</a></li>
-                    {% else %}
-                    <li><a href='{% url login %}'>Login</a></li>
-                    <li><a href='{% url register %}'>Register</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class='clear'></div>
-        </div>
-        <div id='content'>
-            {% block content %}
-            {% endblock %}
-        </div>
-    </body>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel='stylesheet' media='screen' type='text/css' href='/static/css/base.css'>
+    <script src='/static/js/jquery-1.7.1.min.js'></script>
+    {% block jsheader %}{% endblock %}
+  </head>
+  <body>
+    <div id='header'>
+      <a href='{% url paste %}'><img alt='quark-paste' src='/static/img/quark-paste.png'></a>
+      <div id='navigation'>
+        <ul>
+          <li><a href='{% url paste %}'>New Paste</a></li>
+          <li><a href='/search/'>Search</a></li>
+          <li><a href='{% url users %}'>Users</a></li>
+          {% if user.is_authenticated %}
+            <li><a href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
+            <li><a href='{% url favorites %}'>Favorites ({{ user.favorite_set.all.count }})</a></li>
+            <li><a href='{% url logout %}'>Logout</a></li>
+          {% else %}
+            <li><a href='{% url login %}'>Login</a></li>
+            <li><a href='{% url register %}'>Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class='clear'></div>
+    </div>
+    <div id='content'>
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
 </html>
