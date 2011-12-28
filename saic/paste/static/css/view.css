@@ -1,51 +1,51 @@
 div.highlight {
-  background-color: #FFF;
-  border-radius: 5px;
+    background-color: #FFF;
+    border-radius: 5px;
 }
 
 div.highlight > pre {
-  width: 100%;
-  padding: 0px 10px;
-  padding-top: 0;
+    width: 100%;
+    padding: 0px 10px;
+    padding-top: 0;
 }
 
 div.paste table {
-  width: 100%;
+    width: 100%;
 }
 
 div.entryless,
 div.entry {
-  background-color: #E9E9E9;
-  border-radius: 5px !important;
-  border: 2px solid #DDD !important;
+    background-color: #E9E9E9;
+    border-radius: 5px !important;
+    border: 2px solid #DDD !important;
 }
 
 div.entryless + div.entry {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 pre > a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a {
-  font-size: inherit;
+    font-size: inherit;
 }
 
 div.description,
 div.file {
-  border: 0;
-  font-size: 14px;
-  font-weight: bold;
-  color: #666;
+    border: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
 }
 
 div.paste > div {
-  margin: 0 10px !important;
+    margin: 0 10px !important;
 }
 
 #favorite-toggle {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 pre {
@@ -78,7 +78,7 @@ div.submit input {
     margin-left: auto;
     margin-right: auto;
     font-size: 16px;
-    color: #666;
+    color: #444;
 }
 
 .comment-index {
@@ -95,8 +95,8 @@ div.submit input {
 }
 
 div.entry-comment {
-  width: 95%;
-  margin: 0 auto;
+    width: 95%;
+    margin: 0 auto;
 }
 
 div.file-download {

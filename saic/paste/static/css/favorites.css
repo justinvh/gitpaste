@@ -1,49 +1,49 @@
 div.entry input {
-  width: 200px !important;
-  margin-right: 15px;
-  float: left;
+    width: 200px !important;
+    margin-right: 15px;
+    float: left;
 }
 
 div.entry label {
-  float: left;
-  width: 90px;
-  border-top: 0;
+    float: left;
+    width: 90px;
+    border-top: 0;
 }
 
 div.entry {
-  padding: 10px;
-  font-size: 12px;
+    padding: 10px;
+    font-size: 12px;
 }
 
 div.entry > div > div {
-  padding: 5px 0;
-  border-top: 2px solid #DDD;
+    padding: 5px 0;
+    border-top: 2px solid #DDD;
 }
 
 div.entry > div > div:first-child {
-  border-top: 0;
+    border-top: 0;
 }
 
 #favorites {
-  width: 600px;
-  margin: 0 auto;
-  margin-top: 20px;
+    width: 600px;
+    margin: 0 auto;
+    margin-top: 20px;
 }
 
 div.register {
-  text-align: right;
+    text-align: right;
 }
 
 span.small {
-  font-size: 8px;
+    font-size: 8px;
 }
 
 ul.errorlist {
-  list-style: none;
-  color: #A63E45;
-  margin: 0;
-  padding: 0;
-  clear: both;
+    list-style: none;
+    color: #A63E45;
+    margin: 0;
+    padding: 0;
+    clear: both;
 }
 
 #favorites h1 {
