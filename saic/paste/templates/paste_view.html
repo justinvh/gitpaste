@@ -66,6 +66,13 @@
       {% if user.is_authenticated and not commit_current.owner %}
           <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk %}'>adopt</a>
       {% endif %}
+      {% if has_history %}
+        {% if not diff %}
+          <a title='You are not to blame.' href='{% url paste_view pk=paste_set.pk %}?commit={{ commit_current.commit }}&diff=1'>show diff</a>
+        {% else %}
+          <a title='You are not to blame.' href='{% url paste_view pk=paste_set.pk %}?commit={{ commit_current.commit }}'>hide diff</a>
+        {% endif %}
+      {% endif %}
     </span>
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
@@ -84,6 +91,18 @@
       {% endif %}
     </div>
   </div>
+
+  {% if diff %}
+  <div class='entry'>
+    <div class='file'><div>Diff</div></div>
+    <div class='paste'>
+      <div>
+        {{ diff|safe }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   {% for paste in pastes %}
     <div class='entry'>
       <div class='description'>
@@ -107,26 +126,28 @@
     </div>
     <div class='clear'></div>
   {% endfor %}
-  <div class='entry-comment comment'>
-    <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
-    {% for comment in commit_current.comment_set.all %}
-      <div name='comment-{{ comment.pk }}' class='comment-index'>
-        <h1 class='author'>
-          <a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> 
-          <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a>
-        </h1>
-        <div class='markdown'>{{ comment.comment|markdown:"safe" }}</div>
-      </div>
-    {% empty %}
-      <div name='comment-blank' class='comment-index'>
-        {% if user.is_authenticated %}
-            <pre>If only there were comments...</pre>
-        {% else %}
-            <pre>If only there were comments... Maybe <a href='{% url login %}'>login</a> and add one?</pre>
-        {% endif %}
-      </div>
-    {% endfor %}
-  </div>
+  {% if comment_current.comment_set.exists %}
+    <div class='entry-comment comment'>
+      <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
+      {% for comment in commit_current.comment_set.all %}
+        <div name='comment-{{ comment.pk }}' class='comment-index'>
+          <h1 class='author'>
+            <a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> 
+            <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a>
+          </h1>
+          <div class='markdown'>{{ comment.comment|markdown:"safe" }}</div>
+        </div>
+      {% empty %}
+        <div name='comment-blank' class='comment-index'>
+          {% if user.is_authenticated %}
+              <pre>If only there were comments...</pre>
+          {% else %}
+              <pre>If only there were comments... Maybe <a href='{% url login %}'>login</a> and add one?</pre>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
   {% if user.is_authenticated %}
     <div class='entry comment'>
       <h1 class='header'>Comment</h1>

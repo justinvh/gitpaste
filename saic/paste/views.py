@@ -163,6 +163,7 @@ def paste(request):
 def paste_view(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
+    requested_diff = request.GET.get('diff')
 
     # Meh, this could be done better and I am a bit disappointed that you
     # can't filter on the request.user if it is AnonymousUser, so we have
@@ -192,13 +193,40 @@ def paste_view(request, pk):
                     comment=comment_form.cleaned_data['comment']
             )
 
+    diff = None
+    try:
+        repo_dir = paste_set.repo
+        repo = git.Repo(repo_dir)
+        active_commit = repo.commit(commit.commit)
+        transversed_commit = active_commit.traverse().next()
+        has_history = True
+        
+        if requested_diff:
+            diff = highlight(
+                    repo.git.diff(
+                        active_commit.hexsha, 
+                        transversed_commit.hexsha),
+                    DiffLexer(),
+                    HtmlFormatter(
+                        style='colorful',
+                        linenos='table',
+                        lineanchors='diff',
+                        anchorlinenos=True),
+                    )
+    except StopIteration, e:
+        # A diff can not exist at this point.
+        # We don't want to show it on the page at all
+        has_history = False
+
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
         'pastes': commit.paste_set.all().order_by('id'),
         'commit_current': commit,
         'favorited': favorited,
         'editable': latest_commit == commit,
-        'comment_form': comment_form
+        'comment_form': comment_form,
+        'diff': diff,
+        'has_history': has_history
     }, RequestContext(request))
 
 
