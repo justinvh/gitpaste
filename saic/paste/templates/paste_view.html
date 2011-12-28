@@ -55,15 +55,16 @@
           {% endif %}
         </span>
       {% endif %}
-      <span class='header'>paste: {{ paste_set.pk }} ({{ commit_current.commit|slice:":8" }})</span>
+      <span class='header'>paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
       {% if editable %}
-        <a href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(edit)</a>
+        <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
       {% endif %}
-      <a href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(fork)</a>
+      <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>fork</a>
       <!-- <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a> -->
       {% if user.is_authenticated and not commit_current.owner %}
-          <a href='{% url commit_adopt pk=commit_current.pk %}'>(adopt)</a>
+          <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk %}'>adopt</a>
       {% endif %}
+    </span>
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
       {% if commit_current.owner %} by <strong>{{ commit_current.owner }}</strong> {% endif %}
@@ -89,6 +90,9 @@
         </div>
       </div>
       <div class='file'>
+        <div class='file-download'>
+          <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk %}'>download file</a>
+        </div>
         <div id='file-{{ paste.pk }}'>
           {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>
         </div>
