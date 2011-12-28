@@ -30,7 +30,7 @@
           Anonymous
         {% endif %}
       </span> 
-      <span class='date'>{{ commit.created|elapsed }}</span> </li>
+      <span class='date' title="{{ commit_current.created }}">{{ commit_current.created|elapsed }}</span> </li>
     {% endfor %}
   </ul>
   {% if user.is_authenticated %}
