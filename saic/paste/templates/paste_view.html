@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load elapsed %}
+{% load markup %}
 
 {% block jsheader %}
 <script src='/static/js/jquery.formset.min.js'></script>
 <link rel='stylesheet' media='all' type='text/css' href='/static/css/highlights.css'>
 <link rel='stylesheet' media='all' type='text/css' href='/static/css/view.css'>
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/markdown.css'>
 {% endblock %}
 
 {% block content %}
@@ -109,11 +111,11 @@
     <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
     {% for comment in commit_current.comment_set.all %}
       <div name='comment-{{ comment.pk }}' class='comment-index'>
-        <h1>
+        <h1 class='author'>
           <a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> 
           <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a>
         </h1>
-        <pre>{{ comment.comment }}</pre>
+        <div class='markdown'>{{ comment.comment|markdown:"safe" }}</div>
       </div>
     {% empty %}
       <div name='comment-blank' class='comment-index'>
@@ -127,7 +129,8 @@
   </div>
   {% if user.is_authenticated %}
     <div class='entry comment'>
-      <h1>Comment</h1>
+      <h1 class='header'>Comment</h1>
+      <p class='tiny gray'>Hint: You can use <a href='http://daringfireball.net/projects/markdown/'>markdown</a> in your comment.</p>
       <form method='POST'>
         {{ comment_form.comment }}
         {% csrf_token %}

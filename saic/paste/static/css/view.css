@@ -73,20 +73,20 @@ div.submit input {
     margin: 0 auto;
 }
 
-.comment h1 {
-    width: 98%;
-    margin-left: auto;
-    margin-right: auto;
+.comment .author {
+    text-indent: 5px;
+    margin: 0;
     font-size: 16px;
     color: #444;
+    background-color: #DDD;
+    padding: 5px;
 }
 
 .comment-index {
     width: 98%;
     margin: 0 auto;
     background-color: #FFF;
-    padding: 2px;
-    border: 1px solid #EFEFEF;
+    border: 1px solid #999;
     margin-bottom: 5px;
 }
 
@@ -102,3 +102,19 @@ div.entry-comment {
 div.file-download {
     float: right;
 }
+
+div.comment-index {
+    border-radius: 5px;
+}
+
+div.comment h1.header {
+    text-indent: 10px;
+    margin-bottom: 5px;
+}
+
+div.comment h1.header + p {
+    margin: 0;
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+

@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'saic.paste',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'django.contrib.markup',
     'haystack',
 )
 
