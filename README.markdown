@@ -38,8 +38,8 @@ You can **try it out** here: http://sharp-mist-7719.herokuapp.com/
     ✓ Post as anonymous directly (now you can remain anonymous even logged in, thanks not_mad_just_upset
     ✓ Add markdown support for comments
     ✓ Show diffs
-   
-    ☐ Fix some of the ordering issues
+    ✓ Fix some of the ordering issues (added sorting and priority-based pastes)
+
     ☐ Preferences to hide email address
     ☐ Add repository downloading
     ☐ Refine the user pages
