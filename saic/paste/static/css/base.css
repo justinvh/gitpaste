@@ -197,10 +197,12 @@ h1 {
     color: #444;
 }
 
+.link,
 a {
     color: #4183C4;
-    font-size: 12px;
     font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 
@@ -323,4 +325,8 @@ div.search-submit {
 
 .default-input {
     color: #444 !important;
+}
+
+.hidden {
+    display: none;
 }

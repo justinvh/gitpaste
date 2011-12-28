@@ -28,6 +28,27 @@ PasteSet = formset_factory(PasteForm)
 PasteSetEdit = formset_factory(PasteForm, extra=0)
 
 
+def _git_diff(git_commit_object, repo):
+    diff = None
+    try:
+        transversed_commit = git_commit_object.traverse().next()
+        has_history = True
+        diff = highlight(
+                repo.git.diff(
+                    transversed_commit.hexsha,
+                    git_commit_object.hexsha),
+                DiffLexer(),
+                HtmlFormatter(
+                    style='colorful',
+                    linenos='table',
+                    lineanchors='diff',
+                    anchorlinenos=True),
+                )
+        return diff
+    except StopIteration, e:
+        return ""
+
+
 def paste(request):
     if request.method != 'POST':
         return render_to_response('paste.html', {
@@ -154,6 +175,7 @@ def paste(request):
 
     # Create the commit from the index
     new_commit = index.commit('Initial paste.')
+    commit.diff = _git_diff(new_commit, git_repo)
     commit.commit = new_commit
     commit.save()
 
@@ -163,7 +185,6 @@ def paste(request):
 def paste_view(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
-    requested_diff = request.GET.get('diff')
 
     # Meh, this could be done better and I am a bit disappointed that you
     # can't filter on the request.user if it is AnonymousUser, so we have
@@ -182,9 +203,7 @@ def paste_view(request, pk):
         commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
 
-    if request.method != 'POST':
-        comment_form = CommentForm()
-    else:
+    if request.method == 'POST':
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid() and request.user.is_authenticated():
             comment = Comment.objects.create(
@@ -193,31 +212,8 @@ def paste_view(request, pk):
                     comment=comment_form.cleaned_data['comment']
             )
 
-    diff = None
-    try:
-        repo_dir = paste_set.repo
-        repo = git.Repo(repo_dir)
-        active_commit = repo.commit(commit.commit)
-        transversed_commit = active_commit.traverse().next()
-        has_history = True
-        
-        if requested_diff:
-            diff = highlight(
-                    repo.git.diff(
-                        transversed_commit.hexsha,
-                        active_commit.hexsha),
-                    DiffLexer(),
-                    HtmlFormatter(
-                        style='colorful',
-                        linenos='table',
-                        lineanchors='diff',
-                        anchorlinenos=True),
-                    )
-    except StopIteration, e:
-        # A diff can not exist at this point.
-        # We don't want to show it on the page at all
-        has_history = False
-
+    # Always clear the comment form
+    comment_form = CommentForm()
     return render_to_response('paste_view.html', {
         'paste_set': paste_set,
         'pastes': commit.paste_set.all().order_by('id'),
@@ -225,8 +221,6 @@ def paste_view(request, pk):
         'favorited': favorited,
         'editable': latest_commit == commit,
         'comment_form': comment_form,
-        'diff': diff,
-        'has_history': has_history
     }, RequestContext(request))
 
 
@@ -373,6 +367,7 @@ def paste_edit(request, pk):
         ])])
     new_commit = index.commit('Modified.')
     commit.commit = new_commit
+    commit.diff = _git_diff(new_commit, repo)
     commit.save()
 
     return redirect('paste_view', pk=paste_set.pk)

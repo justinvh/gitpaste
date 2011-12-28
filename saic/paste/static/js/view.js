@@ -12,6 +12,18 @@ $(document).ready(function () {
         }
     });
 
+    $diff = $('#diff');
+    $diff_toggle = $('#diff-toggle');
+    $diff_toggle.click(function () {
+        if ($diff.is(":visible")) {
+            $diff_toggle.html('show diff');
+            $diff.hide();
+        } else {
+            $diff_toggle.html('hide diff');
+            $diff.show();
+        }
+    });
+
     // yuk yuk yuk
     $(window).resize(function () {
         $('div.highlight > pre').width($('div.paste:first').width() - 90);

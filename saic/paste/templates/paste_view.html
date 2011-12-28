@@ -66,12 +66,8 @@
       {% if user.is_authenticated and not commit_current.owner %}
           <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk %}'>adopt</a>
       {% endif %}
-      {% if has_history %}
-        {% if not diff %}
-          <a title='You are not to blame.' href='{% url paste_view pk=paste_set.pk %}?commit={{ commit_current.commit }}&diff=1'>show diff</a>
-        {% else %}
-          <a title='You are not to blame.' href='{% url paste_view pk=paste_set.pk %}?commit={{ commit_current.commit }}'>hide diff</a>
-        {% endif %}
+      {% if commit_current.diff %}
+        <span id='diff-toggle' class='link' title='You are not to blame'>show diff</span>
       {% endif %}
     </span>
       <br>
@@ -92,12 +88,12 @@
     </div>
   </div>
 
-  {% if diff %}
-  <div class='entry'>
+  {% if commit_current.diff %}
+  <div id='diff' class='entry hidden'>
     <div class='file'><div>Diff</div></div>
     <div class='paste'>
       <div>
-        {{ diff|safe }}
+        {{ commit_current.diff|safe }}
       </div>
     </div>
   </div>
@@ -126,7 +122,7 @@
     </div>
     <div class='clear'></div>
   {% endfor %}
-  {% if comment_current.comment_set.all.count %}
+  {% if commit_current.comment_set.exists %}
     <div class='entry-comment comment'>
       <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
       {% for comment in commit_current.comment_set.all %}

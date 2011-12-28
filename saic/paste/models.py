@@ -18,6 +18,7 @@ class Commit(models.Model):
     parent_set = models.ForeignKey(Set)
     created = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
+    diff = models.TextField()
 
     class Meta:
         ordering = ['-created']
@@ -28,6 +29,7 @@ class Commit(models.Model):
 
 class Comment(models.Model):
     parent = models.TextField(null=True, blank=True, default=None)
+    diff = models.TextField(blank=True)
     commit = models.ForeignKey(Commit)
     owner = models.ForeignKey(User)
     comment = models.TextField()
