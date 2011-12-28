@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Set(models.Model):
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
     description = models.CharField(max_length=255)
     repo = models.CharField(max_length=100)
     fork = models.ForeignKey('Commit', null=True, blank=True, default=None)
+    created = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return '%s: %s' % (self.repo, self.description)
@@ -41,7 +43,8 @@ class Paste(models.Model):
     paste = models.TextField()
     paste_formatted = models.TextField()
     language = models.CharField(max_length=100)
-    revision = models.ForeignKey(Commit) 
+    revision = models.ForeignKey(Commit)
+    created = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-id']
@@ -53,6 +56,7 @@ class Paste(models.Model):
 class Favorite(models.Model):
     parent_set = models.ForeignKey(Set)
     user = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return '%s: %s' % (self.user, self.parent_set.repo)

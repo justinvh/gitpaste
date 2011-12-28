@@ -1,0 +1,2 @@
+Luke M. <https://github.com/flags>
+- Added functionality for anonymous pastes

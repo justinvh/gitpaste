@@ -16,7 +16,7 @@ languages.insert(0, ('.txt;TextLexer', 'Plain Text'))
 
 
 class CommitMetaForm(forms.Form):
-    """These correspond to a particular commit or iteration of a paste.""" 
+    """These correspond to a particular commit or iteration of a paste."""
     anonymous = forms.BooleanField(required=False)
 
 
@@ -25,7 +25,7 @@ class SetForm(forms.Form):
             widget=forms.widgets.TextInput(attrs={
                 'default': 'add a paste description...'
             }))
-    
+
     def clean_description(self):
         d = self.cleaned_data.get('description')
         if d is None:
@@ -52,9 +52,9 @@ class PasteForm(forms.Form):
 
     paste = forms.CharField(widget=forms.Textarea, required=False)
     language = forms.ChoiceField(
-            choices=languages, 
+            choices=languages,
             required=False,
-            widget=forms.Select(attrs={ 'tabindex': -1 })
+            widget=forms.Select(attrs={'tabindex': -1})
     )
 
 
@@ -67,7 +67,7 @@ class UserCreationForm(UserCreationForm):
         model = User
         exclude = ('username', 'date_joined', 'last_login', 'password')
 
-    username = forms.EmailField() 
+    username = forms.EmailField()
 
     def save(self, commit=True):
         """See ProfileForm for this error."""

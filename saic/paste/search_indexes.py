@@ -3,6 +3,7 @@ from haystack.indexes import *
 from haystack import site
 from models import Paste, Commit
 
+
 class CommitIndex(RealTimeSearchIndex):
     text = CharField(document=True, use_template=True)
     commit = CharField(model_attr='commit')
