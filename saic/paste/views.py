@@ -93,7 +93,7 @@ def paste(request):
     for form_index, form in enumerate(paste_forms):
         data = form.cleaned_data
         filename = data['filename']
-        language, language_lex = data['language'].split(';')
+        language_lex, language = data['language'].split(';')
         paste = data['paste']
 
         # If we don't specify a filename, then obviously it is lonely
@@ -264,7 +264,7 @@ def paste_edit(request, pk):
     for form_index, form in enumerate(forms):
         data = form.cleaned_data
         filename = data['filename']
-        language, language_lex = data['language'].split(';')
+        language_lex, language = data['language'].split(';')
         paste = data['paste']
 
         # If we don't specify a filename, then obviously it is lonely
