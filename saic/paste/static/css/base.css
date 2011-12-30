@@ -132,7 +132,6 @@ div.entry > div > div {
 }
 
 div.entryless > div {
-    margin-left: 5px;
 }
 
 
@@ -333,4 +332,8 @@ div.search-submit {
 
 .hidden {
     display: none;
+}
+
+.right {
+    text-align: right;
 }

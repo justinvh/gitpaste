@@ -12,6 +12,7 @@
 {% block content %}
 <div id='favorites'>
   <h1>
+    <img id='profile-img' alt='Profile' src='{{ owner.preferences.gravatar }}'> 
     {% if user == owner %}
     Contributed ({{ sets.count }})
     {% else %}

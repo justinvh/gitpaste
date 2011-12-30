@@ -7,6 +7,18 @@ HAYSTACK_SEARCH_ENGINE = 'whoosh'
 HAYSTACK_WHOOSH_PATH = os.sep.join([os.path.dirname(__file__),
                         'whoosh', 'search-index'])
 
+def generate_icon(email):
+    """Generates the icon when a user is created. It should
+    return the URL of the gravatar/desired avatar hosting."""
+    import hashlib
+    import urllib
+    size = 40
+    default = 'http://sharp-mist-7719.herokuapp.com/static/img/default-icon.png'
+    gravatar = "http://www.gravatar.com/avatar/%s?%s" % (
+            hashlib.md5(email.lower()).hexdigest(),
+            urllib.urlencode({'d':default, 's':str(size)}))
+    return gravatar
+
 USE_TZ = True
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

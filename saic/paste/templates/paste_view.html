@@ -48,9 +48,9 @@
 </div>
 <div id='pastes'>
   <div class='entryless'>
-    <div class='small'>
+    <div class='small entry-header'>
       {% if user.is_authenticated %}
-        <span favorite={{ favorited }} id='favorite-toggle'>
+      <span favorite={{ favorited }} id='favorite-toggle'>
           {% if favorited %}
             <img align='right' alt='favorite' height='32px' src='/static/img/favorite.png'>
           {% else %}
@@ -58,7 +58,15 @@
           {% endif %}
         </span>
       {% endif %}
-      <span class='header'>paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
+      <span class='header'>
+        {% if commit_current.owner %}
+        <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
+          <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preferences.gravatar }}'></a>
+        {% else %}
+        <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='/static/img/default-icon.png'></a>
+        {% endif %}
+
+        paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
       {% if editable %}
         <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
       {% endif %}
@@ -128,8 +136,9 @@
       <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
       {% for comment in commit_current.comment_set.all %}
         <div name='comment-{{ comment.pk }}' class='comment-index'>
-          <h1 class='author'>
-            <a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.email }}</a> 
+          <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}' style='background: url({{ comment.owner.preferences.gravatar }}) no-repeat left center #DDD'>
+            <a href='{% url user_pastes owner=comment.owner.pk %}'>
+              {{ comment.email }}</a> 
             <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a>
           </h1>
           <div class='markdown'>{{ comment.comment|markdown:"safe" }}</div>

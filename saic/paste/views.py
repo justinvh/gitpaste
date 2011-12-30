@@ -4,6 +4,8 @@ import string
 import random
 import pytz
 
+from settings import generate_icon
+
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import *
@@ -521,7 +523,8 @@ def register(request):
     at, email = str(user.email).split('@')
     masked_email = '%s%s@%s' % (at[:3], len(at[:3]) * '*', email)
 
-    Preferences.objects.create(user=user, masked_email=masked_email)
+    Preferences.objects.create(user=user, 
+            gravatar=generate_icon(user.email), masked_email=masked_email)
 
     authed_user = auth.authenticate(
             username=user.username,

@@ -110,6 +110,7 @@ class Preferences(models.Model):
     masked_email = models.EmailField()
     default_anonymous = models.BooleanField()
     timezone = models.CharField(blank=True, choices=timezones, max_length=20)
+    gravatar = models.URLField(blank=True)
 
     @property
     def email(self):

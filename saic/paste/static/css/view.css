@@ -74,12 +74,20 @@ div.submit input {
 }
 
 .comment .author {
-    text-indent: 5px;
+    text-indent: 40px;
     margin: 0;
-    font-size: 16px;
+    font-size: 14px;
     color: #444;
     background-color: #DDD;
     padding: 5px;
+}
+
+.committer {
+    background-color: #D2E9FF !important;
+}
+
+.committer a {
+    color: #000;
 }
 
 .comment-index {
@@ -120,4 +128,16 @@ div.comment h1.header + p {
 
 #id_comment {
     height: 130px;
+}
+
+div.entry-header {
+    overflow: hidden;
+}
+
+div.entry-header img.gravatar-community {
+    float: left;
+    width: 40px;
+    margin-right: 10px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
 }
