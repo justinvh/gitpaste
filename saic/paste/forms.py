@@ -122,3 +122,8 @@ class UserCreationForm(UserCreationForm):
 
 class CommentForm(forms.Form):
     comment = forms.CharField(required=True, widget=forms.Textarea)
+
+class PreferencesForm(forms.ModelForm):
+    class Meta:
+        model = Preferences
+        exclude = ('user','masked_email','gravatar')

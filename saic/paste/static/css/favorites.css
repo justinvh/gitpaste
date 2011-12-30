@@ -49,3 +49,19 @@ ul.errorlist {
 #favorites h1 {
   line-height: 1.1em;
 }
+
+#profile-img {
+    position: relative;
+    border-radius: 5px;
+    top: 10px;
+}
+
+img.gravatar-community {
+    border-radius: 5px;
+    float: left;
+    margin-right: 10px;
+}
+
+div.user {
+    clear: left;
+}

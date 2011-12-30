@@ -3,3 +3,12 @@
     margin: 0;
     padding: 0;
 }
+
+#sortable li.ui-sortable-helper > div {
+    border-top: 1px solid #CCC;
+    border-radius: 5px;
+}
+
+div.entry-header {
+    border-bottom: 2px solid #DDD !important;
+}

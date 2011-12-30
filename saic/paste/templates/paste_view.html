@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% load elapsed %}
 {% load markup %}
+{% load tz %}
 
 {% block jsheader %}
 <script src='/static/js/jquery.formset.min.js'></script>
 <link rel='stylesheet' media='all' type='text/css' href='/static/css/highlights.css'>
 <link rel='stylesheet' media='all' type='text/css' href='/static/css/view.css'>
 <link rel='stylesheet' media='all' type='text/css' href='/static/css/markdown.css'>
+{% if use_icons %}
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/view-icons.css'>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -25,12 +29,12 @@
       <a href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
       <span class='author'>
         {% if commit.owner %}
-          {{ commit.owner }}
+          {{ commit.email }}
         {% else %}
           Anonymous
         {% endif %}
       </span> 
-      <span class='date' title="{{ commit_current.created }}">{{ commit_current.created|elapsed }}</span> </li>
+      <span class='date' title="{{ commit_current.created|localtime }}">{{ commit_current.created|elapsed }}</span> </li>
     {% endfor %}
   </ul>
   {% if user.is_authenticated %}
@@ -47,9 +51,9 @@
 </div>
 <div id='pastes'>
   <div class='entryless'>
-    <div class='small'>
+    <div class='small entry-header'>
       {% if user.is_authenticated %}
-        <span favorite={{ favorited }} id='favorite-toggle'>
+      <span favorite={{ favorited }} id='favorite-toggle'>
           {% if favorited %}
             <img align='right' alt='favorite' height='32px' src='/static/img/favorite.png'>
           {% else %}
@@ -57,7 +61,16 @@
           {% endif %}
         </span>
       {% endif %}
-      <span class='header'>paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
+      <span class='header'>
+        {% if USE_ICONS %}
+          {% if commit_current.owner %}
+          <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
+            <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preferences.gravatar }}'></a>
+          {% else %}
+            <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='/static/img/default-icon.png'></a>
+          {% endif %}
+        {% endif %}
+        paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
       {% if editable %}
         <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
       {% endif %}
@@ -72,13 +85,13 @@
     </span>
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
-      {% if commit_current.owner %} by <strong>{{ commit_current.owner }}</strong> {% endif %}
-      <span class='date' title="{{ commit_current.created }}">{{ commit_current.created|elapsed }}</span>
+      {% if commit_current.owner %} by <strong>{{ commit_current.email }}</strong> {% endif %}
+      <span class='date' title="{{ commit_current.created|localtime }}">{{ commit_current.created|elapsed }}</span>
       {% if paste_set.fork %}
         <br>
         <em class='light'>Fork of                
           {% if paste_set.fork.parent_set.owner %}
-            <a href='{% url user_pastes owner=paste_set.fork.parent_set.owner %}'>{{ paste_set.fork.parent_set.owner }}</a>
+            <a href='{% url user_pastes owner=paste_set.fork.parent_set.owner.pk %}'>{{ paste_set.fork.parent_set.email }}</a>
           {% else %}
             <a href='{% url anon_pastes %}'>Anonymous</a>
           {% endif %} at commit 
@@ -127,8 +140,13 @@
       <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
       {% for comment in commit_current.comment_set.all %}
         <div name='comment-{{ comment.pk }}' class='comment-index'>
-          <h1 class='author'>
-            <a href='{% url user_pastes owner=comment.owner.pk %}'>{{ comment.owner }}</a> 
+          {% if USE_ICONS %}
+            <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}' style='background: url({{ comment.owner.preferences.gravatar }}) no-repeat left center #DDD'>
+          {% else %}
+            <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}'> 
+          {% endif %}
+            <a href='{% url user_pastes owner=comment.owner.pk %}'>
+              {{ comment.email }}</a> 
             <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a>
           </h1>
           <div class='markdown'>{{ comment.comment|markdown:"safe" }}</div>

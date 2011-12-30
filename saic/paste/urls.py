@@ -14,8 +14,10 @@ urlpatterns = patterns('saic.paste.views',
     url(r'^users/$', 'users', name='users'),
     url(r'^(?P<pk>\d+)/$', 'paste_view', name='paste_view'),
     url(r'^favorites/$', 'favorites', name='favorites'),
-    url(r'^$', 'paste', name='paste'),
     url(r'^accounts/login/$', 'login', name='login'),
     url(r'^accounts/logout/$', 'logout', name='logout'),
-    url(r'^accounts/register/$', 'register', name='register')
+    url(r'^accounts/register/$', 'register', name='register'),
+    url(r'^accounts/preferences/$', 'preferences', name='preferences'),
+    url(r'^accounts/timezone/$', 'set_timezone', name='set_timezone'),
+    url(r'^$', 'paste', name='paste'),
 )

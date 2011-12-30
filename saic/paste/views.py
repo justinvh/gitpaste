@@ -2,6 +2,9 @@ import os
 import settings
 import string
 import random
+import pytz
+
+from settings import generate_icon
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -11,6 +14,7 @@ import git
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.formsets import formset_factory
@@ -21,8 +25,8 @@ from django.contrib import auth
 from django.forms import ValidationError
 
 from forms import PasteForm, SetForm, UserCreationForm, CommentForm
-from forms import CommitMetaForm
-from models import Set, Paste, Commit, Favorite, Comment
+from forms import CommitMetaForm, PreferencesForm
+from models import Set, Paste, Commit, Favorite, Comment, Preferences
 
 PasteSet = formset_factory(PasteForm)
 PasteSetEdit = formset_factory(PasteForm, extra=0)
@@ -50,16 +54,21 @@ def _git_diff(git_commit_object, repo):
 
 
 def paste(request):
+    commit_kwargs = {}
+    if request.user.is_authenticated():
+        commit_kwargs = {
+                'anonymous': request.user.preferences.default_anonymous
+        }
     if request.method != 'POST':
         return render_to_response('paste.html', {
             'forms': PasteSet(),
             'set_form': SetForm(),
-            'commit_meta_form': CommitMetaForm()
+            'commit_meta_form': CommitMetaForm(initial=commit_kwargs)
         }, RequestContext(request))
 
     paste_forms = PasteSet(request.POST)
     set_form = SetForm(request.POST)
-    commit_meta_form = CommitMetaForm(request.POST)
+    commit_meta_form = CommitMetaForm(request.POST, initial=commit_kwargs)
 
     if (not paste_forms.is_valid() or
             not set_form.is_valid() or
@@ -511,6 +520,12 @@ def register(request):
     user.is_active = True
     user.save()
 
+    at, email = str(user.email).split('@')
+    masked_email = '%s%s@%s' % (at[:3], len(at[:3]) * '*', email)
+
+    Preferences.objects.create(user=user, 
+            gravatar=generate_icon(user.email), masked_email=masked_email)
+
     authed_user = auth.authenticate(
             username=user.username,
             password=form.cleaned_data['password1']
@@ -562,3 +577,26 @@ def users(request):
     anons = Set.objects.filter(owner__isnull=True)
     return render_to_response('users.html',
             {'users': users, 'anons': anons}, RequestContext(request))
+
+
+@login_required
+def preferences(request):
+    saved = False
+    instance = Preferences.objects.get(user=request.user)
+    preferences = PreferencesForm(instance=instance)
+    if request.method == 'POST':
+        preferences = PreferencesForm(data=request.POST, instance=instance)
+        if preferences.is_valid():
+            p = preferences.save(commit=False)
+            p.save()
+            saved = True
+    return render_to_response('preferences.html',
+            { 'form': preferences, 'saved': saved }, RequestContext(request))
+
+
+def set_timezone(request):
+    if request.method == 'POST':
+        request.session[session_key] = pytz.timezone(request.POST['timezone'])
+        return redirect('/')
+    else:
+        return render(request, 'template.html', {'timezones': pytz.common_timezones})

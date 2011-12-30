@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block jsheader %}
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/preferences.css'>
+{% endblock %}
+
+{% block content %}
+<div class='results'>
+  <h1>Preferences</h1>
+    {% if saved %}
+    <p id='saved' class='gray tiny'>
+    Your user preferences were saved.<br>
+    </p>
+    {% endif %}
+  <form method='POST' action='{% url preferences %}'>
+    {% csrf_token %}
+    <div class='entry'>
+      <div class='mask'>
+        <label>Mask Email</label>
+        {{ form.mask_email }}
+      </div>
+
+      <div class='default-anonymous'>
+        <label>Default Anonymous</label>
+        {{ form.default_anonymous }}
+      </div>
+
+      <div class='timezone'>
+        <label>Your Timezone</label>
+        {{ form.timezone }}
+      </div>
+      {{ form.id }}
+
+      {% if USE_ICONS %}
+      <p class='gray tiny right'>
+        Your icon is controlled by 
+        <a href='http://gravatar.com'>Gravatar</a>.
+      </p>
+      {% endif %}
+
+    </div>
+    <div class='search-submit'>
+      <input type="submit" value="Save">
+    </div>
+  </form>
+</div>
+{% endblock %}

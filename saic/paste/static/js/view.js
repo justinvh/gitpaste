@@ -25,7 +25,9 @@ $(document).ready(function () {
     });
 
     // yuk yuk yuk
-    $(window).resize(function () {
-        $('div.highlight > pre').width($('div.paste:first').width() - 90);
-    }).resize()
+    $(window).ready(function () {
+        $(window).resize(function () {
+            $('table.highlighttable div.highlight pre').width($('div.entryless:first').width() - 90);
+        }).resize();
+    });
 });
