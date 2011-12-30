@@ -39,12 +39,13 @@ You can **try it out** here: http://sharp-mist-7719.herokuapp.com/
     ✓ Add markdown support for comments
     ✓ Show diffs
     ✓ Fix some of the ordering issues (added sorting and priority-based pastes)
+    ✓ Refine the user pages (masking email, anonymous, timezones)
+    ✓ Add timezone support
+    ✓ Preferences to hide email address
+    ✓ Gravatar support (set USE_ICONS in settings.py to TRUE)
 
-    ☐ Preferences to hide email address
     ☐ Add repository downloading
-    ☐ Refine the user pages
-    ☐ Add merging between files
-    ☐ Add cloning
+    x Add cloning
 
 
 # Building
