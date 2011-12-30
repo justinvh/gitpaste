@@ -45,3 +45,7 @@ ul.errorlist {
     padding: 0;
     clear: both;
 }
+
+#favorites h1 {
+  line-height: 1.1em;
+}
