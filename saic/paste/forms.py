@@ -126,4 +126,4 @@ class CommentForm(forms.Form):
 class PreferencesForm(forms.ModelForm):
     class Meta:
         model = Preferences
-        exclude = ('user','masked_email')
+        exclude = ('user','masked_email','gravatar')

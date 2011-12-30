@@ -30,10 +30,13 @@
         {{ form.timezone }}
       </div>
       {{ form.id }}
+
+      {% if USE_ICONS %}
       <p class='gray tiny right'>
         Your icon is controlled by 
         <a href='http://gravatar.com'>Gravatar</a>.
       </p>
+      {% endif %}
 
     </div>
     <div class='search-submit'>

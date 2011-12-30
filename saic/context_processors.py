@@ -20,6 +20,7 @@ class SettingsContextProcessor(object):
         return extra_context
 
 use_tz = SettingsContextProcessor('USE_TZ')
+use_icon = SettingsContextProcessor('USE_ICONS')
 
 def tz(request):
     from django.utils import timezone

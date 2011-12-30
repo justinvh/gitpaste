@@ -7,12 +7,17 @@
 
 {% block jsheader %}
 <link rel='stylesheet' media='all' type='text/css' href='/static/css/favorites.css'>
+{% if USE_ICONS %}
+<link rel='stylesheet' media='all' type='text/css' href='/static/css/favorites-icons.css'>
+{% endif %}
 {% endblock %}
 
 {% block content %}
 <div id='favorites'>
   <h1>
-    <img id='profile-img' alt='Profile' src='{{ owner.preferences.gravatar }}'> 
+    {% if USE_ICONS %}
+      <img id='profile-img' alt='Profile' src='{{ owner.preferences.gravatar }}'> 
+    {% endif %}
     {% if user == owner %}
     Contributed ({{ sets.count }})
     {% else %}

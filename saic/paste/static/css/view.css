@@ -74,7 +74,7 @@ div.submit input {
 }
 
 .comment .author {
-    text-indent: 40px;
+    text-indent: 10px;
     margin: 0;
     font-size: 14px;
     color: #444;
@@ -132,6 +132,7 @@ div.comment h1.header + p {
 
 div.entry-header {
     overflow: hidden;
+    margin-left: 10px;
 }
 
 div.entry-header img.gravatar-community {

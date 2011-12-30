@@ -7,6 +7,8 @@ HAYSTACK_SEARCH_ENGINE = 'whoosh'
 HAYSTACK_WHOOSH_PATH = os.sep.join([os.path.dirname(__file__),
                         'whoosh', 'search-index'])
 
+USE_ICONS = False
+
 def generate_icon(email):
     """Generates the icon when a user is created. It should
     return the URL of the gravatar/desired avatar hosting."""
@@ -166,4 +168,5 @@ LOGGING = {
 TEMPLATE_CONTEXT_PROCESSORS = (
         'django.contrib.auth.context_processors.auth',
         'saic.context_processors.use_tz',
+        'saic.context_processors.use_icon',
 )

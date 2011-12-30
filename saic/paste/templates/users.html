@@ -14,14 +14,18 @@
     <div>
       <div class='user'>
         <a href='{% url anon_pastes %}'>
-          <img class='gravatar-community' title='Profile' src='/static/img/default-icon.png'>
+          {% if USE_ICONS %}
+            <img class='gravatar-community' title='Profile' src='/static/img/default-icon.png'>
+          {% endif %}
           Anonymous</a>
         <br>
         {{ anons.all.count }} paste{{ anons.all.count|pluralize }}.
       </div>
       {% for user in users %}
       <div class='user'><a href='{% url user_pastes owner=user.pk %}'>
-          <img class='gravatar-community' title='Profile' src='{{ user.preferences.gravatar }}'>
+          {% if USE_ICONS %}
+            <img class='gravatar-community' title='Profile' src='{{ user.preferences.gravatar }}'>
+          {% endif %}
           {{ user.preferences.email }}</a>
           <br>
           {% if user.set_set.all.count %}
