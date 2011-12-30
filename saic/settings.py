@@ -7,6 +7,7 @@ HAYSTACK_SEARCH_ENGINE = 'whoosh'
 HAYSTACK_WHOOSH_PATH = os.sep.join([os.path.dirname(__file__),
                         'whoosh', 'search-index'])
 
+USE_TZ = True
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -105,6 +106,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'saic.paste.middleware.TimezoneMiddleware',
 )
 
 ROOT_URLCONF = 'saic.urls'
@@ -148,3 +150,8 @@ LOGGING = {
         },
     }
 }
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+        'django.contrib.auth.context_processors.auth',
+        'saic.context_processors.use_tz',
+)

@@ -111,7 +111,6 @@ div.clear + div.entry {
 div.anonymous,
 div.file,
 div.description {
-    border-bottom: 1px solid #DDD;
     padding: 2px 5px;
 }
 
@@ -294,8 +293,13 @@ div.results {
     margin: 0 auto;
 }
 
-div.results h1 {
+div.results > h1 {
     margin-left: 20px;
+}
+
+div.results > p {
+    margin-left: 20px;
+    margin-top: -10px;
 }
 
 form p {

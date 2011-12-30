@@ -1,0 +1,15 @@
+div.entry > div {
+    margin: 10px 0;
+    clear: both;
+}
+
+div.entry label {
+    float: left;
+    width: 150px;
+    margin-right: 10px;
+    text-align: right;
+}
+
+div.timezone label {
+    margin-top: 5px;
+}

@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load elapsed %}
+{% load tz %}
 
 {% block title %} Login {% endblock %}
 
@@ -10,7 +12,7 @@
 <div id='favorites'>
   <h1>
     {% if favorites.count %}
-      {{ favorites.count }} Favorite{{ favorites.count|pluralize }}
+       Favorites ({{ favorites.count }})
     {% else %}
       Favoriteless
     {% endif %}
@@ -18,15 +20,19 @@
   <div class='entry'>
     <div>
       {% for favorite in favorites %}
-      <div><a href='{% url paste_view pk=favorite.parent_set.pk %}'>Paste {{ favorite.parent_set.pk }}</a> {{ favorite.parent_set.description }}
-          <br>
-          {% if favorite.parent_set.owner %} 
-            By <a href='{% url user_pastes owner=favorite.parent_set.owner.pk %}'>{{ favorite.parent_set.owner }}</a>.
-          {% else %}
-            By Anonymous.
-          {% endif %}
-          {{ favorite.parent_set.commit_set.all.count }} commit{{ favorite.parent_set.commit_set.all.count|pluralize }}.
-        </div>
+        {% with favorite.parent_set as set %}
+          <div>
+            <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
+            <br>
+            {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}
+            {% with set.commit_set.latest as latest %}
+              <span class='date' title='{{ latest.created|localtime }}'>
+                {{ latest.created|elapsed }} by 
+                {% if latest.owner %}you{% else %}{{ latest.email }}{% endif %}.
+              </span>
+            {% endwith %}
+          </div>
+        {% endwith %}
       {% empty %}
         <div>
           <h1 class='center'>What is a favorite if you don't show love?</h1>

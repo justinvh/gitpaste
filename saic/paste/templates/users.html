@@ -17,7 +17,7 @@
         {{ anons.all.count }} paste{{ anons.all.count|pluralize }}.
       </div>
       {% for user in users %}
-        <div><a href='{% url user_pastes owner=user.pk %}'>{{ user }}</a>
+        <div><a href='{% url user_pastes owner=user.pk %}'>{{ user.preferences.email }}</a>
           <br>
           {% if user.set_set.all.count %}
             {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
