@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 
+from saic.settings import generate_icon
+
 import timezone
 
 timezones = [(tz, tz) for tz in pytz.common_timezones]
@@ -34,10 +36,11 @@ class Set(models.Model):
     repo = models.CharField(max_length=100)
     fork = models.ForeignKey('Commit', null=True, blank=True, default=None)
     created = DateTimeFieldTZ(auto_now=True)
+    views = models.IntegerField()
 
     @property
     def email(self):
-        return self.owner.preferences.email
+        return self.owner.preference.email
 
     def __unicode__(self):
         return '%s: %s' % (self.repo, self.description)
@@ -49,10 +52,11 @@ class Commit(models.Model):
     created = DateTimeFieldTZ(auto_now=True)
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
     diff = models.TextField()
+    views = models.IntegerField()
 
     @property
     def email(self):
-        return self.owner.preferences.email
+        return self.owner.preference.email
 
     class Meta:
         ordering = ['-created']
@@ -72,7 +76,7 @@ class Comment(models.Model):
 
     @property
     def email(self):
-        return self.owner.preferences.email
+        return self.owner.preference.email
 
     def __unicode__(self):
         return '%s: %s' % (self.owner, self.commit.commit)
@@ -104,8 +108,8 @@ class Favorite(models.Model):
         return '%s: %s' % (self.user, self.parent_set.repo)
 
 
-class Preferences(models.Model):
-    user = models.OneToOneField(User)
+class Preference(models.Model):
+    user = models.OneToOneField(User, unique=True)
     mask_email = models.BooleanField()
     masked_email = models.EmailField()
     default_anonymous = models.BooleanField()
@@ -120,3 +124,18 @@ class Preferences(models.Model):
 
     def __unicode__(self):
         return "%s <%s>" % (self.user, self.masked_email)
+
+
+def get_or_create_preference(user):
+    try:
+        preference = Preference.objects.get(user=user)
+    except Preference.DoesNotExist:
+        at, email = str(user.email).split('@')
+        masked_email = '%s%s@%s' % (at[:2], len(at[2:]) * '*', email)
+        return Preference.objects.create(
+                user=user, masked_email=masked_email, 
+                gravatar=generate_icon(user.email)
+        )
+    return preference
+
+User.preference = property(lambda u: get_or_create_preference(u))

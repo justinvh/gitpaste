@@ -25,6 +25,8 @@ USE_TZ = True
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+AUTH_PROFILE_MODULE = "paste.Profile"
+
 ADMINS = (
         ('Justin Bruce Van Horne', 'JUSTIN.B.VAN.HORNE@saic.com'),
 )

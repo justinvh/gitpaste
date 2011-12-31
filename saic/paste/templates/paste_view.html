@@ -65,7 +65,7 @@
         {% if USE_ICONS %}
           {% if commit_current.owner %}
           <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
-            <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preferences.gravatar }}'></a>
+            <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preference.gravatar }}'></a>
           {% else %}
             <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
           {% endif %}
@@ -141,7 +141,7 @@
       {% for comment in commit_current.comment_set.all %}
         <div name='comment-{{ comment.pk }}' class='comment-index'>
           {% if USE_ICONS %}
-            <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}' style='background: url({{ comment.owner.preferences.gravatar }}) no-repeat left center #DDD'>
+            <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}' style='background: url({{ comment.owner.preference.gravatar }}) no-repeat left center #DDD'>
           {% else %}
             <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}'> 
           {% endif %}

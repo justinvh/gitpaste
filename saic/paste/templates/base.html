@@ -18,7 +18,7 @@
           {% if user.is_authenticated %}
           <li><a title='View a list of your contributed pastes.' href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
           <li><a title='View a list of your favorited pastes.' href='{% url favorites %}'>Favorites ({{ user.favorite_set.all.count }})</a></li>
-          <li><a title='Modify your user preferences.' href='{% url preferences %}'>Preferences</a></li>
+          <li><a title='Modify your user preference.' href='{% url preference %}'>Preferences</a></li>
           <li><a title='Logout' href='{% url logout %}'>Logout</a></li>
           {% else %}
           <li><a title='Login' href='{% url login %}'>Login</a></li>

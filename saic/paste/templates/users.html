@@ -24,9 +24,9 @@
       {% for user in users %}
       <div class='user'><a href='{% url user_pastes owner=user.pk %}'>
           {% if USE_ICONS %}
-            <img class='gravatar-community' title='Profile' src='{{ user.preferences.gravatar }}'>
+            <img class='gravatar-community' title='Profile' src='{{ user.preference.gravatar }}'>
           {% endif %}
-          {{ user.preferences.email }}</a>
+          {{ user.preference.email }}</a>
           <br>
           {% if user.set_set.all.count %}
             {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.

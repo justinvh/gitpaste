@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block jsheader %}
-<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/preferences.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/preference.css'>
 {% endblock %}
 
 {% block content %}
@@ -9,10 +9,10 @@
   <h1>Preferences</h1>
     {% if saved %}
     <p id='saved' class='gray tiny'>
-    Your user preferences were saved.<br>
+    Your user preference were saved.<br>
     </p>
     {% endif %}
-  <form method='POST' action='{% url preferences %}'>
+  <form method='POST' action='{% url preference %}'>
     {% csrf_token %}
     <div class='entry'>
       <div class='mask'>

@@ -16,14 +16,14 @@
 <div id='favorites'>
   <h1>
     {% if USE_ICONS %}
-      <img id='profile-img' alt='Profile' src='{{ owner.preferences.gravatar }}'> 
+      <img id='profile-img' alt='Profile' src='{{ owner.preference.gravatar }}'> 
     {% endif %}
     {% if user == owner %}
     Contributed ({{ sets.count }})
     {% else %}
       {{ sets.count|apnumber|capfirst }} paste{{ sets.count|pluralize }} by 
       {% if owner %} 
-        {{ owner.preferences.email }} 
+        {{ owner.preference.email }} 
       {% else %} 
         Anonymous 
       {% endif %}

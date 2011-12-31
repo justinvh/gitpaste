@@ -4,8 +4,6 @@ import string
 import random
 import pytz
 
-from settings import generate_icon
-
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import *
@@ -25,8 +23,8 @@ from django.contrib import auth
 from django.forms import ValidationError
 
 from forms import PasteForm, SetForm, UserCreationForm, CommentForm
-from forms import CommitMetaForm, PreferencesForm
-from models import Set, Paste, Commit, Favorite, Comment, Preferences
+from forms import CommitMetaForm, PreferenceForm
+from models import Set, Paste, Commit, Favorite, Comment, Preference
 
 PasteSet = formset_factory(PasteForm)
 PasteSetEdit = formset_factory(PasteForm, extra=0)
@@ -57,7 +55,7 @@ def paste(request):
     commit_kwargs = {}
     if request.user.is_authenticated():
         commit_kwargs = {
-                'anonymous': request.user.preferences.default_anonymous
+                'anonymous': request.user.preference.default_anonymous
         }
     if request.method != 'POST':
         return render_to_response('paste.html', {
@@ -520,12 +518,6 @@ def register(request):
     user.is_active = True
     user.save()
 
-    at, email = str(user.email).split('@')
-    masked_email = '%s%s@%s' % (at[:3], len(at[:3]) * '*', email)
-
-    Preferences.objects.create(user=user, 
-            gravatar=generate_icon(user.email), masked_email=masked_email)
-
     authed_user = auth.authenticate(
             username=user.username,
             password=form.cleaned_data['password1']
@@ -580,18 +572,18 @@ def users(request):
 
 
 @login_required
-def preferences(request):
+def preference(request):
     saved = False
-    instance = Preferences.objects.get(user=request.user)
-    preferences = PreferencesForm(instance=instance)
+    instance = Preference.objects.get(user=request.user)
+    preference = PreferenceForm(instance=instance)
     if request.method == 'POST':
-        preferences = PreferencesForm(data=request.POST, instance=instance)
-        if preferences.is_valid():
-            p = preferences.save(commit=False)
+        preference = PreferenceForm(data=request.POST, instance=instance)
+        if preference.is_valid():
+            p = preference.save(commit=False)
             p.save()
             saved = True
-    return render_to_response('preferences.html',
-            { 'form': preferences, 'saved': saved }, RequestContext(request))
+    return render_to_response('preference.html',
+            { 'form': preference, 'saved': saved }, RequestContext(request))
 
 
 def set_timezone(request):
@@ -600,3 +592,4 @@ def set_timezone(request):
         return redirect('/')
     else:
         return render(request, 'template.html', {'timezones': pytz.common_timezones})
+
