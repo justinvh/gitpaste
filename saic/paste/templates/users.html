@@ -4,7 +4,7 @@
 {% block title %} Login {% endblock %}
 
 {% block jsheader %}
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/favorites.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/favorites.css'>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,7 @@
       <div class='user'>
         <a href='{% url anon_pastes %}'>
           {% if USE_ICONS %}
-            <img class='gravatar-community' title='Profile' src='/static/img/default-icon.png'>
+            <img class='gravatar-community' title='Profile' src='{{ STATIC_URL }}/img/default-icon.png'>
           {% endif %}
           Anonymous</a>
         <br>

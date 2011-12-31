@@ -4,12 +4,12 @@
 {% load tz %}
 
 {% block jsheader %}
-<script src='/static/js/jquery.formset.min.js'></script>
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/highlights.css'>
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/view.css'>
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/markdown.css'>
+<script src='{{ STATIC_URL }}/js/jquery.formset.min.js'></script>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/highlights.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/view.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/markdown.css'>
 {% if use_icons %}
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/view-icons.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/view-icons.css'>
 {% endif %}
 {% endblock %}
 
@@ -55,9 +55,9 @@
       {% if user.is_authenticated %}
       <span favorite={{ favorited }} id='favorite-toggle'>
           {% if favorited %}
-            <img align='right' alt='favorite' height='32px' src='/static/img/favorite.png'>
+            <img align='right' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
           {% else %}
-            <img align='right' alt='not-favorite' height='32px' src='/static/img/not-favorite.png'>
+            <img align='right' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
           {% endif %}
         </span>
       {% endif %}
@@ -67,7 +67,7 @@
           <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
             <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preferences.gravatar }}'></a>
           {% else %}
-            <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='/static/img/default-icon.png'></a>
+            <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
           {% endif %}
         {% endif %}
         paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
@@ -175,5 +175,5 @@
   {% endif %}
 </div>
 <script>var set = "{{ commit_current.parent_set.pk }}";</script>
-<script src='/static/js/view.js'></script>
+<script src='{{ STATIC_URL }}/js/view.js'></script>
 {% endblock %}

@@ -1,28 +1,29 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
   <head>
     <title>{% block title %}{% endblock %}</title>
-    <link rel='stylesheet' media='screen' type='text/css' href='/static/css/base.css'>
-    <script src='/static/js/jquery-1.7.1.min.js'></script>
+    <link rel='stylesheet' media='screen' type='text/css' href='{{ STATIC_URL }}/css/base.css'>
+    <script src='{{ STATIC_URL }}/js/jquery-1.7.1.min.js'></script>
     {% block jsheader %}{% endblock %}
   </head>
   <body>
     <div id='header'>
-      <a href='{% url paste %}'><img alt='quark-paste' src='/static/img/quark-paste.png'></a>
+      <a href='{% url paste %}'><img alt='quark-paste' src='{{ STATIC_URL }}/img/quark-paste.png'></a>
       <div id='navigation'>
         <ul>
-          <li><a title='You deserve it.' href='{% url paste %}'>New Paste</a></li>
-          <li><a title='A vast sea of pastes; an ultimate treasure awaits.' href='/search/'>Search</a></li>
-          <li><a title='Programmer voueryism' href='{% url users %}'>Users</a></li>
+          <li><a title='Create a new paste.' href='{% url paste %}'>New Paste</a></li>
+          <li><a title='Search for pastes by others.' href='/search/'>Search</a></li>
+          <li><a title='Views a list of users' href='{% url users %}'>Users</a></li>
           <li>|</li>
           {% if user.is_authenticated %}
-            <li><a title='You matter.' href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
-            <li><a title='Or prisoners.' href='{% url favorites %}'>Favorites ({{ user.favorite_set.all.count }})</a></li>
-            <li><a title='Configure your heart out.' href='{% url preferences %}'>Preferences</a></li>
-            <li><a title='...' href='{% url logout %}'>Logout</a></li>
+          <li><a title='View a list of your contributed pastes.' href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
+          <li><a title='View a list of your favorited pastes.' href='{% url favorites %}'>Favorites ({{ user.favorite_set.all.count }})</a></li>
+          <li><a title='Modify your user preferences.' href='{% url preferences %}'>Preferences</a></li>
+          <li><a title='Logout' href='{% url logout %}'>Logout</a></li>
           {% else %}
-            <li><a title='Or register?' href='{% url login %}'>Login</a></li>
-            <li><a title='Or login?' href='{% url register %}'>Register</a></li>
+          <li><a title='Login' href='{% url login %}'>Login</a></li>
+          <li><a title='Register' href='{% url register %}'>Register</a></li>
           {% endif %}
         </ul>
       </div>
