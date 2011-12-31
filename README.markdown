@@ -23,7 +23,7 @@ There's a requirements.txt. If you use pip then just follow the readme.
 
 Fork on GitHub: https://github.com/justinvh/quark-paste
 
-You can **try it out** here: http://sharp-mist-7719.herokuapp.com/ 
+You can **try it out** here: http://quark-paste.herokuapp.com/ 
 
 
 ## To-do:
