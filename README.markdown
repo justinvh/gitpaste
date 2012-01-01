@@ -43,8 +43,8 @@ You can **try it out** here: http://quark-paste.herokuapp.com/
     ✓ Add timezone support
     ✓ Preferences to hide email address
     ✓ Gravatar support (set USE_ICONS in settings.py to TRUE)
+    ✓ Added repository downloading
 
-    ☐ Add repository downloading
     x Add cloning
 
 
