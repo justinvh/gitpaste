@@ -21,11 +21,20 @@
     {% if user == owner %}
     Contributed ({{ sets.count }})
     {% else %}
-      {{ sets.count|apnumber|capfirst }} paste{{ sets.count|pluralize }} by 
-      {% if owner %} 
-        {{ owner.preference.email }} 
-      {% else %} 
-        Anonymous 
+
+      {% if sets.count %}
+        {{ sets.count|apnumber|capfirst }} paste{{ sets.count|pluralize }} by 
+        {% if owner %} 
+          {{ owner.preference.email }} 
+        {% else %} 
+          Anonymous 
+        {% endif %}
+      {% else %}
+
+      {% if owner %}
+        {{ owner.preference.email }}
+      {% else %}
+        Anonymous
       {% endif %}
     {% endif %}
   </h1>
