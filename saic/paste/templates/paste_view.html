@@ -26,7 +26,7 @@
       {% else %}
         <li>
       {% endif %}
-      <a href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
+      <a title='{{ commit.commit.views }} view{{ commit.commit.views|pluralize }}' href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
       <span class='author'>
         {% if commit.owner %}
           {{ commit.email }}
@@ -34,7 +34,8 @@
           Anonymous
         {% endif %}
       </span> 
-      <span class='date' title="{{ commit_current.created|localtime }}">{{ commit_current.created|elapsed }}</span> </li>
+      <span class='date' title="{{ commit_current.created|localtime }}">
+        {{ commit_current.created|elapsed }}.    </span> </li>
     {% endfor %}
   </ul>
   {% if user.is_authenticated %}
@@ -86,7 +87,11 @@
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
       {% if commit_current.owner %} by <strong>{{ commit_current.email }}</strong> {% endif %}
-      <span class='date' title="{{ commit_current.created|localtime }}">{{ commit_current.created|elapsed }}</span>
+      <span class='date' title="{{ commit_current.created|localtime }}">
+        {{ commit_current.created|elapsed }}
+        with {{ commit_current.views }} 
+        view{{ commit_current.views|pluralize }}.
+      </span>
       {% if paste_set.fork %}
         <br>
         <em class='light'>Fork of                
