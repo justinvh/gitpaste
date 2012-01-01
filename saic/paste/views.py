@@ -3,6 +3,7 @@ import settings
 import string
 import random
 import pytz
+import tempfile
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -21,6 +22,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib import auth
 from django.forms import ValidationError
+from django.core.servers.basehttp import FileWrapper
 
 from forms import PasteForm, SetForm, UserCreationForm, CommentForm
 from forms import CommitMetaForm, PreferenceForm
@@ -28,6 +30,17 @@ from models import Set, Paste, Commit, Favorite, Comment, Preference
 
 PasteSet = formset_factory(PasteForm)
 PasteSetEdit = formset_factory(PasteForm, extra=0)
+
+
+def send_zipfile(data, filename):
+    temp = tempfile.TemporaryFile()
+    temp.write(data)
+    wrapper = FileWrapper(temp)
+    response = HttpResponse(wrapper, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=' + filename +'.zip'
+    response['Content-Length'] = temp.tell()
+    temp.seek(0)
+    return response
 
 
 def _git_diff(git_commit_object, repo):
@@ -206,10 +219,6 @@ def paste_view(request, pk):
     # Increment the views
     paste_set.views += 1
     paste_set.save()
-
-    # Meh, this could be done better and I am a bit disappointed that you
-    # can't filter on the request.user if it is AnonymousUser, so we have
-    # to do this request.user.is_authenticated()
     favorited = False
     if request.user.is_authenticated():
         favorited = Favorite.objects.filter(
@@ -274,18 +283,31 @@ def paste_edit(request, pk):
             'language': paste.language,
         })
 
+
     if request.method != 'POST':
+        set_form = None
+        if request.user == paste_set.owner:
+            set_form_initial = {'description': paste_set.description}
+            set_form = SetForm(initial=set_form_initial)
         return render_to_response('paste.html', {
             'forms': PasteSetEdit(initial=initial_data),
+            'set_form': set_form,
             'commit_meta_form': CommitMetaForm()
         }, RequestContext(request))
 
     forms = PasteSetEdit(request.POST, initial=initial_data)
     commit_meta_form = CommitMetaForm(request.POST)
 
-    if not forms.is_valid() or not commit_meta_form.is_valid():
+    set_form = None
+    if request.user == paste_set.owner:
+        set_form = SetForm(request.POST)
+
+    if not forms.is_valid() or not commit_meta_form.is_valid() or (
+            set_form is not None and not set_form.is_valid()):
         return render_to_response('paste.html', {
             'forms': forms,
+            'set_form': set_form,
+            'commit_meta_form': CommitMetaForm()
         }, RequestContext(request))
 
     # Update the repo
@@ -304,6 +326,10 @@ def paste_edit(request, pk):
     os.environ['USER'] = "Anonymous"
     if owner:
         os.environ['USER'] = owner.username
+
+    if set_form:
+        paste_set.description = set_form.cleaned_data['description']
+        paste_set.save()
 
     commit = Commit.objects.create(
             views=0,
@@ -410,10 +436,6 @@ def paste_delete(request, pk):
     return redirect('paste')
 
 
-def paste_download(request, pk):
-    pass
-
-
 @login_required
 def paste_favorite(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
@@ -506,6 +528,17 @@ def commit_adopt(request, pk):
     commit.owner = owner
     commit.save()
     return redirect('paste_view', pk=commit.parent_set.pk)
+
+
+@login_required
+def commit_download(request, pk):
+    commit = get_object_or_404(Commit, pk=pk)
+    sha1 = commit.commit
+    git_repo = git.Repo.init(commit.parent_set.repo)
+    description = commit.parent_set.description
+    filename = 'paste %s %s %s' % (commit.email, description, commit.short)
+    filename = slugify(filename)
+    return send_zipfile(git_repo.git.archive(sha1, format='zip'), filename) 
 
 
 def register(request):

@@ -76,10 +76,10 @@
         <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
       {% endif %}
       <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>fork</a>
-      <!-- <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a> -->
       {% if user.is_authenticated and not commit_current.owner %}
           <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk %}'>adopt</a>
       {% endif %}
+      <a title='Download paste' href='{% url commit_download pk=commit_current.pk %}'>download</a>
       {% if commit_current.diff %}
         <span id='diff-toggle' class='link' title='You are not to blame'>show diff</span>
       {% endif %}

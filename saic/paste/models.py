@@ -58,6 +58,10 @@ class Commit(models.Model):
     def email(self):
         return self.owner.preference.email
 
+    @property
+    def short(self):
+        return self.commit[:8]
+
     class Meta:
         ordering = ['-created']
         get_latest_by = 'created'
