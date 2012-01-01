@@ -1,6 +1,8 @@
 import datetime
-from django import template
 import repoze.timeago
+import pytz
+
+from django import template
 
 register = template.Library()
 
@@ -22,5 +24,6 @@ def elapsed(timestamp):
         7 days ago
 
     """
-    return repoze.timeago.get_elapsed(timestamp)
+    naive = timestamp.replace(tzinfo=None)
+    return repoze.timeago.get_elapsed(naive)
 elapsed.is_safe = True

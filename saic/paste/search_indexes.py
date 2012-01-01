@@ -7,7 +7,6 @@ from models import Paste, Commit
 class CommitIndex(RealTimeSearchIndex):
     text = CharField(document=True, use_template=True)
     commit = CharField(model_attr='commit')
-    created = DateField(model_attr='created')
     user = CharField(model_attr='owner', null=True)
 
     def index_queryset(self):

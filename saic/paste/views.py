@@ -95,6 +95,7 @@ def paste(request):
     # Create a new paste set so we can reference our paste.
     description = set_form.cleaned_data.get('description')
     paste_set = Set.objects.create(
+            views=0,
             repo=repo_dir,
             owner=owner,
             description=description
@@ -108,6 +109,7 @@ def paste(request):
 
     # Initialize a commit, git repository, and pull the current index.
     commit = Commit.objects.create(
+            views=0,
             parent_set=paste_set,
             commit='',
             owner=owner
@@ -201,6 +203,10 @@ def paste_view(request, pk):
     paste_set = get_object_or_404(Set, pk=pk)
     requested_commit = request.GET.get('commit')
 
+    # Increment the views
+    paste_set.views += 1
+    paste_set.save()
+
     # Meh, this could be done better and I am a bit disappointed that you
     # can't filter on the request.user if it is AnonymousUser, so we have
     # to do this request.user.is_authenticated()
@@ -217,6 +223,9 @@ def paste_view(request, pk):
     else:
         commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
+
+    commit.views += 1
+    commit.save()
 
     if request.method == 'POST':
         comment_form = CommentForm(request.POST)
@@ -297,6 +306,7 @@ def paste_edit(request, pk):
         os.environ['USER'] = owner.username
 
     commit = Commit.objects.create(
+            views=0,
             parent_set=paste_set,
             commit='',
             owner=owner
