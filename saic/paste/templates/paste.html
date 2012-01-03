@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block jsheader %}
-<script src='/static/js/jquery.formset.min.js'></script>
-<script src='/static/js/jquery.textarea.js'></script>
-<script src='/static/js/jquery-ui-1.8.16.custom.min.js'></script>
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/paste.css'>
+<script src='{{ STATIC_URL }}/js/jquery.formset.min.js'></script>
+<script src='{{ STATIC_URL }}/js/jquery.textarea.js'></script>
+<script src='{{ STATIC_URL }}/js/jquery-ui-1.8.16.custom.min.js'></script>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/paste.css'>
 {% endblock %}
 
 {% block content %}
@@ -99,5 +99,5 @@
   {{ forms.management_form }}
   </form>
 </div>
-<script src='/static/js/paste.js'></script>
+<script src='{{ STATIC_URL }}/js/paste.js'></script>
 {% endblock %}

@@ -127,6 +127,7 @@ div.file input {
     width: 30%;
 }
 
+div.entryless > div > div,
 div.entry > div > div {
     margin: 2px 5px;
 }
@@ -193,6 +194,7 @@ div.submit input {
 
 h1 {
     color: #444;
+    line-height: 1.1em;
 }
 
 .link,

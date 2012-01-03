@@ -8,6 +8,6 @@ from saic.paste.timezone import activate
 class TimezoneMiddleware(object):
     def process_request(self, request):
         if request.user.is_authenticated():
-            tz = request.user.preferences.timezone
+            tz = request.user.preference.timezone
             if tz:
                 activate(tz)

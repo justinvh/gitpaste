@@ -4,12 +4,12 @@
 {% load tz %}
 
 {% block jsheader %}
-<script src='/static/js/jquery.formset.min.js'></script>
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/highlights.css'>
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/view.css'>
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/markdown.css'>
+<script src='{{ STATIC_URL }}/js/jquery.formset.min.js'></script>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/highlights.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/view.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/markdown.css'>
 {% if use_icons %}
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/view-icons.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/view-icons.css'>
 {% endif %}
 {% endblock %}
 
@@ -26,7 +26,7 @@
       {% else %}
         <li>
       {% endif %}
-      <a href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
+      <a title='{{ commit.commit.views }} view{{ commit.commit.views|pluralize }}' href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
       <span class='author'>
         {% if commit.owner %}
           {{ commit.email }}
@@ -34,7 +34,8 @@
           Anonymous
         {% endif %}
       </span> 
-      <span class='date' title="{{ commit_current.created|localtime }}">{{ commit_current.created|elapsed }}</span> </li>
+      <span class='date' title="{{ commit_current.created|localtime }}">
+        {{ commit_current.created|elapsed }}.    </span> </li>
     {% endfor %}
   </ul>
   {% if user.is_authenticated %}
@@ -55,9 +56,9 @@
       {% if user.is_authenticated %}
       <span favorite={{ favorited }} id='favorite-toggle'>
           {% if favorited %}
-            <img align='right' alt='favorite' height='32px' src='/static/img/favorite.png'>
+            <img align='right' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
           {% else %}
-            <img align='right' alt='not-favorite' height='32px' src='/static/img/not-favorite.png'>
+            <img align='right' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
           {% endif %}
         </span>
       {% endif %}
@@ -65,9 +66,9 @@
         {% if USE_ICONS %}
           {% if commit_current.owner %}
           <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
-            <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preferences.gravatar }}'></a>
+            <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preference.gravatar }}'></a>
           {% else %}
-            <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='/static/img/default-icon.png'></a>
+            <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
           {% endif %}
         {% endif %}
         paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
@@ -75,10 +76,10 @@
         <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
       {% endif %}
       <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>fork</a>
-      <!-- <a href='{% url paste_download pk=paste_set.pk %}?commit={{ commit_current.commit }}'>(download)</a> -->
       {% if user.is_authenticated and not commit_current.owner %}
           <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk %}'>adopt</a>
       {% endif %}
+      <a title='Download paste' href='{% url commit_download pk=commit_current.pk %}'>download</a>
       {% if commit_current.diff %}
         <span id='diff-toggle' class='link' title='You are not to blame'>show diff</span>
       {% endif %}
@@ -86,7 +87,11 @@
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
       {% if commit_current.owner %} by <strong>{{ commit_current.email }}</strong> {% endif %}
-      <span class='date' title="{{ commit_current.created|localtime }}">{{ commit_current.created|elapsed }}</span>
+      <span class='date' title="{{ commit_current.created|localtime }}">
+        {{ commit_current.created|elapsed }}
+        with {{ commit_current.views }} 
+        view{{ commit_current.views|pluralize }}.
+      </span>
       {% if paste_set.fork %}
         <br>
         <em class='light'>Fork of                
@@ -141,7 +146,7 @@
       {% for comment in commit_current.comment_set.all %}
         <div name='comment-{{ comment.pk }}' class='comment-index'>
           {% if USE_ICONS %}
-            <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}' style='background: url({{ comment.owner.preferences.gravatar }}) no-repeat left center #DDD'>
+            <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}' style='background: url({{ comment.owner.preference.gravatar }}) no-repeat left center #DDD'>
           {% else %}
             <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}'> 
           {% endif %}
@@ -175,5 +180,5 @@
   {% endif %}
 </div>
 <script>var set = "{{ commit_current.parent_set.pk }}";</script>
-<script src='/static/js/view.js'></script>
+<script src='{{ STATIC_URL }}/js/view.js'></script>
 {% endblock %}

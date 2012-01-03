@@ -3,7 +3,7 @@
 {% block title %} Login {% endblock %}
 
 {% block jsheader %}
-<link rel='stylesheet' media='all' type='text/css' href='/static/css/login.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/login.css'>
 {% endblock %}
 
 {% block content %}
@@ -33,5 +33,5 @@
     {% csrf_token %}
   </form>
 </div>
-<script src='/static/js/paste.js'></script>
+<script src='{{ STATIC_URL }}/js/paste.js'></script>
 {% endblock %}

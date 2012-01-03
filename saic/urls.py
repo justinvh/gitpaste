@@ -5,9 +5,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^paste/', include('saic.paste.urls')),
-    (r'^search/', include('haystack.urls')),
-    (r'^', redirect_to, {'url': '/paste/'}),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/password_reset/$',
@@ -17,4 +14,7 @@ urlpatterns = patterns('',
     url(r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
         'django.contrib.auth.views.password_reset_confirm'),
     (r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
+    url(r'^paste/', include('saic.paste.urls')),
+    (r'^search/', include('haystack.urls')),
+    (r'^', redirect_to, {'url': '/paste/'}),
 )

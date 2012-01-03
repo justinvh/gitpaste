@@ -23,7 +23,7 @@ There's a requirements.txt. If you use pip then just follow the readme.
 
 Fork on GitHub: https://github.com/justinvh/quark-paste
 
-You can **try it out** here: http://sharp-mist-7719.herokuapp.com/ 
+You can **try it out** here: http://quark-paste.herokuapp.com/ 
 
 
 ## To-do:
@@ -43,9 +43,15 @@ You can **try it out** here: http://sharp-mist-7719.herokuapp.com/
     ✓ Add timezone support
     ✓ Preferences to hide email address
     ✓ Gravatar support (set USE_ICONS in settings.py to TRUE)
+    ✓ Added repository downloading
 
-    ☐ Add repository downloading
     x Add cloning
+
+
+# Refactoring Needed
+
+  ☐ CSS is a disaster
+  ☐ PEP8 everything
 
 
 # Building
