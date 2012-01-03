@@ -48,6 +48,12 @@ You can **try it out** here: http://quark-paste.herokuapp.com/
     x Add cloning
 
 
+# Refactoring Needed
+
+  ☐ CSS is a disaster
+  ☐ PEP8 everything
+
+
 # Building
 *Optional*: If you have virtualenv then create your desired environment.
 
