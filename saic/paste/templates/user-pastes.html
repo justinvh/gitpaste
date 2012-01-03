@@ -47,7 +47,15 @@
           {% with set.commit_set.latest as latest %}
             <span class='date' title='{{ latest.created|localtime }}'>
               {{ latest.created|elapsed }} by 
-              {% if latest.owner == user %}you{% else %}{{ latest.email }}{% endif %}.
+              {% if latest.owner == user %}
+                you.
+              {% else %}
+                {% if not latest.owner %}
+                  Anonymous.
+                {% else %}
+                  {{ latest.email }}.
+                {% endif %}
+              {% endif %}
             </span>
           {% endwith %}
         </div>
