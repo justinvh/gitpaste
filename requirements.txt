@@ -5,7 +5,6 @@ async==0.6.1
 gitdb==0.5.4
 smmap==0.8.1
 wsgiref==0.1.2
-psycopg2==2.4.4
 Whoosh==2.3.2
 django-haystack==1.2.6
 repoze.timeago==0.5
