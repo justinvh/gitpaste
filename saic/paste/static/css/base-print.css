@@ -1,0 +1,32 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    line-height: 1.1em;
+    font-family: Arial, "Bitstream Vera sans", FreeSans, sans-serif;
+}
+
+#header {
+  display: none;
+}
+
+#navigation {
+  display: none;
+}
+
+div.entry {
+  border: 1px solid #000;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+div.file-download {
+  display: none;
+}
+
+span.header a {
+  display: none;
+}

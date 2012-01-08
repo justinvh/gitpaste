@@ -36,7 +36,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'paste.db',
+        'NAME': os.sep.join([os.path.dirname(__file__), 'paste.db']),
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
