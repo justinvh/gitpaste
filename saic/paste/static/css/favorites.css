@@ -46,6 +46,10 @@ ul.errorlist {
     clear: both;
 }
 
+#favorites h1 {
+  line-height: 1.1em;
+}
+
 #profile-img {
     position: relative;
     border-radius: 5px;

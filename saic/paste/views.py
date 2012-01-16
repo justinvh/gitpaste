@@ -168,6 +168,12 @@ def paste(request):
             filename_absolute = '%s-%d%s' % (filename_base, i, ext)
             i += 1
 
+        cleaned = []
+        for line in paste.split('\n'):
+            line = line.rstrip()
+            cleaned.append(line)
+        paste = '\n'.join(cleaned)
+
         # Open the file, write the paste, call it good.
         f = open(filename_absolute, "w")
         f.write(paste)
@@ -217,6 +223,8 @@ def paste_view(request, pk):
     requested_commit = request.GET.get('commit')
 
     # Increment the views
+    if not paste_set.views:
+        paste_set.views = 0
     paste_set.views += 1
     paste_set.save()
     favorited = False
@@ -233,6 +241,8 @@ def paste_view(request, pk):
         commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
 
+    if not commit.views:
+        commit.views = 0
     commit.views += 1
     commit.save()
 
@@ -380,6 +390,13 @@ def paste_edit(request, pk):
                 i += 1
 
         form_files.append(os.path.basename(filename_absolute))
+
+        cleaned = []
+        for line in paste.split('\n'):
+            line = line.rstrip()
+            cleaned.append(line)
+        paste = '\n'.join(cleaned)
+
 
         # Open the file, write the paste, call it good.
         f = open(filename_absolute, "w")
