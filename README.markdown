@@ -44,14 +44,16 @@ You can **try it out** here: http://quark-paste.herokuapp.com/
     ✓ Preferences to hide email address
     ✓ Gravatar support (set USE_ICONS in settings.py to TRUE)
     ✓ Added repository downloading
+    ☐ Add embedding
 
     x Add cloning
 
 
 # Refactoring Needed
 
-  ☐ CSS is a disaster
-  ☐ PEP8 everything
+
+    ☐ CSS is a disaster
+    ☐ PEP8 everything
 
 
 # Building

@@ -79,6 +79,7 @@ $(document).ready(function (doc) {
     });
 
     $('#sortable').sortable({
+        'items': 'div.entry',
         'update': function () {
             update_order();
         }
