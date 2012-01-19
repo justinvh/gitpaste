@@ -57,7 +57,7 @@
         <span>
           This paste is <strong>private</strong>, you'll need this special URL to
           {% if not paste_set.owner_id or user.id != paste_set.owner_id %}revisit{% else %}share{% endif %} it:
-          <input type="text" size="75" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
+          <input type="text" size="73" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
         </span>
       </div>
     </div>

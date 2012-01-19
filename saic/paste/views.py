@@ -241,7 +241,10 @@ def paste(request):
     commit.commit = new_commit
     commit.save()
 
-    return redirect('paste_view', pk=paste_set.pk, private_key=private_key)
+    if not paste_set.private or user_owns_paste(paste_set, request.user):
+        return redirect('paste_view', pk=paste_set.pk)
+    else:
+        return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
 
 
 def paste_view(request, pk, private_key=None):
@@ -498,7 +501,7 @@ def paste_edit(request, pk, private_key=None):
     commit.diff = _git_diff(new_commit, repo)
     commit.save()
 
-    if user_owns_paste(paste_set, request.user):
+    if not paste_set.private or user_owns_paste(paste_set, request.user):
         return redirect('paste_view', pk=paste_set.pk)
     else:
         return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
