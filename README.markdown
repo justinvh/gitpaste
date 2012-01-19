@@ -44,6 +44,8 @@ You can **try it out** here: http://quark-paste.herokuapp.com/
     ✓ Preferences to hide email address
     ✓ Gravatar support (set USE_ICONS in settings.py to TRUE)
     ✓ Added repository downloading
+    ✓ Private pastes
+    ✓ Expiration on pastes
     ☐ Add embedding
 
     x Add cloning

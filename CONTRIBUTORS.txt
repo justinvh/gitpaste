@@ -1,2 +1,5 @@
 Luke M. <https://github.com/flags>
 - Added functionality for anonymous pastes
+
+Garrett Heel <garrettheel@gmail.com>
+- Private pastes, expired pastes and various bugfixes
