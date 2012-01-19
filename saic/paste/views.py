@@ -7,7 +7,7 @@ import tempfile
 from datetime import datetime
 from datetime import timedelta
 
-from util import has_access_to_paste
+from util import has_access_to_paste, user_owns_paste
 import timezone
 
 from pygments import highlight
@@ -498,7 +498,10 @@ def paste_edit(request, pk, private_key=None):
     commit.diff = _git_diff(new_commit, repo)
     commit.save()
 
-    return redirect('paste_view', pk=paste_set.pk)
+    if user_owns_paste(paste_set, request.user):
+        return redirect('paste_view', pk=paste_set.pk)
+    else:
+        return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
 
 
 @login_required

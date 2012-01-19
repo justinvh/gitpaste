@@ -98,10 +98,10 @@ div.entryless + ul > li:first-child > div.entry {
 
 div.entryless {
     border: 2px solid #DDD;
-    border-bottom: 0 !important;
     border-radius: 5px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    padding: 5px 0 3px 0;
 }
 
 div.clear + div.entry {
@@ -186,6 +186,13 @@ span.submit-options-private {
     margin-right: 20px;
 }
 
+div.private-note {
+    margin-bottom: 10px;
+    background-color: #D2E9FF !important;
+    border-style: none !important;
+
+}
+
 input.submit {
     margin-left: 40px;
 }
@@ -244,8 +251,8 @@ div.entry label {
 }
 
 div.entryless label {
-    font-size: 12px; 
-    float: left; 
+    font-size: 12px;
+    float: left;
     width: 80px;
     color: #444;
 }

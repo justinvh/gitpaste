@@ -25,3 +25,10 @@ use_icon = SettingsContextProcessor('USE_ICONS')
 def tz(request):
     from django.utils import timezone
     return {'TIME_ZONE': timezone.get_current_timezone_name()}
+
+
+def site(request):
+    from django.contrib.sites.models import Site
+    return {
+        'site': Site.objects.get_current()
+    }

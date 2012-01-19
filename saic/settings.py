@@ -177,4 +177,5 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         'django.contrib.messages.context_processors.messages',
         'saic.context_processors.use_tz',
         'saic.context_processors.use_icon',
+        'saic.context_processors.site',
 )

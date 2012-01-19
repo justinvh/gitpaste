@@ -48,6 +48,11 @@ class Set(models.Model):
     def email(self):
         return self.owner.preference.email
 
+    @property
+    def active_private_key(self):
+        """ For use in templates. """
+        return self.private_key if self.private else ''
+
     def __unicode__(self):
         return '%s: %s' % (self.repo, self.description)
 
@@ -62,7 +67,7 @@ class Commit(models.Model):
 
     @property
     def email(self):
-        return self.owner.preference.email
+        return self.owner.preference.email if self.owner else "Anonymous"
 
     @property
     def short(self):
