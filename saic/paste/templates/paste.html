@@ -30,7 +30,7 @@
         <ul>
           {% for set in user.parent_set_set.all %}
             <li><a href='{% url paste_view pk=set.pk %}'>paste {{ set.pk }}:</a>
-            <span class='description'>{{ set.description }}</li>
+            <span class='description'>{{ set.description }}</span></li>
           {% endfor %}
         </ul>
       {% endif %}
@@ -52,12 +52,14 @@
       {% endif %}
       <div class='description'>
         <div>
-          {% if set_form %}
+          {% if not editing %}
             <span class='tiny gray'>Hint: You can reorder your pastes. Drag them around!</span>
-            {{ set_form.description }}
           {% else %}
             <strong>Updating Paste</strong>
             <span class='tiny gray'>Hint: You can reorder your pastes. Drag them around!</span>
+          {% endif %}
+          {% if set_meta_form %}
+            {{ set_form.description }}
           {% endif %}
         </div>
       </div>
@@ -88,13 +90,41 @@
         </li>
       {% endfor %}
     </ul>
+
     <div class='submit'>
-      {% if not set_form %}
-        <input type='submit' value='Submit Changeset'>
-      {% else %}
-        <input type='submit' value='Create Paste'>
-      {% endif %}
+      <div class="submit-options">
+        <span class="submit-options-private">
+          <label>Private:</label>
+          {% if not set_form %}
+            {% if set_meta_form.private.value %}
+              Yes
+            {% else %}
+              No
+            {% endif %}
+          {% else %}
+            {{ set_meta_form.private }}
+          {% endif %}
+        </span>
+        <span class="submit-options-expires">
+        <label>Expires:</label>
+          {% if editing %}
+            {% if not set_meta_form.expires.value %}
+              Never
+            {% else %}
+              {{ expires_time|date:"f A F j, Y" }}
+            {% endif %}
+          {% else %}
+            {{ set_meta_form.expires }}
+          {% endif %}
+          {% if editing %}
+            <input class='submit' type='submit' value='Submit Changeset'>
+          {% else %}
+            <input class='submit' type='submit' value='Create Paste'>
+          {% endif %}
+        </span>
+      </div>
     </div>
+
   {% csrf_token %}
   {{ forms.management_form }}
   </form>

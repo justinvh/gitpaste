@@ -4,6 +4,11 @@ import string
 import random
 import pytz
 import tempfile
+from datetime import datetime
+from datetime import timedelta
+
+from util import has_access_to_paste, user_owns_paste
+import timezone
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -25,7 +30,7 @@ from django.forms import ValidationError
 from django.core.servers.basehttp import FileWrapper
 
 from forms import PasteForm, SetForm, UserCreationForm, CommentForm
-from forms import CommitMetaForm, PreferenceForm
+from forms import CommitMetaForm, SetMetaForm, PreferenceForm
 from models import Set, Paste, Commit, Favorite, Comment, Preference
 
 PasteSet = formset_factory(PasteForm)
@@ -74,20 +79,24 @@ def paste(request):
         return render_to_response('paste.html', {
             'forms': PasteSet(),
             'set_form': SetForm(),
-            'commit_meta_form': CommitMetaForm(initial=commit_kwargs)
+            'commit_meta_form': CommitMetaForm(initial=commit_kwargs),
+            'set_meta_form': SetMetaForm(),
         }, RequestContext(request))
 
     paste_forms = PasteSet(request.POST)
     set_form = SetForm(request.POST)
     commit_meta_form = CommitMetaForm(request.POST, initial=commit_kwargs)
+    set_meta_form = SetMetaForm(request.POST)
 
     if (not paste_forms.is_valid() or
             not set_form.is_valid() or
-            not commit_meta_form.is_valid()):
+            not commit_meta_form.is_valid() or
+            not set_meta_form.is_valid()):
         return render_to_response('paste.html', {
             'forms': paste_forms,
             'set_form': set_form,
-            'commit_meta_form': commit_meta_form
+            'commit_meta_form': commit_meta_form,
+            'set_meta_form': set_meta_form,
         }, RequestContext(request))
 
     # Repositories are just a random sequence of letters and digits
@@ -97,7 +106,7 @@ def paste(request):
         "".join(random.sample(string.letters + string.digits, 15))
     ])
 
-    anonymous = commit_meta_form.cleaned_data['anonymous']
+    anonymous = commit_meta_form.cleaned_data.get('anonymous')
 
     os.mkdir(repo_dir)
 
@@ -105,13 +114,30 @@ def paste(request):
     if request.user.is_authenticated() and not anonymous:
         owner = request.user
 
-    # Create a new paste set so we can reference our paste.
     description = set_form.cleaned_data.get('description')
+    private = set_meta_form.cleaned_data.get('private')
+
+    # Calculate expiration time of set if necessary
+    exp_option = set_meta_form.cleaned_data.get('expires')
+    exp_map = {
+        'day'   : timedelta(days=1),
+        'hour'  : timedelta(hours=1),
+        'month' : timedelta(365/12),
+    }
+    exp_time = datetime.utcnow() + exp_map[exp_option] if exp_option in exp_map else None
+
+    # Generate a random hash for private access (20-30 characters from letters & numbers)
+    private_key = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(random.randrange(20,30)))
+
+    # Create a new paste set so we can reference our paste.
     paste_set = Set.objects.create(
             views=0,
             repo=repo_dir,
             owner=owner,
-            description=description
+            description=description,
+            private=private,
+            private_key=private_key,
+            expires=exp_time,
     )
 
     # Yes, this is horrible. I know. But there is a bug with Python Git.
@@ -215,11 +241,18 @@ def paste(request):
     commit.commit = new_commit
     commit.save()
 
-    return redirect('paste_view', pk=paste_set.pk)
+    if not paste_set.private or user_owns_paste(paste_set, request.user):
+        return redirect('paste_view', pk=paste_set.pk)
+    else:
+        return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
 
 
-def paste_view(request, pk):
+def paste_view(request, pk, private_key=None):
     paste_set = get_object_or_404(Set, pk=pk)
+
+    if not has_access_to_paste(paste_set, request, private_key):
+        return redirect('paste')
+
     requested_commit = request.GET.get('commit')
 
     # Increment the views
@@ -267,10 +300,13 @@ def paste_view(request, pk):
     }, RequestContext(request))
 
 
-def paste_edit(request, pk):
+def paste_edit(request, pk, private_key=None):
     paste_set = get_object_or_404(Set, pk=pk)
-    requested_commit = request.GET.get('commit')
 
+    if not has_access_to_paste(paste_set, request, private_key):
+        return redirect('paste')
+
+    requested_commit = request.GET.get('commit')
 
     # You can technically modify anything in history and update it
     if requested_commit is None:
@@ -278,7 +314,6 @@ def paste_edit(request, pk):
     else:
         commit = get_object_or_404(Commit,
                 parent_set=paste_set, commit=requested_commit)
-
 
     previous_files = []
     for f in commit.paste_set.all():
@@ -292,7 +327,18 @@ def paste_edit(request, pk):
             'paste': paste.paste,
             'language': paste.language,
         })
+    initial_set_meta = {
+        'private': paste_set.private,
+        'expires': paste_set.expires,
+    }
 
+    #TODO: turn this into a template tag and allow template to do conversion
+    original_expires_time = paste_set.expires
+    expires_time = None
+    if original_expires_time:
+        if timezone.is_naive(original_expires_time):
+            original_expires_time = original_expires_time.replace(tzinfo=timezone.utc)
+        expires_time = original_expires_time.astimezone(timezone.get_current_timezone())
 
     if request.method != 'POST':
         set_form = None
@@ -302,22 +348,32 @@ def paste_edit(request, pk):
         return render_to_response('paste.html', {
             'forms': PasteSetEdit(initial=initial_data),
             'set_form': set_form,
-            'commit_meta_form': CommitMetaForm()
+            'commit_meta_form': CommitMetaForm(),
+            'set_meta_form': SetMetaForm(initial=initial_set_meta),
+            'expires_time': expires_time,
+            'editing': True,
         }, RequestContext(request))
 
     forms = PasteSetEdit(request.POST, initial=initial_data)
     commit_meta_form = CommitMetaForm(request.POST)
 
     set_form = None
+    set_meta_form = None
     if request.user == paste_set.owner:
         set_form = SetForm(request.POST)
+        set_meta_initial = {'expires': 'never'} # to stop validation error, not used. is there a better way to do this?
+        set_meta_form = SetMetaForm(request.POST, initial=set_meta_initial)
 
     if not forms.is_valid() or not commit_meta_form.is_valid() or (
-            set_form is not None and not set_form.is_valid()):
+            set_form is not None and not set_form.is_valid() ) or (
+            set_meta_form is not None and not set_meta_form.is_valid()):
         return render_to_response('paste.html', {
             'forms': forms,
             'set_form': set_form,
-            'commit_meta_form': CommitMetaForm()
+            'commit_meta_form': CommitMetaForm(),
+            'set_meta_form': SetMetaForm(initial=initial_set_meta),
+            'expires_time': expires_time,
+            'editing': True,
         }, RequestContext(request))
 
     # Update the repo
@@ -339,6 +395,7 @@ def paste_edit(request, pk):
 
     if set_form:
         paste_set.description = set_form.cleaned_data['description']
+        paste_set.private = set_meta_form.cleaned_data.get('private')
         paste_set.save()
 
     commit = Commit.objects.create(
@@ -444,18 +501,25 @@ def paste_edit(request, pk):
     commit.diff = _git_diff(new_commit, repo)
     commit.save()
 
-    return redirect('paste_view', pk=paste_set.pk)
+    if not paste_set.private or user_owns_paste(paste_set, request.user):
+        return redirect('paste_view', pk=paste_set.pk)
+    else:
+        return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
 
 
 @login_required
 def paste_delete(request, pk):
-    get_object_or_404(Set, pk=pk, owner=request.user).delete()
+    paste_set = get_object_or_404(Set, pk=pk, owner=request.user)
+    if has_access_to_paste(paste_set, request, private_key):
+        paste_set.delete()
     return redirect('paste')
 
 
 @login_required
-def paste_favorite(request, pk):
+def paste_favorite(request, pk, private_key=None):
     paste_set = get_object_or_404(Set, pk=pk)
+    if not has_access_to_paste(paste_set, request, private_key):
+        return redirect('paste')
     try:
         Favorite.objects.get(parent_set=paste_set, user=request.user).delete()
     except Favorite.DoesNotExist:
@@ -463,8 +527,10 @@ def paste_favorite(request, pk):
     return HttpResponse()
 
 
-def paste_fork(request, pk):
+def paste_fork(request, pk, private_key=None):
     paste_set = get_object_or_404(Set, pk=pk)
+    if not has_access_to_paste(paste_set, request, private_key):
+        return redirect('paste')
 
     # Create the new repository
     repo_dir = os.sep.join([
@@ -518,8 +584,11 @@ def paste_fork(request, pk):
     return redirect('paste_view', pk=paste_set.pk)
 
 
-def paste_raw(request, pk):
+def paste_raw(request, pk, private_key=None):
     paste = get_object_or_404(Paste, pk=pk)
+
+    # TODO: check permission to access this, need access to pasteset
+
     filename = paste.filename
     response = HttpResponse(paste.paste, mimetype='application/force-download')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
@@ -527,8 +596,10 @@ def paste_raw(request, pk):
 
 
 @login_required
-def paste_adopt(request, pk):
+def paste_adopt(request, pk, private_key=None):
     paste_set = get_object_or_404(Set, pk=pk)
+    if not has_access_to_paste(paste_set, request, private_key):
+        return redirect('paste')
     if paste_set.owner is not None:
         return HttpResponse('This is not yours to own.')
     paste_set.owner = request.user
@@ -537,8 +608,10 @@ def paste_adopt(request, pk):
 
 
 @login_required
-def commit_adopt(request, pk):
+def commit_adopt(request, pk, private_key=None):
     commit = get_object_or_404(Commit, pk=pk)
+    if not has_access_to_paste(commit.parent_set, request, private_key):
+        return redirect('paste')
     if commit.owner is not None:
         return HttpResponse('This is not yours to own.')
     owner = request.user
@@ -548,8 +621,10 @@ def commit_adopt(request, pk):
 
 
 @login_required
-def commit_download(request, pk):
+def commit_download(request, pk, private_key=None):
     commit = get_object_or_404(Commit, pk=pk)
+    if not has_access_to_paste(commit.parent_set, request, private_key):
+        return redirect('paste')
     sha1 = commit.commit
     git_repo = git.Repo.init(commit.parent_set.repo)
     description = commit.parent_set.description
@@ -620,13 +695,24 @@ def user_pastes(request, owner=None):
     user = None
     if owner:
         user = User.objects.get(pk=owner)
+    if owner == None or request.user.id == None or request.user.pk != user.pk:
+        sets = sets.exclude(private=True)
     return render_to_response('user-pastes.html',
             {'sets': sets, 'owner': user}, RequestContext(request))
 
 
 def users(request):
     users = User.objects.all()
-    anons = Set.objects.filter(owner__isnull=True)
+    anons = Set.objects.filter(owner__isnull=True).exclude(private=True)
+
+    # This is an inefficient way to get the public sets for each user, should
+    # be changed at some point to scale better with large # of users
+    for user in users:
+        if request.user.id == None or user.pk != request.user.pk:
+            user.public_sets = user.set_set.exclude(private=True)
+        else:
+            user.public_sets = user.set_set
+
     return render_to_response('users.html',
             {'users': users, 'anons': anons}, RequestContext(request))
 

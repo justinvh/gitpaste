@@ -28,7 +28,7 @@
           {% endif %}
           {{ user.preference.email }}</a>
           <br>
-          {% if user.set_set.all.count %}
+          {% if user.public_sets.count %}
             {{ user.set_set.all.count }} paste{{ user.set_set.all.count|pluralize }}.
           {% else %}
             A pasteless user.

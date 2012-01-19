@@ -98,10 +98,10 @@ div.entryless + ul > li:first-child > div.entry {
 
 div.entryless {
     border: 2px solid #DDD;
-    border-bottom: 0 !important;
     border-radius: 5px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    padding: 5px 0 3px 0;
 }
 
 div.clear + div.entry {
@@ -140,7 +140,8 @@ form p input,
 div.entryless div > input,
 div.entry div > textarea,
 div.entry div > select,
-div.entry div > input {
+div.entry div > input,
+div.submit_options > select {
     border: 1px solid #999;
     font-size: 15px;
     background-color: #FAFAFA;
@@ -171,8 +172,29 @@ div.entry textarea {
 
 div.submit {
     position: relative;
-    width: 100%;
-    margin-top: 30px;
+    width: 95%;
+    margin: 20px auto;
+    color: #444;
+    font-size: 15px;
+}
+
+div.submit-options {
+    float: right;
+}
+
+span.submit-options-private {
+    margin-right: 20px;
+}
+
+div.private-note {
+    margin-bottom: 10px;
+    background-color: #D2E9FF !important;
+    border-style: none !important;
+    font-size: 14px !important;
+}
+
+input.submit {
+    margin-left: 40px;
 }
 
 div.anonymous label {
@@ -184,12 +206,6 @@ div.anonymous input {
     width: inherit;
     margin: 0;
     margin-left: 5px;
-}
-
-div.submit input {
-    position: absolute;
-    bottom: 20px;
-    right: 25px;
 }
 
 h1 {
@@ -235,8 +251,8 @@ div.entry label {
 }
 
 div.entryless label {
-    font-size: 12px; 
-    float: left; 
+    font-size: 12px;
+    float: left;
     width: 80px;
     color: #444;
 }
