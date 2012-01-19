@@ -73,13 +73,25 @@
         {% endif %}
         paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
       {% if editable %}
-        <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
+        {% if paste_set.private %}
+          <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk private_key=paste_set.private_key %}?commit={{ commit_current.commit }}'>edit</a>
+        {% else %}
+          <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
+        {% endif %}
       {% endif %}
-      <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>fork</a>
+      {% if paste_set.private %}
+        <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk private_key=paste_set.private_key %}?commit={{ commit_current.commit }}'>fork</a>
+      {% else %}
+        <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>fork</a>
+      {% endif %}
       {% if user.is_authenticated and not commit_current.owner %}
+        {% if paste_set.private %}
+          <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk private_key=paste_set.private_key %}'>adopt</a>
+        {% else %}
           <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk %}'>adopt</a>
+        {% endif %}
       {% endif %}
-      <a title='Download paste' href='{% url commit_download pk=commit_current.pk %}'>download</a>
+      <a title='Download paste' href='{% url commit_download pk=commit_current.pk private_key=paste_set.private_key %}'>download</a>
       {% if commit_current.diff %}
         <span id='diff-toggle' class='link' title='You are not to blame'>show diff</span>
       {% endif %}

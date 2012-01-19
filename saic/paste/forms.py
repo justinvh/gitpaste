@@ -58,6 +58,17 @@ class CommitMetaForm(forms.Form):
     """These correspond to a particular commit or iteration of a paste."""
     anonymous = forms.BooleanField(required=False)
 
+class SetMetaForm(forms.Form):
+    """Extra set options"""
+    private = forms.BooleanField(required=False)
+    expires = forms.ChoiceField(
+        choices = (
+            ("never", "Never"),
+            ("hour", "1 Hour"),
+            ("day", "1 Day"),
+            ("month", "1 Month"),
+        ), required=False
+    )
 
 class SetForm(forms.Form):
     description = forms.CharField(max_length=256, required=False,
