@@ -1,6 +1,6 @@
 import os
 
-REPO_DIR = os.sep.join([os.path.dirname(__file__), 'repositories'])
+REPO_DIR = os.sep.join([os.path.dirname(os.path.abspath(__file__)), 'repositories'])
 
 HAYSTACK_SITECONF = 'saic.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
@@ -177,4 +177,5 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         'django.contrib.messages.context_processors.messages',
         'saic.context_processors.use_tz',
         'saic.context_processors.use_icon',
+        'saic.context_processors.site',
 )

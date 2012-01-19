@@ -26,7 +26,7 @@
       {% else %}
         <li>
       {% endif %}
-      <a title='{{ commit.commit.views }} view{{ commit.commit.views|pluralize }}' href='{% url paste_view pk=paste_set.pk %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a> 
+      <a title='{{ commit.commit.views }} view{{ commit.commit.views|pluralize }}' href='{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a>
       <span class='author'>
         {% if commit.owner %}
           {{ commit.email }}
@@ -51,15 +51,26 @@
   {% endif %}
 </div>
 <div id='pastes'>
+  {% if paste_set.private %}
+    <div class='private-note entryless'>
+      <div class='entry-header'>
+        <span>
+          This paste is <strong>private</strong>, you'll need this special URL to
+          {% if not paste_set.owner_id or user.id != paste_set.owner_id %}revisit{% else %}share{% endif %} it:
+          <input type="text" size="73" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
+        </span>
+      </div>
+    </div>
+  {% endif %}
   <div class='entryless'>
     <div class='small entry-header'>
       {% if user.is_authenticated %}
       <span favorite={{ favorited }} id='favorite-toggle'>
-          {% if favorited %}
-            <img align='right' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
-          {% else %}
-            <img align='right' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
-          {% endif %}
+        {% if favorited %}
+          <img align='right' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
+        {% else %}
+          <img align='right' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
+        {% endif %}
         </span>
       {% endif %}
       <span class='header'>
@@ -73,13 +84,13 @@
         {% endif %}
         paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
       {% if editable %}
-        <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk %}?commit={{ commit_current.commit }}'>edit</a>
+          <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>edit</a>
       {% endif %}
-      <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk %}?commit={{ commit_current.commit }}'>fork</a>
+        <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>fork</a>
       {% if user.is_authenticated and not commit_current.owner %}
-          <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk %}'>adopt</a>
+          <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk private_key=paste_set.active_private_key %}'>adopt</a>
       {% endif %}
-      <a title='Download paste' href='{% url commit_download pk=commit_current.pk %}'>download</a>
+      <a title='Download paste' href='{% url commit_download pk=commit_current.pk private_key=paste_set.active_private_key %}'>download</a>
       {% if commit_current.diff %}
         <span id='diff-toggle' class='link' title='You are not to blame'>show diff</span>
       {% endif %}
@@ -126,7 +137,7 @@
       </div>
       <div class='file'>
         <div class='file-download'>
-          <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk %}'>download file</a>
+          <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}'>download file</a>
         </div>
         <div id='file-{{ paste.pk }}'>
           {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>

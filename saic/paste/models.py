@@ -4,9 +4,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from saic.settings import generate_icon
-
 import timezone
+
+from datetime import datetime
+
+from saic.settings import generate_icon
 
 timezones = [(tz, tz) for tz in pytz.common_timezones]
 
@@ -16,16 +18,17 @@ class DateTimeFieldTZ(models.DateTimeField):
 
     def pre_save(self, model_instance, add):
         if self.auto_now or (self.auto_now_add and add):
-            value = timezone.now()
+            value = datetime.utcnow().replace(tzinfo=timezone.utc)
             setattr(model_instance, self.attname, value)
             return value
         else:
-            return super(DateTimeField, self).pre_save(model_instance, add)
+            return super(models.DateTimeField, self).pre_save(model_instance, add)
 
     def get_prep_value(self, value):
         value = self.to_python(value)
         if value is not None and settings.USE_TZ and timezone.is_naive(value):
-            default_timezone = timezone.get_default_timezone()
+            # Always store times in UTC regardless of TIME_ZONE setting
+            default_timezone = timezone.utc
             value = timezone.make_aware(value, default_timezone)
         return value
 
@@ -35,12 +38,20 @@ class Set(models.Model):
     description = models.CharField(max_length=255)
     repo = models.CharField(max_length=100)
     fork = models.ForeignKey('Commit', null=True, blank=True, default=None)
+    private = models.BooleanField(default=False)
+    private_key = models.CharField(max_length=30)
+    expires = DateTimeFieldTZ(null=True)
     created = DateTimeFieldTZ(auto_now=True)
     views = models.IntegerField()
 
     @property
     def email(self):
         return self.owner.preference.email
+
+    @property
+    def active_private_key(self):
+        """ For use in templates. """
+        return self.private_key if self.private else ''
 
     def __unicode__(self):
         return '%s: %s' % (self.repo, self.description)
@@ -56,7 +67,7 @@ class Commit(models.Model):
 
     @property
     def email(self):
-        return self.owner.preference.email
+        return self.owner.preference.email if self.owner else "Anonymous"
 
     @property
     def short(self):

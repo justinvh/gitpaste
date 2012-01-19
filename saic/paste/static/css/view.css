@@ -17,7 +17,7 @@ div.entryless,
 div.entry {
     background-color: #E9E9E9;
     border-radius: 5px !important;
-    border: 2px solid #DDD !important;
+    border: 2px solid #DDD;
 }
 
 div.entryless + div.entry {
