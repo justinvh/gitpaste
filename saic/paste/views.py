@@ -8,6 +8,7 @@ from datetime import datetime
 from datetime import timedelta
 
 from util import has_access_to_paste, user_owns_paste
+from decorators import private
 import timezone
 
 from pygments import highlight
@@ -247,12 +248,8 @@ def paste(request):
         return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
 
 
-def paste_view(request, pk, private_key=None):
-    paste_set = get_object_or_404(Set, pk=pk)
-
-    if not has_access_to_paste(paste_set, request, private_key):
-        return redirect('paste')
-
+@private(Set)
+def paste_view(request, pk, paste_set, private_key=None):
     requested_commit = request.GET.get('commit')
 
     # Increment the views
@@ -300,12 +297,8 @@ def paste_view(request, pk, private_key=None):
     }, RequestContext(request))
 
 
-def paste_edit(request, pk, private_key=None):
-    paste_set = get_object_or_404(Set, pk=pk)
-
-    if not has_access_to_paste(paste_set, request, private_key):
-        return redirect('paste')
-
+@private(Set)
+def paste_edit(request, pk, paste_set, private_key=None):
     requested_commit = request.GET.get('commit')
 
     # You can technically modify anything in history and update it
@@ -508,18 +501,15 @@ def paste_edit(request, pk, private_key=None):
 
 
 @login_required
-def paste_delete(request, pk):
-    paste_set = get_object_or_404(Set, pk=pk, owner=request.user)
-    if has_access_to_paste(paste_set, request, private_key):
-        paste_set.delete()
+@private(Set)
+def paste_delete(request, pk, paste_set, private_key=None):
+    paste_set.delete()
     return redirect('paste')
 
 
 @login_required
-def paste_favorite(request, pk, private_key=None):
-    paste_set = get_object_or_404(Set, pk=pk)
-    if not has_access_to_paste(paste_set, request, private_key):
-        return redirect('paste')
+@private(Set)
+def paste_favorite(request, pk, paste_set, private_key=None):
     try:
         Favorite.objects.get(parent_set=paste_set, user=request.user).delete()
     except Favorite.DoesNotExist:
@@ -527,11 +517,8 @@ def paste_favorite(request, pk, private_key=None):
     return HttpResponse()
 
 
-def paste_fork(request, pk, private_key=None):
-    paste_set = get_object_or_404(Set, pk=pk)
-    if not has_access_to_paste(paste_set, request, private_key):
-        return redirect('paste')
-
+@private(Set)
+def paste_fork(request, pk, paste_set, private_key=None):
     # Create the new repository
     repo_dir = os.sep.join([
         settings.REPO_DIR,
@@ -583,12 +570,8 @@ def paste_fork(request, pk, private_key=None):
 
     return redirect('paste_view', pk=paste_set.pk)
 
-
-def paste_raw(request, pk, private_key=None):
-    paste = get_object_or_404(Paste, pk=pk)
-
-    # TODO: check permission to access this, need access to pasteset
-
+@private(Paste)
+def paste_raw(request, pk, paste, private_key=None):
     filename = paste.filename
     response = HttpResponse(paste.paste, mimetype='application/force-download')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
@@ -596,10 +579,8 @@ def paste_raw(request, pk, private_key=None):
 
 
 @login_required
-def paste_adopt(request, pk, private_key=None):
-    paste_set = get_object_or_404(Set, pk=pk)
-    if not has_access_to_paste(paste_set, request, private_key):
-        return redirect('paste')
+@private(Set)
+def paste_adopt(request, pk, paste_set, private_key=None):
     if paste_set.owner is not None:
         return HttpResponse('This is not yours to own.')
     paste_set.owner = request.user
@@ -608,10 +589,8 @@ def paste_adopt(request, pk, private_key=None):
 
 
 @login_required
-def commit_adopt(request, pk, private_key=None):
-    commit = get_object_or_404(Commit, pk=pk)
-    if not has_access_to_paste(commit.parent_set, request, private_key):
-        return redirect('paste')
+@private(Commit)
+def commit_adopt(request, pk, commit, private_key=None):
     if commit.owner is not None:
         return HttpResponse('This is not yours to own.')
     owner = request.user
@@ -621,10 +600,8 @@ def commit_adopt(request, pk, private_key=None):
 
 
 @login_required
-def commit_download(request, pk, private_key=None):
-    commit = get_object_or_404(Commit, pk=pk)
-    if not has_access_to_paste(commit.parent_set, request, private_key):
-        return redirect('paste')
+@private(Commit)
+def commit_download(request, pk, commit, private_key=None):
     sha1 = commit.commit
     git_repo = git.Repo.init(commit.parent_set.repo)
     description = commit.parent_set.description
