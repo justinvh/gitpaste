@@ -15,9 +15,7 @@ div.paste table {
 
 div.entryless,
 div.entry {
-    background-color: #E9E9E9;
     border-radius: 5px !important;
-    border: 2px solid #DDD;
 }
 
 div.entryless + div.entry {
@@ -54,6 +52,18 @@ pre {
 
 .linenos {
     width: 30px !important;
+}
+
+div.private-note {
+    margin-bottom: 20px;
+    background-color: #D2E9FF !important;
+    border: 1px solid #A7D4F9;
+    font-size: 14px !important;
+}
+
+span.paste-actions {
+    float: right;
+    margin-right: 10px;
 }
 
 div.submit input {
