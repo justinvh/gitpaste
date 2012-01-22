@@ -10,11 +10,13 @@
 {% block content %}
 <div id='log'>
   {% if not user.parent_set_set.all.count %}
-    <div id='paste-description'>
+    <div id='paste-description' class="info">
         <strong>Paste</strong> is a simple way to <strong>share snippets and pastes</strong> with others. 
-        All pastes are git repositories, so they are automatically <strong>versioned</strong>.
+        All pastes are git repositories, so they are automatically <strong>versioned</strong> and
+        <strong>forkable</strong>.
     </div>
   {% endif %}
+  <div id="recent-pastes">
   {% if pastes %}
     <h1>Your Most Recent Pastes</h1>
     {% for paste in pastes %}
@@ -40,6 +42,7 @@
       <a href='{% url register %}'>register</a> to organize your pastes.</p>
     {% endif %}
   {% endif %}
+  </div>
 </div>
 <div id='pastes'>
   <form method='POST' id='paste-form'>
