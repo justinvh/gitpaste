@@ -43,6 +43,7 @@ $(document).ready(function (doc) {
         if (lexer) { 
             $lang.val(lexer);
         }
+        $('div.language select', $parent).trigger("liszt:updated");
     });
 
 
