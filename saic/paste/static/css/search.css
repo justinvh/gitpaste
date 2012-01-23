@@ -1,0 +1,23 @@
+div.results {
+    width: 60%;
+    margin: 0 auto;
+}
+
+div.results > h1 {
+    margin-left: 20px;
+}
+
+div.results > p {
+    margin-left: 20px;
+    margin-top: -10px;
+}
+
+div.results > form > .entry {
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+div.search-submit {
+    clear: both;
+    margin-left: 20px;
+}
