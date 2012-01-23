@@ -102,6 +102,10 @@ div.entryless + ul > li:first-child > div.entry {
     margin-top: 0;
 }
 
+div.entryless + ul > li:first-child > div.entry + div.entry {
+    margin-top: 5px;
+}
+
 div.entryless {
     border: 1px solid #DDD;
     border-radius: 5px;

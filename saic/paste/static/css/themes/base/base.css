@@ -1,0 +1,91 @@
+/* Styles for every page */
+
+body, html {
+    padding: 0;
+    margin: 0;
+    line-height: 1.1em;
+    font-family: Arial, "Bitstream Vera sans", FreeSans, sans-serif;
+}
+
+.link,
+a {
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#header {
+    position: relative;
+    width: 100%;
+    height: 40px;
+}
+
+#header img {
+    position: absolute;
+    float: left;
+    width: 120px;
+    bottom: 10px;
+    left: 10px;
+}
+
+#navigation {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+#navigation ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#navigation ul li {
+    display: inline;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+/* Util styles */
+
+.clear {
+    clear: both;
+}
+
+.inline {
+    display: inline;
+}
+
+.hidden {
+    display: none;
+}
+
+.tiny {
+    font-size: 80%;
+}
+
+.gray {
+    color: #999;
+}
+
+.alert {
+    color: #A63E45;
+}
+
+
+.hidden {
+    display: none;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.center {
+    text-align: center;
+}

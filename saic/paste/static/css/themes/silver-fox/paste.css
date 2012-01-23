@@ -1,0 +1,11 @@
+#sortable li.ui-sortable-helper > div {
+    border-radius: 5px;
+}
+
+#page-description {
+    border-radius: 5px;
+    background-color: #DDDDDD;
+    border: 1px solid #999999;
+    color: #555555;
+}
+

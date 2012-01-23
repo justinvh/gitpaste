@@ -1,0 +1,181 @@
+/* Style fro creating a new post */
+#notices {
+    width: 32%;
+    float: right;
+}
+
+#notices ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    width: 90%;
+}
+
+#notices li {
+    padding: 3px;
+}
+
+#notices h1 {
+    font-size: 16px;
+    border-bottom: 1px solid #DDD;
+    width: 90%;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+#page-description {
+    width: 90%;
+    padding: 5px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+#pastes {
+    width: 68%;
+    overflow: hidden;
+    margin-top: 10px;
+    position: relative;
+}
+
+div.entryless,
+div.entry {
+    position: relative;
+    width: 95%;
+    margin: 0 auto;
+}
+
+div.entry {
+    margin-top: 10px;
+}
+
+
+div.entryless + ul > li:first-child > div.entry {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0;
+    margin-top: 0;
+}
+
+div.entryless {
+    border-bottom: 0 !important;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+div.clear + div.entry {
+    margin-top: 10px;
+}
+
+div.language {
+    float: right;
+}
+
+div.language label {
+    font-size: 14px !important;
+    float: none !important;
+}
+
+div.file input {
+    width: 30%;
+}
+
+form p input,
+div.entryless > div,
+div.entry > div {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 15px;
+}
+
+form p input,
+div.entryless div > input,
+div.entry div > textarea,
+div.entry div > select,
+div.entry div > input {
+    border-radius: 5px;
+    border: 1px solid #999;
+    background-color: #FAFAFA;
+    color: #444;
+}
+
+div.entry textarea {
+    border-radius: 5px;
+    background-color: #FAFAFA;
+}
+
+li.active {
+    border-radius: 5px;
+}
+
+div.entry input:focus {
+    background-color: #FFF !important;
+}
+
+
+
+
+
+div.description input {
+    width: 100%;
+}
+
+div.entry textarea {
+    width: 100%;
+    height: 300px;
+    font-family: Consolas, Monaco, "Bitstream Vera sans Mono", monospace;
+}
+
+div.submit {
+    position: relative;
+    width: 100%;
+    margin-top: 30px;
+}
+
+div.anonymous label {
+    display: inline;
+    width: inherit !important;
+}
+
+div.anonymous input {
+    width: inherit;
+    margin: 0;
+    margin-left: 5px;
+}
+
+div.submit input {
+    position: absolute;
+    bottom: 20px;
+    right: 25px;
+}
+
+div.add-row {
+    width: 95%;
+    margin: 0 auto;
+    margin-top: 5px;
+    display: block;
+}
+
+div.delete-row {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    padding: 5px;
+}
+
+a.delete-row {
+}
+
+span.header {
+    font-size: 18px;
+}
+
+
+div.entry label {
+}
+
+div.entryless label {
+}
+
+

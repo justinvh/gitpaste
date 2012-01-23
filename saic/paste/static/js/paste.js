@@ -45,6 +45,7 @@ $(document).ready(function (doc) {
         }
     });
 
+
     // HACK(justinvh): I don't want to go modify anymore libraries.
     // This just handles our current theme and makes it work.
     function reorder_deletes() {
@@ -55,6 +56,7 @@ $(document).ready(function (doc) {
 
     function update_order() {
         var i = 0;
+        $('div.language select').chosen();
         $('div.entry > div.priority > input').each(function () {
             // I am not crazy.
             $(this).attr('value', i);
@@ -79,11 +81,12 @@ $(document).ready(function (doc) {
     });
 
     $('#sortable').sortable({
-        'items': 'div.entry',
+        'items': 'li',
         'update': function () {
             update_order();
         }
     });
     $('textarea').tabby({'tabString': '    '});
     reorder_deletes();
+    update_order();
 });

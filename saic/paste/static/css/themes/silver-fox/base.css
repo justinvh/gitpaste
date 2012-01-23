@@ -1,0 +1,95 @@
+#header {
+    border-bottom: 2px solid #DDD;
+    background-color: #EFEFEF;
+}
+
+#navigation ul li {
+    color: #4183C4;
+}
+
+
+div.entryless,
+div.entry {
+    background-color: #EFEFEF;
+    border: 2px solid #DDD;
+}
+
+div.entry {
+    border-radius: 5px;
+}
+
+div.entryless {
+    border: 2px solid #DDD;
+    border-radius: 5px;
+}
+
+div.entry textarea {
+    border-radius: 5px;
+    background-color: #FAFAFA;
+}
+
+li.active {
+    border-radius: 5px;
+}
+
+div.entry input:focus {
+    background-color: #FFF !important;
+}
+
+h1 {
+    color: #444;
+}
+
+.link,
+a {
+    color: #4183C4;
+}
+
+a.delete-row {
+    color: #A60000;
+}
+
+span.header {
+    color: #333;
+}
+
+div.entry label {
+    color: #444;
+}
+
+div.entryless label {
+    color: #444;
+}
+
+.alert {
+    color: #A63E45;
+}
+
+#log h1 {
+    border-bottom: 1px solid #DDD;
+}
+
+span.date {
+    color: #999;
+}
+
+span.description {
+    color: #444;
+}
+
+li.active {
+    background-color: #D2E9FF;
+}
+
+.light {
+    color: #555;
+}
+
+.gray {
+    color: #666;
+}
+
+.default-input {
+    color: #444 !important;
+}
+

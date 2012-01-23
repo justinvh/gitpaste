@@ -1,1 +1,1 @@
-python manage.py runserver 139.121.3.65:5999
+python manage.py runserver localhost:8080

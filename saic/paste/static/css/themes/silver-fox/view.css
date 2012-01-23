@@ -1,0 +1,47 @@
+div.highlight {
+    border-radius: 5px;
+    background-color: #FFF;
+}
+
+div.entryless,
+div.entry {
+    border-radius: 5px;
+    background-color: #E9E9E9;
+    border: 2px solid #DDD !important;
+}
+
+div.comment-index {
+    border-radius: 5px;
+}
+
+div.description,
+div.file {
+    color: #444;
+}
+
+.comment textarea {
+    background-color: #FAFAFA;
+}
+
+.comment .author {
+    color: #444;
+    background-color: #DDD;
+}
+
+.committer {
+    background-color: #D2E9FF !important;
+}
+
+.committer a {
+    color: #000;
+}
+
+.comment-index {
+    background-color: #FFF;
+    border: 1px solid #999;
+}
+
+div.entry-header img.gravatar-community {
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
