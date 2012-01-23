@@ -41,7 +41,7 @@ class Set(models.Model):
     private = models.BooleanField(default=False)
     private_key = models.CharField(max_length=30)
     expires = DateTimeFieldTZ(null=True)
-    created = DateTimeFieldTZ(auto_now=True)
+    created = DateTimeFieldTZ(auto_now_add=True)
     views = models.IntegerField()
 
     @property
@@ -53,6 +53,10 @@ class Set(models.Model):
         """ For use in templates. """
         return self.private_key if self.private else ''
 
+    @property
+    def ordered_commits(self):
+        return self.commit_set.order_by('-created', ).all
+
     def __unicode__(self):
         return '%s: %s' % (self.repo, self.description)
 
@@ -60,7 +64,7 @@ class Set(models.Model):
 class Commit(models.Model):
     commit = models.CharField(max_length=255)
     parent_set = models.ForeignKey(Set)
-    created = DateTimeFieldTZ(auto_now=True)
+    created = DateTimeFieldTZ(auto_now_add=True)
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
     diff = models.TextField()
     views = models.IntegerField()

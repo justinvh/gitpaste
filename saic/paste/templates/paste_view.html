@@ -20,7 +20,7 @@
     Revision{{ paste_set.commit_set.all.count|pluralize }}
   </h1>
   <ul class='revisions'>
-    {% for commit in paste_set.commit_set.all %}
+    {% for commit in paste_set.ordered_commits %}
       {% if commit.commit == commit_current.commit %}
         <li class='active'>
       {% else %}
@@ -61,7 +61,7 @@
         <span>
           This paste is <strong>private</strong>, you'll need this special URL to
           {% if not paste_set.owner_id or user.id != paste_set.owner_id %}revisit{% else %}share{% endif %} it:
-          <input type="text" size="55" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
+          <input type="text" size="75" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
         </span>
       </div>
     </div>
