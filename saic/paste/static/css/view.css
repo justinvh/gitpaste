@@ -56,9 +56,13 @@ pre {
 
 div.private-note {
     margin-bottom: 20px;
-    background-color: #D2E9FF !important;
+    background: 10px no-repeat url('../img/icons/key.png') #D2E9FF !important;
     border: 1px solid #A7D4F9;
     font-size: 14px !important;
+}
+
+div.private-note > .entry-header {
+    margin-left: 35px;
 }
 
 span.paste-actions {
