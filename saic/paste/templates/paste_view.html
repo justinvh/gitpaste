@@ -20,7 +20,7 @@
     Revision{{ paste_set.commit_set.all.count|pluralize }}
   </h1>
   <ul class='revisions'>
-    {% for commit in paste_set.commit_set.all %}
+    {% for commit in paste_set.ordered_commits %}
       {% if commit.commit == commit_current.commit %}
         <li class='active'>
       {% else %}
@@ -41,12 +41,16 @@
   {% if user.is_authenticated %}
     <br>
     {% if not commit_current.parent_set.owner %}
-      <span class='alert'>Hey! This paste is not owned by anyone. 
-        <a href='{% url paste_adopt pk=commit_current.parent_set.pk %}'>Adopt it!</a>
-      </span>
+      <div class="sidebar-message">
+        <span class='alert'>Hey! This paste is not owned by anyone.
+          <a href='{% url paste_adopt pk=commit_current.parent_set.pk %}'>Adopt it!</a>
+        </span>
+      </div>
     {% endif %}
     {% if commit_current.parent_set.owner == user %}
-      <a class='alert' href='{% url paste_delete pk=commit_current.parent_set.pk %}'>delete this entire paste</a>
+      <div class="sidebar-message">
+        <a class='alert' href='{% url paste_delete pk=commit_current.parent_set.pk %}'>delete this entire paste</a>
+      </div>
     {% endif %}
   {% endif %}
 </div>
@@ -57,12 +61,12 @@
         <span>
           This paste is <strong>private</strong>, you'll need this special URL to
           {% if not paste_set.owner_id or user.id != paste_set.owner_id %}revisit{% else %}share{% endif %} it:
-          <input type="text" size="73" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
+          <input type="text" size="75" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
         </span>
       </div>
     </div>
   {% endif %}
-  <div class='entryless'>
+  <div class='entryless info'>
     <div class='small entry-header'>
       {% if user.is_authenticated %}
       <span favorite={{ favorited }} id='favorite-toggle'>
@@ -73,16 +77,17 @@
         {% endif %}
         </span>
       {% endif %}
-      <span class='header'>
-        {% if USE_ICONS %}
-          {% if commit_current.owner %}
-          <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
-            <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preference.gravatar }}'></a>
-          {% else %}
-            <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
-          {% endif %}
+    <span class='header'>
+      {% if USE_ICONS %}
+        {% if commit_current.owner %}
+        <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
+          <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preference.gravatar }}'></a>
+        {% else %}
+          <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
         {% endif %}
-        paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
+      {% endif %}
+      paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
+      <span class="paste-actions">
       {% if editable %}
           <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>edit</a>
       {% endif %}
@@ -94,6 +99,7 @@
       {% if commit_current.diff %}
         <span id='diff-toggle' class='link' title='You are not to blame'>show diff</span>
       {% endif %}
+      </span>
     </span>
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}

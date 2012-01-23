@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block jsheader %}
+<link rel='stylesheet' media='screen' type='text/css' href='{{ STATIC_URL }}/css/search.css'>
+{% endblock %}
+
 {% block content %}
 <div class='results'>
   <h1>Search</h1>
