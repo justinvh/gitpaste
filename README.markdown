@@ -1,5 +1,5 @@
-# Quark Paste
-Quark Paste is a `GitHub Gist` clone.
+# GitPaste
+GitPaste is a `GitHub Gist` clone.
 
 
 ## Quick Introduction
@@ -21,9 +21,9 @@ There's a requirements.txt. If you use pip then just follow the readme.
 
 ## Forking and Testing
 
-Fork on GitHub: https://github.com/justinvh/quark-paste
+Fork on GitHub: https://github.com/justinvh/gitpaste
 
-You can **try it out** here: http://quark-paste.herokuapp.com/ 
+You can **try it out** here: http://www.gitpaste.com
 
 
 ## To-do:
@@ -74,4 +74,4 @@ Modify runserver.sh to fit your IP address needs.
 
 
 # License
-Quark Paste is licensed under a three clause BSD License. See LICENSE.txt
+GitPaste is licensed under a three clause BSD License. See LICENSE.txt
