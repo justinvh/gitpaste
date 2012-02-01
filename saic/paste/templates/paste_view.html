@@ -34,8 +34,8 @@
           Anonymous
         {% endif %}
       </span> 
-      <span class='date' title="{{ commit_current.created|localtime }}">
-        {{ commit_current.created|elapsed }}.    </span> </li>
+      <span class='date' title="{{ commit.created|localtime }}">
+        {{ commit.created|elapsed }}.    </span> </li>
     {% endfor %}
   </ul>
   {% if user.is_authenticated %}
@@ -162,7 +162,7 @@
       <h1>{{ commit_current.comment_set.all.count }} Comment{{ commit_current.comment_set.all.count|pluralize }}</h1>
       {% for comment in commit_current.comment_set.all %}
         <div name='comment-{{ comment.pk }}' class='comment-index'>
-          {% if USE_ICONS %}
+        {% if USE_ICONS %}
             <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}' style='background: url({{ comment.owner.preference.gravatar }}) no-repeat left center #DDD'>
           {% else %}
             <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}'> 

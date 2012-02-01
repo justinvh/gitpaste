@@ -16,8 +16,8 @@ body, html {
 #header img {
     position: absolute;
     float: left;
-    width: 140px; /* height 25px */
-    padding: 10px 0 5px;
+    width: 180px; /* height 25px */
+    padding: 5px 0 5px;
     left: 15px;
 }
 

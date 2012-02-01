@@ -40,8 +40,8 @@ class Set(models.Model):
     fork = models.ForeignKey('Commit', null=True, blank=True, default=None)
     private = models.BooleanField(default=False)
     private_key = models.CharField(max_length=30)
-    expires = DateTimeFieldTZ(null=True)
-    created = DateTimeFieldTZ(auto_now_add=True)
+    expires = models.DateTimeField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
     views = models.IntegerField()
 
     @property
@@ -64,7 +64,7 @@ class Set(models.Model):
 class Commit(models.Model):
     commit = models.CharField(max_length=255)
     parent_set = models.ForeignKey(Set)
-    created = DateTimeFieldTZ(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
     diff = models.TextField()
     views = models.IntegerField()
@@ -91,7 +91,7 @@ class Comment(models.Model):
     commit = models.ForeignKey(Commit)
     owner = models.ForeignKey(User)
     comment = models.TextField()
-    created = DateTimeFieldTZ(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     @property
     def email(self):
@@ -108,7 +108,7 @@ class Paste(models.Model):
     paste_formatted = models.TextField()
     language = models.CharField(max_length=100)
     revision = models.ForeignKey(Commit)
-    created = DateTimeFieldTZ(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
     priority = models.IntegerField()
 
     class Meta:
@@ -121,7 +121,7 @@ class Paste(models.Model):
 class Favorite(models.Model):
     parent_set = models.ForeignKey(Set)
     user = models.ForeignKey(User)
-    created = DateTimeFieldTZ(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return '%s: %s' % (self.user, self.parent_set.repo)
