@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}gitpaste.com - open source git-backed pasting{% endblock %}
+
 {% block jsheader %}
 <script src='{{ STATIC_URL }}/js/jquery.formset.min.js'></script>
 <script src='{{ STATIC_URL }}/js/jquery.textarea.js'></script>
@@ -16,6 +18,8 @@
         <strong>Paste</strong> is a simple way to <strong>share snippets and pastes</strong> with others. 
         All pastes are git repositories, so they are automatically <strong>versioned</strong> and
         <strong>forkable</strong>.
+        <br>
+        <a href='https://github.com/justinvh/gitpaste'>Fork GitPaste on GitHub and improve it.</a>
     </div>
   {% endif %}
   <div id="recent-pastes">

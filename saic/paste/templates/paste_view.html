@@ -3,6 +3,14 @@
 {% load markup %}
 {% load tz %}
 
+{% block title %}
+{% if paste_set.description %}
+gitpaste.com - "{{ paste_set.description }}"
+{% else %}
+gitpaste.com - anonymous paste
+{% endif %}
+{% endblock %}
+
 {% block jsheader %}
 <script src='{{ STATIC_URL }}/js/jquery.formset.min.js'></script>
 <link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/highlights.css'>
