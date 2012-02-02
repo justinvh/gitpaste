@@ -15,6 +15,13 @@
   <form method='POST' action='{% url preference %}'>
     {% csrf_token %}
     <div class='entry'>
+    {% if USE_ICONS %}
+      <div class='gray tiny float-right'>
+        Your icon is controlled by 
+        <a href='http://gravatar.com'>Gravatar</a>.
+      </div>
+      {% endif %}
+
       <div class='mask'>
         <label>Mask Email</label>
         {{ form.mask_email }}
@@ -30,14 +37,6 @@
         {{ form.timezone }}
       </div>
       {{ form.id }}
-
-      {% if USE_ICONS %}
-      <p class='gray tiny right'>
-        Your icon is controlled by 
-        <a href='http://gravatar.com'>Gravatar</a>.
-      </p>
-      {% endif %}
-
     </div>
     <div class='search-submit'>
       <input type="submit" value="Save">

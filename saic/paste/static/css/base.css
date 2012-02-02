@@ -50,9 +50,9 @@ div.clear {
 }
 
 #pastes {
-    width: 68%;
+    width: 66%;
     overflow: hidden;
-    margin-top: 10px;
+    margin: 1%;
     position: relative;
 }
 
@@ -84,7 +84,6 @@ div.clear {
 div.entryless,
 div.entry {
     position: relative;
-    width: 95%;
     margin: 0 auto;
     background-color: #EFEFEF;
     border: 1px solid #DDD;
@@ -234,7 +233,6 @@ a:hover {
 
 
 div.add-row {
-    width: 95%;
     margin: 0 auto;
     margin-top: 5px;
     display: block;
@@ -339,7 +337,6 @@ form ul {
 
 div.search-submit {
     clear: both;
-    margin-left: 20px;
 }
 
 .tiny {
@@ -364,4 +361,8 @@ div.search-submit {
 
 .right {
     text-align: right;
+}
+
+.float-right {
+  float: right;
 }

@@ -1,6 +1,6 @@
 div.entry > div {
     margin: 10px 0;
-    clear: both;
+    clear: left;
 }
 
 div.entry label {

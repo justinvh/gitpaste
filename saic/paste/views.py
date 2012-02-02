@@ -22,6 +22,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.utils.encoding import smart_str, smart_unicode
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
 from django.contrib.auth.forms import AuthenticationForm
@@ -196,6 +197,7 @@ def paste(request):
             i += 1
 
         cleaned = []
+        paste = paste.encode('UTF-8')
         for line in paste.split('\n'):
             line = line.rstrip()
             cleaned.append(line)
@@ -206,6 +208,7 @@ def paste(request):
         f.write(paste)
         f.close()
         priority_file.write('%s: %s\n' % (filename, data['priority']))
+        paste = smart_unicode(paste)
 
         # This is a bit nasty and a get_by_ext something exist in pygments.
         # However, globals() is just much more fun.
@@ -442,11 +445,11 @@ def paste_edit(request, pk, paste_set, private_key=None):
         form_files.append(os.path.basename(filename_absolute))
 
         cleaned = []
+        paste = paste.encode('UTF-8')
         for line in paste.split('\n'):
             line = line.rstrip()
             cleaned.append(line)
         paste = '\n'.join(cleaned)
-
 
         # Open the file, write the paste, call it good.
         f = open(filename_absolute, "w")
@@ -456,6 +459,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
 
         # This is a bit nasty and a get_by_ext something exist in pygments.
         # However, globals() is just much more fun.
+        paste = smart_unicode(paste)
         lex = globals()[language_lex]
         paste_formatted = highlight(
                 paste,
