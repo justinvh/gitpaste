@@ -13,3 +13,8 @@ div.entry label {
 div.timezone label {
     margin-top: 5px;
 }
+
+div.results {
+  width: 600px;
+  margin: 0 auto;
+}

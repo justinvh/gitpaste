@@ -45,7 +45,12 @@
     <div>
       {% for set in sets %}
         <div>
-          <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
+            {% if set.private %}
+            <img src='{{ STATIC_URL }}/img/icons/key.png' alt='private' title='This paste is private' style='vertical-align: middle'>
+            {% endif %}
+            <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
+            {% if set.private %}
+            {% endif %}
           <br>
           {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}
           {% with set.commit_set.latest as latest %}

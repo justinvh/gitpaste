@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel='stylesheet' media='screen' type='text/css' href='{{ STATIC_URL }}/css/base.css'>
+    <link rel='stylesheet' media='print' type='text/css' href='{{ STATIC_URL }}/css/base-print.css'>
+    <script src='{{ STATIC_URL }}/js/jquery-1.7.1.min.js'></script>
+    {% block jsheader %}{% endblock %}
+  </head>
+  <body>
+    <div id='header'>
+      <a href='{% url paste %}'><img alt='quark-paste' src='{{ STATIC_URL }}/img/logo.png'></a>
+      <div id='navigation'>
+        <ul>
+          <li><a title='Create a new paste.' href='{% url paste %}'>New Paste</a></li>
+          <li><a title='Search for pastes by others.' href='/search/'>Search</a></li>
+          <li><a title='Views a list of users' href='{% url users %}'>Users</a></li>
+          <li>|</li>
+          {% if user.is_authenticated %}
+          <li><a title='View a list of your contributed pastes.' href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
+          <li><a title='View a list of your favorited pastes.' href='{% url favorites %}'>Favorites ({{ user.favorite_set.all.count }})</a></li>
+          <li><a title='Modify your user preference.' href='{% url preference %}'>Preferences</a></li>
+          <li><a title='Logout' href='{% url logout %}'>Logout</a></li>
+          {% else %}
+          <li><a title='Login' href='{% url login %}'>Login</a></li>
+          <li><a title='Register' href='{% url register %}'>Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class='clear'></div>
+    </div>
+    <div id='content'>
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+</html>
