@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% load elapsed %}
+{% load tz %}
+
 
 {% block title %}gitpaste.com - open source git-backed pasting{% endblock %}
 
@@ -35,12 +38,27 @@
         <p>You have not created any pastes, but you will eventually.</p>
       {% else %}
         <h1>Your Last 10 Contributions</h1>
-        <ul>
-          {% for set in user.set_set.all|slice:":10" %}
-            <li><a href='{% url paste_view pk=set.pk %}'>paste {{ set.pk }}:</a>
-            <span class='description gray'>{{ set.description }}</span></li>
-          {% endfor %}
-        </ul>
+        {% for set in user.set_set.all|slice:":10" %}
+        <div>
+            <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
+          <br>
+          {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}
+          {% with set.commit_set.latest as latest %}
+            <span class='date' title='{{ latest.created|localtime }}'>
+              {{ latest.created|elapsed }} by 
+              {% if latest.owner == user %}
+                you.
+              {% else %}
+                {% if not latest.owner %}
+                  Anonymous.
+                {% else %}
+                  {{ latest.email }}.
+                {% endif %}
+              {% endif %}
+            </span>
+          {% endwith %}
+        </div>
+        {% endfor %}
       {% endif %}
     {% else %}
       <h1>Hey, you're anonymous.</h1>

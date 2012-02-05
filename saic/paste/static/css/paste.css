@@ -25,3 +25,14 @@
 div.entry-header {
     border-bottom: 1px solid #DDD !important;
 }
+
+#recent-pastes {
+  font-size: 12px;
+}
+
+#recent-pastes > div {
+  margin-bottom: 5px;
+  border-bottom: 1px solid #EFEFEF;
+}
+
+
