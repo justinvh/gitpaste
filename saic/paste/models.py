@@ -39,6 +39,7 @@ class Set(models.Model):
     repo = models.CharField(max_length=100)
     fork = models.ForeignKey('Commit', null=True, blank=True, default=None)
     private = models.BooleanField(default=False)
+    anyone_can_edit = models.BooleanField(default=False)
     private_key = models.CharField(max_length=30)
     expires = models.DateTimeField(null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -129,8 +130,8 @@ class Favorite(models.Model):
 
 class Preference(models.Model):
     user = models.OneToOneField(User, unique=True)
-    mask_email = models.BooleanField()
-    masked_email = models.EmailField()
+    mask_email = models.BooleanField(default=False)
+    masked_email = models.CharField(max_length=256)
     default_anonymous = models.BooleanField()
     timezone = models.CharField(blank=True, choices=timezones, default='UTC', max_length=20)
     gravatar = models.URLField(blank=True)
@@ -149,8 +150,12 @@ def get_or_create_preference(user):
     try:
         preference = Preference.objects.get(user=user)
     except Preference.DoesNotExist:
-        at, email = str(user.email).split('@')
-        masked_email = '%s%s@%s' % (at[:2], len(at[2:]) * '*', email)
+        try:
+            at, email = str(user.email).split('@')
+            masked_email = '%s%s@%s' % (at[:2], len(at[2:]) * '*', email)
+        except ValueError, e:
+            email = user.username
+            masked_email = ''
         return Preference.objects.create(
                 user=user, masked_email=masked_email, 
                 gravatar=generate_icon(user.email)

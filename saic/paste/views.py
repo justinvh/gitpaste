@@ -55,6 +55,13 @@ def _git_diff(git_commit_object, repo):
     try:
         transversed_commit = git_commit_object.traverse().next()
         has_history = True
+        diff = repo.git.diff(
+                transversed_commit.hexsha,
+                git_commit_object.hexsha),
+
+        if not len(diff):
+            return None
+
         diff = highlight(
                 repo.git.diff(
                     transversed_commit.hexsha,
@@ -68,7 +75,7 @@ def _git_diff(git_commit_object, repo):
                 )
         return diff
     except StopIteration, e:
-        return ""
+        return None
 
 
 def paste(request):
@@ -118,6 +125,7 @@ def paste(request):
 
     description = set_form.cleaned_data.get('description')
     private = set_meta_form.cleaned_data.get('private')
+    allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
 
     # Calculate expiration time of set if necessary
     exp_option = set_meta_form.cleaned_data.get('expires')
@@ -138,6 +146,7 @@ def paste(request):
             owner=owner,
             description=description,
             private=private,
+            anyone_can_edit=allow_edits,
             private_key=private_key,
             expires=exp_time,
     )
@@ -171,7 +180,7 @@ def paste(request):
 
         # If we don't specify a filename, then obviously it is lonely
         if not len(filename):
-            filename = 'a-lonely-file'
+            filename = 'paste'
 
         # Construct a more logical filename for our commit
         filename_base, ext = os.path.splitext(filename)
@@ -181,19 +190,21 @@ def paste(request):
             filename
         ])
         filename_absolute += ext
-        filename_base, ext = os.path.splitext(filename_absolute)
+        filename_abs_base, ext = os.path.splitext(filename_absolute)
 
         # If no extension was specified in the file, then we can append
         # the extension from the lexer.
         if not len(ext):
             filename_absolute += language
+            filename += language
             ext = language
 
         # Gists doesn't allow for the same filename, we do.
         # Just append a number to the filename and call it good.
         i = 1
         while os.path.exists(filename_absolute):
-            filename_absolute = '%s-%d%s' % (filename_base, i, ext)
+            filename_absolute = '%s-%d%s' % (filename_abs_base, i, ext)
+            filename = '%s-%d%s' % (filename_base, i, ext)
             i += 1
 
         cleaned = []
@@ -243,9 +254,12 @@ def paste(request):
     new_commit = index.commit('Initial paste.')
     commit.diff = _git_diff(new_commit, git_repo)
     commit.commit = new_commit
+
+    if not len(commit.diff):
+        commit.diff = 'Paste attributes changed.'
     commit.save()
 
-    if not paste_set.private or user_owns_paste(paste_set, request.user):
+    if not paste_set.private:
         return redirect('paste_view', pk=paste_set.pk)
     else:
         return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
@@ -288,6 +302,11 @@ def paste_view(request, pk, paste_set, private_key=None):
                     comment=comment_form.cleaned_data['comment']
             )
 
+    editable = False
+    if paste_set.anyone_can_edit or paste_set.owner == request.user:
+        if latest_commit == commit:
+            editable = True
+
     # Always clear the comment form
     comment_form = CommentForm()
     return render_to_response('paste_view.html', {
@@ -295,7 +314,7 @@ def paste_view(request, pk, paste_set, private_key=None):
         'pastes': commit.paste_set.all(),
         'commit_current': commit,
         'favorited': favorited,
-        'editable': latest_commit == commit,
+        'editable': editable, 
         'comment_form': comment_form,
     }, RequestContext(request))
 
@@ -325,7 +344,8 @@ def paste_edit(request, pk, paste_set, private_key=None):
         })
     initial_set_meta = {
         'private': paste_set.private,
-        'expires': paste_set.expires,
+        'expires': paste_set.expires or "never",
+        'anyone_can_edit': paste_set.anyone_can_edit 
     }
 
     #TODO: turn this into a template tag and allow template to do conversion
@@ -350,24 +370,22 @@ def paste_edit(request, pk, paste_set, private_key=None):
             'editing': True,
         }, RequestContext(request))
 
-    forms = PasteSetEdit(request.POST, initial=initial_data)
-    commit_meta_form = CommitMetaForm(request.POST)
-
     set_form = None
     set_meta_form = None
+    forms = PasteSetEdit(request.POST, initial=initial_data)
+    commit_meta_form = CommitMetaForm(request.POST)
+    form_list = [forms, commit_meta_form]
     if request.user == paste_set.owner:
         set_form = SetForm(request.POST)
-        set_meta_initial = {'expires': 'never'} # to stop validation error, not used. is there a better way to do this?
-        set_meta_form = SetMetaForm(request.POST, initial=set_meta_initial)
+        set_meta_form = SetMetaForm(request.POST)
+        form_list += [set_form, set_meta_form]
 
-    if not forms.is_valid() or not commit_meta_form.is_valid() or (
-            set_form is not None and not set_form.is_valid() ) or (
-            set_meta_form is not None and not set_meta_form.is_valid()):
+    if not all(map(lambda x: x.is_valid(), form_list)):
         return render_to_response('paste.html', {
             'forms': forms,
             'set_form': set_form,
-            'commit_meta_form': CommitMetaForm(),
-            'set_meta_form': SetMetaForm(initial=initial_set_meta),
+            'commit_meta_form': commit_meta_form,
+            'set_meta_form': set_meta_form,
             'expires_time': expires_time,
             'editing': True,
         }, RequestContext(request))
@@ -390,9 +408,15 @@ def paste_edit(request, pk, paste_set, private_key=None):
         os.environ['USER'] = owner.username
 
     if set_form:
-        paste_set.description = set_form.cleaned_data['description']
-        paste_set.private = set_meta_form.cleaned_data.get('private')
-        paste_set.save()
+        fdata = set_form.cleaned_data
+        paste_set.description = fdata['description']
+
+    if set_meta_form:
+        fdata = set_meta_form.cleaned_data
+        paste_set.private = fdata.get('private')
+        paste_set.anyone_can_edit = fdata.get('anyone_can_edit')
+
+    paste_set.save()
 
     commit = Commit.objects.create(
             views=0,
@@ -416,7 +440,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
         no_filename = False
         if not len(filename):
             no_filename = True
-            filename = 'a-lonely-file'
+            filename = 'paste' 
 
         # Construct a more logical filename for our commit
         filename_base, ext = os.path.splitext(filename)
@@ -426,12 +450,13 @@ def paste_edit(request, pk, paste_set, private_key=None):
             filename
         ])
         filename_absolute += ext
-        filename_base, ext = os.path.splitext(filename_absolute)
+        filename_abs_base, ext = os.path.splitext(filename_absolute)
 
         # If no extension was specified in the file, then we can append
         # the extension from the lexer.
         if not len(ext):
             filename_absolute += language
+            filename += language
             ext = language
 
         # Gists doesn't allow for the same filename, we do.
@@ -439,7 +464,8 @@ def paste_edit(request, pk, paste_set, private_key=None):
         i = 1
         if no_filename:
             while os.path.exists(filename_absolute):
-                filename_absolute = '%s-%d%s' % (filename_base, i, ext)
+                filename_absolute = '%s-%d%s' % (filename_abs_base, i, ext)
+                filename = '%s-%d%s'(filename_base, i, ext)
                 i += 1
 
         form_files.append(os.path.basename(filename_absolute))
@@ -496,9 +522,11 @@ def paste_edit(request, pk, paste_set, private_key=None):
     new_commit = index.commit('Modified.')
     commit.commit = new_commit
     commit.diff = _git_diff(new_commit, repo)
+    if not commit.diff:
+        commit.diff = 'Paste attributes changed.'
     commit.save()
 
-    if not paste_set.private or user_owns_paste(paste_set, request.user):
+    if not paste_set.private:
         return redirect('paste_view', pk=paste_set.pk)
     else:
         return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)

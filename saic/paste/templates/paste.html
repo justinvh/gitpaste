@@ -103,6 +103,18 @@
     <div class='submit'>
       <div class="submit-options">
         <span class="submit-options-private">
+          <label>Anyone can edit:</label>
+          {% if not set_form %}
+            {% if set_meta_form.anyone_can_edit.value %}
+              Yes
+            {% else %}
+              No
+            {% endif %}
+          {% else %}
+            {{ set_meta_form.anyone_can_edit }}
+          {% endif %}
+        </span>
+        <span class="submit-options-private">
           <label>Private:</label>
           {% if not set_form %}
             {% if set_meta_form.private.value %}

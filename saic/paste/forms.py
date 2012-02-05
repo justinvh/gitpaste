@@ -60,6 +60,7 @@ class CommitMetaForm(forms.Form):
 
 class SetMetaForm(forms.Form):
     """Extra set options"""
+    anyone_can_edit = forms.BooleanField(required=False)
     private = forms.BooleanField(required=False)
     expires = forms.ChoiceField(
         choices = (
@@ -116,9 +117,7 @@ class UserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        exclude = ('username', 'date_joined', 'last_login', 'password')
-
-    username = forms.EmailField()
+        exclude = ('date_joined', 'last_login', 'password')
 
     def save(self, commit=True):
         """See ProfileForm for this error."""
