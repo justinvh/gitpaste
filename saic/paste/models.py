@@ -71,7 +71,7 @@ class Commit(models.Model):
     parent_set = models.ForeignKey(Set)
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
-    diff = models.TextField()
+    diff = models.TextField(null=True, blank=True)
     views = models.IntegerField()
 
     @property

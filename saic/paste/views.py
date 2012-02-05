@@ -252,7 +252,6 @@ def paste(request):
 
     # Create the commit from the index
     new_commit = index.commit('Initial paste.')
-    commit.diff = 'No history.'
     commit.commit = new_commit
 
     commit.save()
@@ -307,7 +306,7 @@ def paste_view(request, pk, paste_set, private_key=None):
 
     # Always clear the comment form
     comment_form = CommentForm()
-    return render_to_response('paste_view.html', {
+    return render_to_response('paste-view.html', {
         'paste_set': paste_set,
         'pastes': commit.paste_set.all(),
         'commit_current': commit,
@@ -520,8 +519,6 @@ def paste_edit(request, pk, paste_set, private_key=None):
     new_commit = index.commit('Modified.')
     commit.commit = new_commit
     commit.diff = _git_diff(new_commit, repo)
-    if not commit.diff:
-        commit.diff = 'Blank file or paste attributes changed.'
     commit.save()
 
     if not paste_set.private:
@@ -602,9 +599,14 @@ def paste_fork(request, pk, paste_set, private_key=None):
 
 @private(Paste)
 def paste_raw(request, pk, paste, private_key=None):
+    download = request.GET.get('download')
     filename = paste.filename
-    response = HttpResponse(paste.paste, mimetype='application/force-download')
-    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    if download:
+        response = HttpResponse(
+                paste.paste, mimetype='application/force-download')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    else:
+        response = HttpResponse(paste.paste, mimetype='text/plain')
     return response
 
 

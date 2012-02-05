@@ -37,9 +37,9 @@ gitpaste.com - anonymous paste
       <a title='{{ commit.commit.views }} view{{ commit.commit.views|pluralize }}' href='{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a>
       <span class='author'>
         {% if commit.owner %}
-          {{ commit.email }}
+            <a href='{% url user_pastes owner=commit.owner.pk %}'>{{ commit.email }}</a>
         {% else %}
-          Anonymous
+            <a href='{% url anon_pastes %}'>Anonymous</a>
         {% endif %}
       </span> 
       <span class='date' title="{{ commit.created|localtime }}">
@@ -79,9 +79,9 @@ gitpaste.com - anonymous paste
       {% if user.is_authenticated %}
       <span favorite={{ favorited }} id='favorite-toggle'>
         {% if favorited %}
-          <img align='right' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
+          <img align='left' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
         {% else %}
-          <img align='right' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
+          <img align='left' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
         {% endif %}
         </span>
       {% endif %}
@@ -105,13 +105,13 @@ gitpaste.com - anonymous paste
       {% endif %}
       <a title='Download paste' href='{% url commit_download pk=commit_current.pk private_key=paste_set.active_private_key %}'>download</a>
       {% if commit_current.diff %}
-        <span id='diff-toggle' class='link' title='You are not to blame'>show diff</span>
+        <span id='diff-toggle' class='link' title='You are not to blame'>diff</span>
       {% endif %}
       </span>
     </span>
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
-      {% if commit_current.owner %} by <strong>{{ commit_current.email }}</strong> {% endif %}
+      {% if commit_current.owner %} by <strong><a href='{% url user_pastes owner=commit_current.owner.pk %}'>{{ commit_current.email }}</a></strong> {% endif %}
       <span class='date' title="{{ commit_current.created|localtime }}">
         {{ commit_current.created|elapsed }}
         with {{ commit_current.views }} 
@@ -151,10 +151,11 @@ gitpaste.com - anonymous paste
       </div>
       <div class='file'>
         <div class='file-download'>
-          <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}'>download file</a>
+        <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}?download=true'>download</a>
         </div>
         <div id='file-{{ paste.pk }}'>
           {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>
+          <a title='Too raw for you.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}'>raw</a>
         </div>
       </div>
       <div class='paste'>
