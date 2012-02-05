@@ -13,22 +13,23 @@ $(document).ready(function (doc) {
         }
     });
 
-    var languages = {
-        '.cc': '.cpp;CppLexer',
-        '.cxx': '.cpp;CppLexer',
-        '.C': '.cpp;CppLexer',
-        '.C': '.c;CLexer',
-        '.h': '.c;CLexer',
-        '.hpp': '.cpp;CppLexer',
-        '.hxx': '.cpp;CppLexer',
-        '.java': '.java;JavaLexer'
-    };
+    var languages = {};
 
     var $options = $('div.language:first select > option');
 
     for (var i = 0; i < $options.length; i++) {
         languages[$options[i].value.split(';')[1]] = $options[i].value;
     }
+
+    languages['.cc'] = 'CppLexer;.cpp';
+    languages['.cxx'] = 'CppLexer;.cpp';
+    languages['.C'] = 'CppLexer;.cpp';
+    languages['.C'] = 'CLexer;.c';
+    languages['.h'] = 'CLexer;.c';
+    languages['.hpp'] = 'CppLexer;.cpp';
+    languages['.hxx'] = 'CppLexer;.cpp';
+    languages['.java'] = 'JavaLexer;.java';
+    languages['.txt'] = 'TextLexer;.txt';
 
     $("input").blur();
 
