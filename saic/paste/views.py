@@ -252,11 +252,9 @@ def paste(request):
 
     # Create the commit from the index
     new_commit = index.commit('Initial paste.')
-    commit.diff = _git_diff(new_commit, git_repo)
+    commit.diff = 'No history.'
     commit.commit = new_commit
 
-    if not len(commit.diff):
-        commit.diff = 'Paste attributes changed.'
     commit.save()
 
     if not paste_set.private:
@@ -523,7 +521,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
     commit.commit = new_commit
     commit.diff = _git_diff(new_commit, repo)
     if not commit.diff:
-        commit.diff = 'Paste attributes changed.'
+        commit.diff = 'Blank file or paste attributes changed.'
     commit.save()
 
     if not paste_set.private:

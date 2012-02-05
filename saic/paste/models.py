@@ -45,6 +45,10 @@ class Set(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     views = models.IntegerField()
 
+    class Meta:
+        ordering = ['-created']
+        get_latest_by = 'created'
+
     @property
     def email(self):
         return self.owner.preference.email

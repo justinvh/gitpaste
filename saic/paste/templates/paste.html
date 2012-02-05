@@ -30,15 +30,15 @@
     {% endfor %}
   {% else %}
     {% if user.is_authenticated %}
-      {% if not user.parent_set_set.all.count %}
+      {% if not user.set_set.all.count %}
         <h1>Hey!</h1>
         <p>You have not created any pastes, but you will eventually.</p>
       {% else %}
-        <h1>Your Contributions</h1>
+        <h1>Your Last 10 Contributions</h1>
         <ul>
-          {% for set in user.parent_set_set.all %}
+          {% for set in user.set_set.all|slice:":10" %}
             <li><a href='{% url paste_view pk=set.pk %}'>paste {{ set.pk }}:</a>
-            <span class='description'>{{ set.description }}</span></li>
+            <span class='description gray'>{{ set.description }}</span></li>
           {% endfor %}
         </ul>
       {% endif %}
