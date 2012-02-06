@@ -24,6 +24,21 @@ $(document).ready(function () {
         }
     });
 
+    // jQuery is used for this example, but JavaScript Linkify doesn't require
+    // any third-party libraries.
+
+    $('pre span').each(function(){
+        var that = $(this),
+        txt = that.html(),
+        options = {
+            callback: function( text, href ) {
+                href && console.log([ text, href ]);
+                return href ? '<a target="_blank" href="' + href + '" title="' + href + '">' + text + '</a>' : text;
+            }
+        };
+        that.html(linkify( txt, options )); 
+    });
+
     // yuk yuk yuk
     $(window).ready(function () {
         $(window).resize(function () {

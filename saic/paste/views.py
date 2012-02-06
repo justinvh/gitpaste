@@ -711,8 +711,9 @@ def user_pastes(request, owner=None):
 
     count = set_list.count()
 
-    paginator = Paginator(set_list, 20)
     page = int(request.GET.get('page', 1))
+    per_page = int(request.GET.get('count', 20))
+    paginator = Paginator(set_list, per_page)
 
     try:
         sets = paginator.page(page)
@@ -737,8 +738,10 @@ def users(request):
         else:
             user.public_sets = user.set_set
 
-    paginator = Paginator(users, 20)
     page = int(request.GET.get('page', 1))
+    per_page = int(request.GET.get('count', 20))
+    paginator = Paginator(users, per_page)
+
     count = users.count()
 
     try:
