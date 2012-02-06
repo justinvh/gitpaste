@@ -30,6 +30,7 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.forms import ValidationError
 from django.core.servers.basehttp import FileWrapper
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from forms import PasteForm, SetForm, UserCreationForm, CommentForm
 from forms import CommitMetaForm, SetMetaForm, PreferenceForm
@@ -700,14 +701,28 @@ def favorites(request):
 
 
 def user_pastes(request, owner=None):
-    sets = Set.objects.filter(owner=owner)
+    set_list = Set.objects.filter(owner=owner)
+
     user = None
     if owner:
         user = User.objects.get(pk=owner)
     if owner == None or request.user.id == None or request.user.pk != user.pk:
-        sets = sets.exclude(private=True)
+        set_list = set_list.exclude(private=True)
+
+    count = set_list.count()
+
+    paginator = Paginator(set_list, 20)
+    page = int(request.GET.get('page', 1))
+
+    try:
+        sets = paginator.page(page)
+    except PageNotAnInteger:
+        sets = paginator.page(1)
+    except EmptyPage:
+        sets = paginator.page(paginator.num_pages)
+
     return render_to_response('user-pastes.html',
-            {'sets': sets, 'owner': user}, RequestContext(request))
+            {'sets': sets, 'count': count, 'owner': user}, RequestContext(request))
 
 
 def users(request):
@@ -722,8 +737,19 @@ def users(request):
         else:
             user.public_sets = user.set_set
 
+    paginator = Paginator(users, 20)
+    page = int(request.GET.get('page', 1))
+    count = users.count()
+
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+
     return render_to_response('users.html',
-            {'users': users, 'anons': anons}, RequestContext(request))
+            {'users': users, 'count': count, 'anons': anons}, RequestContext(request))
 
 
 @login_required

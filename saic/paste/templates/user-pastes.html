@@ -22,28 +22,37 @@
           <img id='profile-img' alt='Profile' src='{{ owner.preference.gravatar }}'> 
         {% endif %}
     {% endif %}
-    {% if user == owner %}
-    Contributed ({{ sets.count }})
-    {% else %}
-      {% if sets.count %}
-        {{ sets.count|apnumber|capfirst }} paste{{ sets.count|pluralize }} by 
+    {{ count }} Contribution{{ count|pluralize }} by
+    {% if sets.count %}
         {% if owner %} 
           {{ owner.preference.email }} 
         {% else %} 
           Anonymous 
         {% endif %}
-      {% else %}
+    {% else %}
         {% if owner %}
           {{ owner.preference.email }}
         {% else %}
           Anonymous
         {% endif %}
-      {% endif %}
     {% endif %}
   </h1>
+  <h2 class='pages'>
+    {% if sets.has_previous %}
+        <a href="?page={{ sets.previous_page_number }}">prev</a>
+    {% endif %}
+
+    <span class="current">
+        Page {{ sets.number }} of {{ sets.paginator.num_pages }}
+    </span>
+
+    {% if sets.has_next %}
+        <a href="?page={{ sets.next_page_number }}">next</a>
+    {% endif %}
+  </h2>
   <div class='entry'>
     <div>
-      {% for set in sets %}
+      {% for set in sets.object_list %}
         <div>
             {% if set.private %}
             <img src='{{ STATIC_URL }}/img/icons/key.png' alt='private' title='This paste is private' style='vertical-align: middle'>

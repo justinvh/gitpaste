@@ -9,7 +9,20 @@
 
 {% block content %}
 <div id='favorites'>
-  <h1>A community of {{ users.count|apnumber }}</h1>
+  <h1>{{ count }} Member{{ count|pluralize }}</h1>
+  <h2 class='pages'>
+    {% if users.has_previous %}
+        <a href="?page={{ users.previous_page_number }}">prev</a>
+    {% endif %}
+
+    <span class="current">
+        Page {{ users.number }} of {{ users.paginator.num_pages }}
+    </span>
+
+    {% if users.has_next %}
+        <a href="?page={{ users.next_page_number }}">next</a>
+    {% endif %}
+  </h2>
   <div class='entry'>
     <div>
       <div class='user'>
@@ -21,7 +34,7 @@
         <br>
         {{ anons.all.count }} paste{{ anons.all.count|pluralize }}.
       </div>
-      {% for user in users %}
+      {% for user in users.object_list %}
       <div class='user'><a href='{% url user_pastes owner=user.pk %}'>
           {% if USE_ICONS %}
             <img class='gravatar-community' title='Profile' src='{{ user.preference.gravatar }}'>
