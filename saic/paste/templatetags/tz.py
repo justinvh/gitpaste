@@ -20,6 +20,10 @@ register = Library()
 class datetimeobject(datetime, object):
     pass
 
+@register.filter
+def timetag(value):
+    return value
+
 
 # Template filters
 

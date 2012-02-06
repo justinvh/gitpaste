@@ -13,7 +13,7 @@ gitpaste.com - anonymous paste
 
 {% block jsheader %}
 <script src='{{ STATIC_URL }}/js/jquery.formset.min.js'></script>
-<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/highlights.css'>
+<link rel='stylesheet' media='all' type='text/css' href='{{ STATIC_URL }}/css/pygments/tango.css'>
 <link rel='stylesheet' media='screen' type='text/css' href='{{ STATIC_URL }}/css/view.css'>
 <link rel='stylesheet' media='screen' type='text/css' href='{{ STATIC_URL }}/css/markdown.css'>
 {% if use_icons %}
@@ -22,7 +22,7 @@ gitpaste.com - anonymous paste
 {% endblock %}
 
 {% block content %}
-<div id='log'>
+<section class='meta'>
   <h1>
     {{ paste_set.commit_set.all.count }}
     Revision{{ paste_set.commit_set.all.count|pluralize }}
@@ -61,7 +61,7 @@ gitpaste.com - anonymous paste
       </div>
     {% endif %}
   {% endif %}
-</div>
+</section>
 <div id='pastes'>
   {% if paste_set.private %}
     <div class='private-note entryless'>

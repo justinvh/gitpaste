@@ -68,7 +68,7 @@ def _git_diff(git_commit_object, repo):
                     git_commit_object.hexsha),
                 DiffLexer(),
                 HtmlFormatter(
-                    style='colorful',
+                    style='friendly',
                     linenos='table',
                     lineanchors='diff',
                     anchorlinenos=True),
@@ -228,7 +228,7 @@ def paste(request):
                 paste,
                 lex(),
                 HtmlFormatter(
-                    style='colorful',
+                    style='friendly',
                     linenos='table',
                     lineanchors='line-%s' % form_index,
                     anchorlinenos=True)
@@ -488,7 +488,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
                 paste,
                 lex(),
                 HtmlFormatter(
-                    style='colorful',
+                    style='friendly',
                     linenos='table',
                     lineanchors='line-%s' % form_index,
                     anchorlinenos=True)

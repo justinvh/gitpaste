@@ -5,35 +5,30 @@ body, html {
     font-family: Arial, "Bitstream Vera sans", FreeSans, sans-serif;
 }
 
-#header {
-    position: relative;
+nav.top-bar {
     border-bottom: 1px solid #DDD;
     width: 100%;
-    height: 40px;
     background-color: #EFEFEF;
+    box-shadow: 1px 1px 5px #999;
+    height: 45px;
 }
 
-#header img {
-    position: absolute;
+nav.top-bar img {
     float: left;
     width: 180px; /* height 25px */
     padding: 5px 0 5px;
     left: 15px;
 }
 
-#navigation {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
+nav.top-bar ul {
+  float: right;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-top: 15px;
 }
 
-#navigation ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-#navigation ul li {
+nav.top-bar ul li {
     display: inline;
     color: #4183C4;
     font-size: 12px;
@@ -41,7 +36,7 @@ body, html {
     padding: 0 10px;
 }
 
-#content {
+#wrapper {
     margin: 15px 0 80px 0;
 }
 
@@ -51,30 +46,47 @@ div.clear {
 
 #pastes {
     width: 66%;
-    overflow: hidden;
     margin: 1%;
     position: relative;
 }
 
-#log {
+.meta {
     width: 32%;
     float: right;
+    text-align: left;
 }
 
-.info {
+.meta h1 {
+    font-size: 16px;
+    border-bottom: 1px solid #DDD;
+    margin-top: 0;
+}
+
+.meta ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    width: 90%;
+}
+
+.meta li {
+    padding: 3px;
+}
+
+
+.yellow-box {
+    width: 90%;
+    margin-bottom: 20px;
     background-color: #F6F7C1 !important;
     border: 1px solid #EDE788 !important;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
     border-radius: 5px;
     color: #2b2b2b;
-    padding: 8px;
     font-size: 12px;
 }
 
-#paste-description {
-    width: 90%;
-    margin-bottom: 20px;
+.yellow-box p {
+  padding: 0 8px;
 }
 
 #recent-pastes, .sidebar-message {
@@ -215,6 +227,7 @@ div.anonymous input {
 h1 {
     color: #444;
     line-height: 1.1em;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .link,
@@ -235,20 +248,25 @@ a:hover {
 div.add-row {
     margin: 0 auto;
     margin-top: 5px;
+    border-radius: 5px;
     display: block;
+    border: 1px solid #DDD;
+    font-size: 14px;
 }
 
 div.add-row a {
-    display: block;
-    padding: 10px 8px 8px 35px;
-    border: 1px solid #DDD;
-    background: 10px no-repeat url('../img/icons/page_add.png') #EFEFEF;
-    font-size: 14px;
+  display: block;
+  padding: 10px 8px 8px 35px;
+  background: 10px no-repeat url('/static/img/icons/page_add.png') #EFEFEF;
 }
 
 div.add-row a:hover {
     text-decoration: none;
     background-color: #e0e0e0;
+}
+
+div.add-row a:hover {
+    box-shadow: 1px 1px 5px #999;
 }
 
 div.delete-row {
@@ -287,29 +305,13 @@ div.small {
     color: #A63E45;
 }
 
-#log h1 {
-    font-size: 16px;
-    border-bottom: 1px solid #DDD;
-    margin-top: 0;
-}
-
-#log ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-size: 13px;
-    width: 90%;
-}
-
-#log li {
-    padding: 3px;
-}
 
 span.author {
     font-weight: bold;
 }
 
-span.date {
+time,
+.date {
     color: #999;
 }
 
@@ -351,7 +353,7 @@ div.search-submit {
 }
 
 .default-input {
-    color: #444 !important;
+    color: #999 !important;
 }
 
 .hidden {

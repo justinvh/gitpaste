@@ -48,6 +48,9 @@ div.paste > div {
 
 pre {
     overflow: auto;
+    font-family: 'Droid Sans Mono', sans-serif;
+    font-size: 0.75em;
+    line-height: 1.5em;
 }
 
 .linenos {

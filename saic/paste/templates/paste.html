@@ -15,158 +15,145 @@
 {% endblock %}
 
 {% block content %}
-<div id='log'>
-  {% if not user.parent_set_set.all.count %}
-    <div id='paste-description' class="info">
-        <strong>Paste</strong> is a simple way to <strong>share snippets and pastes</strong> with others. 
-        All pastes are git repositories, so they are automatically <strong>versioned</strong> and
-        <strong>forkable</strong>.
-        <br>
-        <a href='https://github.com/justinvh/gitpaste'>Fork GitPaste on GitHub and improve it.</a>
-    </div>
-  {% endif %}
-  <div id="recent-pastes">
-  {% if pastes %}
-    <h1>Your Most Recent Pastes</h1>
-    {% for paste in pastes %}
-      {{ paste }}
-    {% endfor %}
-  {% else %}
+<section class='meta'>
+{% if not user.parent_set_set.all.count %}
+    <section class='yellow-box '>
+        <p>
+            <strong>Paste</strong> is a simple way to <strong>share snippets and pastes</strong> with others. 
+            All pastes are git repositories, so they are automatically <strong>versioned</strong> and
+            <strong>forkable</strong>.
+        </p>
+        <p>
+            <a href='https://github.com/justinvh/gitpaste'>Fork GitPaste on GitHub and improve it.</a>
+        </p>
+    </section>
+{% endif %}
+    <section class='paste-list'>
     {% if user.is_authenticated %}
-      {% if not user.set_set.all.count %}
-        <h1>Hey!</h1>
-        <p>You have not created any pastes, but you will eventually.</p>
-      {% else %}
-        <h1>Your Last 10 Contributions</h1>
-        {% for set in user.set_set.all|slice:":10" %}
-        <div>
-            <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
-          <br>
-          {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}
-          {% with set.commit_set.latest as latest %}
-            <span class='date' title='{{ latest.created|localtime }}'>
-              {{ latest.created|elapsed }} by 
-              {% if latest.owner == user %}
-                you.
-              {% else %}
-                {% if not latest.owner %}
-                  Anonymous.
-                {% else %}
-                  {{ latest.email }}.
-                {% endif %}
-              {% endif %}
-            </span>
-          {% endwith %}
-        </div>
-        {% endfor %}
-      {% endif %}
+        {% if not user.set_set.all.count %}
+            <h1>Hey!</h1>
+            <p>You have not created any pastes, but you will eventually.</p>
+        {% else %}
+            <h1>Your Most Recent Contributions</h1>
+            {% for set in user.set_set.all|slice:":10" %}
+            <div>
+                <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
+            </div>
+            <div>
+                {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}
+                {% with set.commit_set.latest as latest %}
+                <time datetime='{{ latest.created|timetag }}' title='{{ latest.created|localtime }}'> {{ latest.created|elapsed }} by 
+                    {% if latest.owner == user %}
+                    you.
+                    {% else %}
+                        {% if not latest.owner %}
+                        Anonymous.
+                        {% else %}
+                        {{ latest.email }}.
+                        {% endif %}
+                    {% endif %}
+                </time>
+                {% endwith %}
+            </div>
+            {% endfor %}
+        {% endif %}
     {% else %}
-      <h1>Hey, you're anonymous.</h1>
-      <p>You should <a href='{% url login %}'>login</a> or 
-      <a href='{% url register %}'>register</a> to organize your pastes.</p>
+        <h1>Hey, you're anonymous.</h1>
+        <p>You should <a href='{% url login %}'>login</a> or <a href='{% url register %}'>register</a> to organize your pastes.</p>
     {% endif %}
-  {% endif %}
-  </div>
-</div>
+    </section>
+</section>
 <div id='pastes'>
-  <form method='POST' id='paste-form'>
-    <div class='entryless entry-header'>
-      {% if user.is_authenticated %}
-        <div class='anonymous'>
-          <label>Remain Anonymous?</label>
-            {{ commit_meta_form.anonymous }}
-        </div>
-      {% endif %}
-      <div class='description'>
-        <div>
-          {% if not editing %}
-            <span class='tiny gray'>Hint: You can reorder your pastes. Drag them around!</span>
-          {% else %}
-            <strong>Updating Paste</strong>
-            <span class='tiny gray'>Hint: You can reorder your pastes. Drag them around!</span>
-          {% endif %}
-          {% if set_meta_form %}
-            {{ set_form.description }}
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    <ul id='sortable'>
-      {% for form in forms %}
-        <li>
-          <div class='entry'>
-            <div class='file'>
-              <div>
-                <div class='language'>
-                  <label>Language:</label>
-                  {{ form.language }}
+    <form method='POST' id='paste-form'>
+        <div class='entryless entry-header'>
+        {% if user.is_authenticated %}
+            <div class='anonymous'>
+                <label>Remain Anonymous?</label>
+                {{ commit_meta_form.anonymous }}
+            </div>
+        {% endif %}
+            <div class='description'>
+                <div>
+                {% if set_meta_form %}
+                    {{ set_form.description }}
+                {% endif %}
                 </div>
-                {{ form.filename }}
-              </div>
             </div>
-            <div class='priority hidden'>
-              {{ form.priority }}
+        </div>
+        <ul id='sortable'>
+        {% for form in forms %}
+            <li>
+                <div class='entry'>
+                    <div class='file'>
+                        <div>
+                            <div class='language'>
+                                <label>Language:</label>
+                                {{ form.language }}
+                            </div>
+                            {{ form.filename }}
+                        </div>
+                    </div>
+                    <div class='priority hidden'>
+                        {{ form.priority }}
+                    </div>
+                    <div class='paste'>
+                        <div>
+                            {{ form.paste }}
+                        </div>
+                    </div>
+                </div>
+                <div class='clear'></div>
+            </li>
+        {% endfor %}
+        </ul>
+        <div class='submit'>
+            <div class="submit-options">
+                <span class="submit-options-private">
+                    <label>Anyone can edit:</label>
+                    {% if not set_form %}
+                        {% if set_meta_form.anyone_can_edit.value %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    {% else %}
+                        {{ set_meta_form.anyone_can_edit }}
+                    {% endif %}
+                </span>
+                <span class="submit-options-private">
+                    <label>Private:</label>
+                {% if not set_form %}
+                    {% if set_meta_form.private.value %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                {% else %}
+                    {{ set_meta_form.private }}
+                {% endif %}
+                </span>
+                <span class="submit-options-expires">
+                    <label>Expires:</label>
+                {% if editing %}
+                    {% if not set_meta_form.expires.value %}
+                        Never
+                    {% else %}
+                        {{ expires_time|date:"f A F j, Y" }}
+                    {% endif %}
+                {% else %}
+                    {{ set_meta_form.expires }}
+                {% endif %}
+                </span>
+            {% if editing %}
+                <input class='submit' type='submit' value='Submit Changeset'>
+            {% else %}
+                <input class='submit' type='submit' value='Create Paste'>
+            {% endif %}
             </div>
-            <div class='paste'>
-              <div>
-                  {{ form.paste }}
-              </div>
-            </div>
-          </div>
-          <div class='clear'></div>
-        </li>
-      {% endfor %}
-    </ul>
-
-    <div class='submit'>
-      <div class="submit-options">
-        <span class="submit-options-private">
-          <label>Anyone can edit:</label>
-          {% if not set_form %}
-            {% if set_meta_form.anyone_can_edit.value %}
-              Yes
-            {% else %}
-              No
-            {% endif %}
-          {% else %}
-            {{ set_meta_form.anyone_can_edit }}
-          {% endif %}
-        </span>
-        <span class="submit-options-private">
-          <label>Private:</label>
-          {% if not set_form %}
-            {% if set_meta_form.private.value %}
-              Yes
-            {% else %}
-              No
-            {% endif %}
-          {% else %}
-            {{ set_meta_form.private }}
-          {% endif %}
-        </span>
-        <span class="submit-options-expires">
-        <label>Expires:</label>
-          {% if editing %}
-            {% if not set_meta_form.expires.value %}
-              Never
-            {% else %}
-              {{ expires_time|date:"f A F j, Y" }}
-            {% endif %}
-          {% else %}
-            {{ set_meta_form.expires }}
-          {% endif %}
-          {% if editing %}
-            <input class='submit' type='submit' value='Submit Changeset'>
-          {% else %}
-            <input class='submit' type='submit' value='Create Paste'>
-          {% endif %}
-        </span>
-      </div>
-    </div>
-
-  {% csrf_token %}
-  {{ forms.management_form }}
-  </form>
+        </div>
+    {% csrf_token %}
+    {{ forms.management_form }}
+    </form>
 </div>
 <script src='{{ STATIC_URL }}/js/paste.js'></script>
 {% endblock %}

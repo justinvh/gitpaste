@@ -74,7 +74,7 @@ class SetMetaForm(forms.Form):
 class SetForm(forms.Form):
     description = forms.CharField(max_length=256, required=False,
             widget=forms.widgets.TextInput(attrs={
-                'default': 'add a paste description...'
+                'placeholder': 'add a paste description...'
             }))
 
     def clean_description(self):
@@ -90,7 +90,7 @@ class PasteForm(forms.Form):
     priority = forms.IntegerField(initial=0)
     filename = forms.CharField(max_length=256, required=False,
             widget=forms.widgets.TextInput(attrs={
-                'default': 'add a file name...',
+                'placeholder': 'add a file name...',
                 'class': 'filename'
             }))
 

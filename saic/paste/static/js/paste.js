@@ -1,14 +1,14 @@
 $(document).ready(function (doc) {
     $("input").live("focus", function (e) {
         var $this = $(this);
-        if ($this.val() == $this.attr('default')) {
+        if ($this.val() == $this.attr('placeholder')) {
             $this.removeClass('default-input');
             $this.val('');
         }
     }).live("blur", function (e) {
         var $this = $(this);
         if ($this.val() == "") {
-            $this.val($this.attr('default'));
+            $this.val($this.attr('placeholder'));
             $this.addClass('default-input');
         }
     });
@@ -84,6 +84,12 @@ $(document).ready(function (doc) {
 
     $('#sortable').sortable({
         'items': 'li',
+        'start': function (event, ui) {
+            $(this).addClass('sorting');
+        },
+        'stop': function (event, ui) {
+            $(this).removeClass('sorting');
+        },
         'update': function () {
             update_order();
         }
