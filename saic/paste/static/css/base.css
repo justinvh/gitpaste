@@ -166,7 +166,6 @@ div.submit_options > select {
     font-size: 14px;
     background-color: #FAFAFA;
     color: #444;
-    border-radius: 5px;
     padding: 3px;
 }
 
@@ -189,13 +188,11 @@ div.entry textarea {
     font-size: 15px;
     background-color: #FAFAFA;
     color: #000 !important;
-    border-radius: 5px;
     padding: 0;
 }
 
 div.submit {
     position: relative;
-    width: 95%;
     margin: 5px auto;
     color: #444;
     font-size: 15px;
