@@ -17,7 +17,7 @@ from pygments.lexers import *
 
 import git
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -777,3 +777,13 @@ def set_timezone(request):
     else:
         return render(request, 'template.html', {'timezones': pytz.common_timezones})
 
+
+def paste_embed(request, pk, private_key=None):
+    theme = request.GET.get('theme', 'tango')
+    filtering = {'pk': pk}
+    paste = get_object_or_404(Paste, **filtering)
+    if (paste.revision.parent_set.private and 
+            paste.revision.parent_set.private_key != private_key):
+        raise Http404
+    return render_to_response('embed.html',
+            {'paste': paste, 'theme': theme}, RequestContext(request))

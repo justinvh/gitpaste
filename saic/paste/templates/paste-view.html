@@ -152,7 +152,8 @@ gitpaste.com - anonymous paste
       </div>
       <div class='file'>
         <div class='file-download'>
-        <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}?download=true'>download</a>
+            <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}?download=true'>download</a>
+            <a title='Embedding it.' href='{% url paste_embed pk=paste.pk private_key=paste_set.active_private_key %}'>embed</a>
         </div>
         <div id='file-{{ paste.pk }}'>
           {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>
