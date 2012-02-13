@@ -30,6 +30,10 @@
     <div class='register'>
       <input type='submit' value='Login'>
     </div>
+    <div>
+        <br>
+        {{ form.non_field_errors }}
+    </div>
     {% csrf_token %}
   </form>
 </div>

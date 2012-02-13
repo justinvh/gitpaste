@@ -2,6 +2,7 @@ from django.conf.urls.defaults import patterns, include, url
 from django.views.generic.simple import redirect_to
 
 urlpatterns = patterns('saic.paste.views',
+    url(r'^live/$', 'live_paste', name='live_paste'),
     url(r'^(?P<pk>\d+)/$', redirect_to, {'url': '/paste/%(pk)s/'}),
     url(r'^(?P<pk>\d+)/(?P<private_key>[a-zA-Z0-9]+)?/?$', redirect_to, {'url': '/paste/%(pk)s/%(private_key)s/'}),
     url(r'^owner/anonymous/', 'user_pastes', name='anon_pastes'),

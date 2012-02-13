@@ -50,6 +50,11 @@ div.clear {
     position: relative;
 }
 
+#pastes-live {
+    width: 100%;
+    position: relative;
+}
+
 .meta {
     width: 32%;
     float: right;
@@ -129,6 +134,7 @@ div.clear + div.entry {
     margin-top: 10px;
 }
 
+div.stream,
 div.anonymous,
 div.file,
 div.description {
@@ -171,6 +177,10 @@ div.submit_options > select {
 
 div.description input {
     width: 99%;
+}
+
+div.stream input {
+  width: 99%;
 }
 
 div.entry input:focus {
@@ -227,13 +237,19 @@ h1 {
     font-family: 'Open Sans', sans-serif;
 }
 
+.unlink,
 .link,
 a {
     color: #4183C4;
     font-weight: bold;
     cursor: pointer;
     text-decoration: none;
+}
 
+
+.unlink {
+    text-decoration: none;
+    cursor: inherit;
 }
 
 .link:hover,

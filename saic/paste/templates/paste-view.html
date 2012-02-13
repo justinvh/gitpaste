@@ -80,9 +80,9 @@ gitpaste.com - anonymous paste
       {% if user.is_authenticated %}
       <span favorite={{ favorited }} id='favorite-toggle'>
         {% if favorited %}
-          <img align='left' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
+          <img title='Click to remove this post from your favorites' align='left' alt='favorite' height='32px' src='{{ STATIC_URL }}/img/favorite.png'>
         {% else %}
-          <img align='left' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
+          <img title='Click to favorite this post' align='left' alt='not-favorite' height='32px' src='{{ STATIC_URL }}/img/not-favorite.png'>
         {% endif %}
         </span>
       {% endif %}
@@ -99,14 +99,22 @@ gitpaste.com - anonymous paste
       <span class="paste-actions">
       {% if editable %}
           <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>edit</a>
+      {% else %}
+          <span title='This paste is not editable' class='unlink gray'>edit</span>
       {% endif %}
+      {% if user.is_authenticated %}
         <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>fork</a>
+      {% else %}
+      <span title='Login to fork' class='unlink gray'>fork</span>
+      {% endif %}
       {% if user.is_authenticated and not commit_current.owner %}
           <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk private_key=paste_set.active_private_key %}'>adopt</a>
       {% endif %}
       <a title='Download paste' href='{% url commit_download pk=commit_current.pk private_key=paste_set.active_private_key %}'>download</a>
       {% if commit_current.diff %}
         <span id='diff-toggle' class='link' title='You are not to blame'>diff</span>
+      {% else %}
+        <span class='gray unlink' title='No diff available'>diff</span>
       {% endif %}
       </span>
     </span>

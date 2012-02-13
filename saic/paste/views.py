@@ -545,6 +545,7 @@ def paste_favorite(request, pk, paste_set, private_key=None):
     return HttpResponse()
 
 
+@login_required
 @private(Set)
 def paste_fork(request, pk, paste_set, private_key=None):
     # Create the new repository
@@ -555,9 +556,7 @@ def paste_fork(request, pk, paste_set, private_key=None):
     os.mkdir(repo_dir)
 
     # Set the new owner
-    owner = None
-    if request.user.is_authenticated():
-        owner = request.user
+    owner = request.user
 
     # A requested commit allows us to navigate in history
     requested_commit = request.GET.get('commit')
@@ -787,3 +786,188 @@ def paste_embed(request, pk, private_key=None):
         raise Http404
     return render_to_response('embed.html',
             {'paste': paste, 'theme': theme}, RequestContext(request))
+
+def live_paste(request):
+    commit_kwargs = {}
+    if request.user.is_authenticated():
+        commit_kwargs = {
+                'anonymous': request.user.preference.default_anonymous
+        }
+    if request.method != 'POST':
+        return render_to_response('live.html', {
+            'forms': PasteSet(),
+            'set_form': SetForm(),
+            'commit_meta_form': CommitMetaForm(initial=commit_kwargs),
+            'set_meta_form': SetMetaForm(),
+        }, RequestContext(request))
+
+    paste_forms = PasteSet(request.POST)
+    set_form = SetForm(request.POST)
+    commit_meta_form = CommitMetaForm(request.POST, initial=commit_kwargs)
+    set_meta_form = SetMetaForm(request.POST)
+
+    if (not paste_forms.is_valid() or
+            not set_form.is_valid() or
+            not commit_meta_form.is_valid() or
+            not set_meta_form.is_valid()):
+        return render_to_response('live.html', {
+            'forms': paste_forms,
+            'set_form': set_form,
+            'commit_meta_form': commit_meta_form,
+            'set_meta_form': set_meta_form,
+        }, RequestContext(request))
+
+    # Repositories are just a random sequence of letters and digits
+    # We store the reference repository for editing the pastes.
+    repo_dir = os.sep.join([
+        settings.REPO_DIR,
+        "".join(random.sample(string.letters + string.digits, 15))
+    ])
+
+    anonymous = commit_meta_form.cleaned_data.get('anonymous')
+
+    os.mkdir(repo_dir)
+
+    owner = None
+    if request.user.is_authenticated() and not anonymous:
+        owner = request.user
+
+    description = set_form.cleaned_data.get('description')
+    private = set_meta_form.cleaned_data.get('private')
+    allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
+
+    # Calculate expiration time of set if necessary
+    exp_option = set_meta_form.cleaned_data.get('expires')
+    exp_map = {
+        'day'   : timedelta(days=1),
+        'hour'  : timedelta(hours=1),
+        'month' : timedelta(365/12),
+    }
+    exp_time = datetime.utcnow() + exp_map[exp_option] if exp_option in exp_map else None
+
+    # Generate a random hash for private access (20-30 characters from letters & numbers)
+    private_key = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(random.randrange(20,30)))
+
+    # Create a new paste set so we can reference our paste.
+    paste_set = Set.objects.create(
+            views=0,
+            repo=repo_dir,
+            owner=owner,
+            description=description,
+            private=private,
+            anyone_can_edit=allow_edits,
+            private_key=private_key,
+            expires=exp_time,
+    )
+
+    # Yes, this is horrible. I know. But there is a bug with Python Git.
+    # See: https://github.com/gitpython-developers/GitPython/issues/39
+    os.environ['USER'] = "Anonymous"
+    if owner:
+        os.environ['USER'] = owner.username
+
+    # Initialize a commit, git repository, and pull the current index.
+    commit = Commit.objects.create(
+            views=0,
+            parent_set=paste_set,
+            commit='',
+            owner=owner
+    )
+
+    git_repo = git.Repo.init(repo_dir)
+    index = git_repo.index
+
+    # We enumerate over the forms so we can have a way to reference
+    # the line numbers in a unique way relevant to the pastes.
+    priority_filename = os.sep.join([repo_dir, 'priority.txt'])
+    priority_file = open(priority_filename, 'w')
+    for form_index, form in enumerate(paste_forms):
+        data = form.cleaned_data
+        filename = data['filename']
+        language_lex, language = data['language'].split(';')
+        paste = data['paste']
+
+        # If we don't specify a filename, then obviously it is lonely
+        if not len(filename):
+            filename = 'paste'
+
+        # Construct a more logical filename for our commit
+        filename_base, ext = os.path.splitext(filename)
+        filename_slugify = slugify(filename[:len(ext)])
+        filename_absolute = os.sep.join([
+            repo_dir,
+            filename
+        ])
+        filename_absolute += ext
+        filename_abs_base, ext = os.path.splitext(filename_absolute)
+
+        # If no extension was specified in the file, then we can append
+        # the extension from the lexer.
+        if not len(ext):
+            filename_absolute += language
+            filename += language
+            ext = language
+
+        # Gists doesn't allow for the same filename, we do.
+        # Just append a number to the filename and call it good.
+        i = 1
+        while os.path.exists(filename_absolute):
+            filename_absolute = '%s-%d%s' % (filename_abs_base, i, ext)
+            filename = '%s-%d%s' % (filename_base, i, ext)
+            i += 1
+
+        cleaned = []
+        paste = paste.encode('UTF-8')
+        for line in paste.split('\n'):
+            line = line.rstrip()
+            cleaned.append(line)
+        paste = '\n'.join(cleaned)
+
+        # Open the file, write the paste, call it good.
+        f = open(filename_absolute, "w")
+        f.write(paste)
+        f.close()
+        priority_file.write('%s: %s\n' % (filename, data['priority']))
+        paste = smart_unicode(paste)
+
+        # This is a bit nasty and a get_by_ext something exist in pygments.
+        # However, globals() is just much more fun.
+        lex = globals()[language_lex]
+        paste_formatted = highlight(
+                paste,
+                lex(),
+                HtmlFormatter(
+                    style='friendly',
+                    linenos='table',
+                    lineanchors='line-%s' % form_index,
+                    anchorlinenos=True)
+        )
+
+        # Add the file to the index and create the paste
+        index.add([filename_absolute])
+        p = Paste.objects.create(
+                filename=filename,
+                absolute_path=filename_absolute,
+                paste=paste,
+                priority=data['priority'],
+                paste_formatted=paste_formatted,
+                language=data['language'],
+                revision=commit
+        )
+
+    # Add a priority file
+    priority_file.close()
+    index.add([priority_filename])
+
+    # Create the commit from the index
+    new_commit = index.commit('Initial paste.')
+    commit.commit = new_commit
+
+    commit.save()
+
+    if not paste_set.private:
+        return redirect('paste_view', pk=paste_set.pk)
+    else:
+        return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
+
+    return render_to_response('live.html')

@@ -159,3 +159,10 @@ div.entry-header img.gravatar-community {
     border-bottom-left-radius: 5px;
     border-top-left-radius: 5px;
 }
+
+.paste-actions a,
+.paste-actions span {
+    margin-left: 5px;
+}
+
+
