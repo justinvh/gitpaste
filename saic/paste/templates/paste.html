@@ -35,6 +35,7 @@
             <p>You have not created any pastes, but you will eventually.</p>
         {% else %}
             <h1>Your Most Recent Contributions</h1>
+            <div class='pastes'>
             {% for set in user.set_set.all|slice:":10" %}
             <div>
                 <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
@@ -56,6 +57,7 @@
                 {% endwith %}
             </div>
             {% endfor %}
+            </div>
         {% endif %}
     {% else %}
         <h1>Hey, you're anonymous.</h1>

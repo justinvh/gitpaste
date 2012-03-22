@@ -32,6 +32,11 @@ div.entry-header {
   width: 90%;
 }
 
+.paste-list .pastes {
+  height: 265px;
+  overflow: auto;
+}
+
 .paste-list > div:nth-child(odd) { 
   margin-bottom: 5px;
   border-bottom: 1px solid #EFEFEF;

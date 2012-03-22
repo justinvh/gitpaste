@@ -1,3 +1,7 @@
+html {
+    -webkit-font-smoothing: antialiased;
+}
+
 div.highlight {
     background-color: #FFF;
     border-radius: 5px;
