@@ -624,10 +624,10 @@ def favorites(request):
 
 
 def user_pastes(request, owner=None):
-    set_list = Set.objects.filter(owner=owner)
+    set_list = Set.objects.filter(owner=owner) if owner != 'all' else Set.objects
 
     user = None
-    if owner:
+    if owner is not None and owner.isnumeric():
         user = User.objects.get(pk=owner)
     if owner == None or request.user.id == None or request.user.pk != user.pk:
         set_list = set_list.exclude(private=True)
@@ -646,7 +646,8 @@ def user_pastes(request, owner=None):
         sets = paginator.page(paginator.num_pages)
 
     return render_to_response('user-pastes.html',
-            {'sets': sets, 'count': count, 'owner': user}, RequestContext(request))
+                              {'sets': sets, 'count': count, 'owner': user,
+                               'all': owner == 'all'}, RequestContext(request))
 
 
 def users(request):
