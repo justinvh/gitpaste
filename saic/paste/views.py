@@ -175,79 +175,13 @@ def paste(request):
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
     priority_filename = os.sep.join([repo_dir, 'priority.txt'])
-    priority_file = open(priority_filename, 'w')
-    for form_index, form in enumerate(paste_forms):
-        data = form.cleaned_data
-        filename = data['filename']
-        language_lex, language = data['language'].split(';')
-        paste = data['paste']
+    with open(priority_filename, 'w') as priority_file:
+        for form_index, form in enumerate(paste_forms):
+            priority_file.write('%s: %s\n' % process_pasted_file(form_index,
+                                                                 form,
+                                                                 repo_dir,
+                                                                 index, commit))
 
-        # If we don't specify a filename, then obviously it is lonely
-        if not len(filename):
-            filename = 'paste'
-
-        # Construct a more logical filename for our commit
-        filename_base, ext = os.path.splitext(filename)
-        filename_slugify = slugify(filename_base)
-        filename_abs_base = os.sep.join((repo_dir, filename_slugify))
-        filename_absolute = filename_abs_base + ext
-
-        # If no extension was specified in the file, then we can append
-        # the extension from the lexer.
-        if not len(ext):
-            filename_absolute += language
-            filename += language
-            ext = language
-
-        # Gists doesn't allow for the same filename, we do.
-        # Just append a number to the filename and call it good.
-        i = 1
-        while os.path.exists(filename_absolute):
-            filename_absolute = '%s-%d%s' % (filename_abs_base, i, ext)
-            filename = '%s-%d%s' % (filename_base, i, ext)
-            i += 1
-
-        cleaned = []
-        paste = paste.encode('UTF-8')
-        for line in paste.split('\n'):
-            line = line.rstrip()
-            cleaned.append(line)
-        paste = '\n'.join(cleaned)
-
-        # Open the file, write the paste, call it good.
-        with open(filename_absolute, "w") as f:
-            f.write(paste)
-
-        priority_file.write('%s: %s\n' % (filename, data['priority']))
-        paste = smart_unicode(paste)
-
-        # This is a bit nasty and a get_by_ext something exist in pygments.
-        # However, globals() is just much more fun.
-        lex = globals()[language_lex]
-        paste_formatted = highlight(
-                paste,
-                lex(),
-                HtmlFormatter(
-                    style='friendly',
-                    linenos='table',
-                    lineanchors='line-%s' % form_index,
-                    anchorlinenos=True)
-        )
-
-        # Add the file to the index and create the paste
-        index.add([filename_absolute])
-        p = Paste.objects.create(
-                filename=filename,
-                absolute_path=filename_absolute,
-                paste=paste,
-                priority=data['priority'],
-                paste_formatted=paste_formatted,
-                language=data['language'],
-                revision=commit
-        )
-
-    # Add a priority file
-    priority_file.close()
     index.add([priority_filename])
 
     # Create the commit from the index
@@ -314,6 +248,67 @@ def paste_view(request, pk, paste_set, private_key=None):
         'comment_form': comment_form,
     }, RequestContext(request))
 
+def process_pasted_file(form_index, form, repo_dir, index, commit):
+    data = form.cleaned_data
+    filename = data['filename']
+    language_lex, language = data['language'].split(';')
+    paste = data['paste']
+
+    # If we don't specify a filename, then obviously it is lonely
+    if not len(filename):
+        filename = 'paste'
+
+    # Construct a more logical filename for our commit
+    filename_base, ext = os.path.splitext(filename)
+    filename_slugify = slugify(filename_base)
+    filename_abs_base = os.sep.join((repo_dir, filename_slugify))
+    filename_absolute = filename_abs_base + ext
+
+    # If no extension was specified in the file, then we can append
+    # the extension from the lexer.
+    if not len(ext):
+        filename_absolute += language
+        filename += language
+        ext = language
+
+    if os.path.exists(filename_absolute):
+        filename_absolute = \
+                get_first_nonexistent_filename(filename_abs_base + '-%d' + ext)
+        filename = os.path.basename(filename_absolute)
+
+    paste = '\n'.join((line.rstrip()
+                       for line in smart_unicode(paste).splitlines()))
+
+    # Open the file, write the paste, call it good.
+    with open(filename_absolute, "w") as f:
+        f.write(paste)
+
+    # This is a bit nasty and a get_by_ext something exist in pygments.
+    # However, globals() is just much more fun.
+    lex = globals()[language_lex]
+    paste_formatted = highlight(
+            paste,
+            lex(),
+            HtmlFormatter(
+                style='friendly',
+                linenos='table',
+                lineanchors='line-%s' % form_index,
+                anchorlinenos=True)
+    )
+
+    # Add the file to the index and create the paste
+    index.add([filename_absolute])
+    p = Paste.objects.create(
+            filename=filename,
+            absolute_path=filename_absolute,
+            paste=paste,
+            priority=data['priority'],
+            paste_formatted=paste_formatted,
+            language=data['language'],
+            revision=commit
+    )
+
+    return (filename, data['priority'])
 
 @private(Set)
 def paste_edit(request, pk, paste_set, private_key=None):
@@ -425,85 +420,13 @@ def paste_edit(request, pk, paste_set, private_key=None):
     # the line numbers in a unique way relevant to the pastes.
     form_files = []
     priority_filename = os.sep.join([repo_dir, 'priority.txt'])
-    priority_file = open(priority_filename, 'w')
-    for form_index, form in enumerate(forms):
-        data = form.cleaned_data
-        filename = data['filename']
-        language_lex, language = data['language'].split(';')
-        paste = data['paste']
+    with open(priority_filename, 'w') as priority_file:
+        for form_index, form in enumerate(forms):
+            filename, priority = process_pasted_file(form_index, form,
+                                                     repo_dir, index, commit)
 
-        # If we don't specify a filename, then obviously it is lonely
-        no_filename = False
-        if not len(filename):
-            no_filename = True
-            filename = 'paste'
-
-        # Construct a more logical filename for our commit
-        filename_base, ext = os.path.splitext(filename)
-        filename_slugify = slugify(filename[:len(ext)])
-        filename_absolute = os.sep.join([
-            repo_dir,
-            filename
-        ])
-        filename_absolute += ext
-        filename_abs_base, ext = os.path.splitext(filename_absolute)
-
-        # If no extension was specified in the file, then we can append
-        # the extension from the lexer.
-        if not len(ext):
-            filename_absolute += language
-            filename += language
-            ext = language
-
-        # Gists doesn't allow for the same filename, we do.
-        # Just append a number to the filename and call it good.
-        i = 1
-        if no_filename:
-            while os.path.exists(filename_absolute):
-                filename_absolute = '%s-%d%s' % (filename_abs_base, i, ext)
-                filename = '%s-%d%s'(filename_base, i, ext)
-                i += 1
-
-        form_files.append(os.path.basename(filename_absolute))
-
-        cleaned = []
-        paste = paste.encode('UTF-8')
-        for line in paste.split('\n'):
-            line = line.rstrip()
-            cleaned.append(line)
-        paste = '\n'.join(cleaned)
-
-        # Open the file, write the paste, call it good.
-        f = open(filename_absolute, "w")
-        f.write(paste)
-        f.close()
-        priority_file.write('%s: %s\n' % (filename, data['priority']))
-
-        # This is a bit nasty and a get_by_ext something exist in pygments.
-        # However, globals() is just much more fun.
-        paste = smart_unicode(paste)
-        lex = globals()[language_lex]
-        paste_formatted = highlight(
-                paste,
-                lex(),
-                HtmlFormatter(
-                    style='friendly',
-                    linenos='table',
-                    lineanchors='line-%s' % form_index,
-                    anchorlinenos=True)
-        )
-
-        # Add the file to the index and create the paste
-        index.add([filename_absolute])
-        p = Paste.objects.create(
-                filename=filename,
-                absolute_path=filename_absolute,
-                paste=paste,
-                priority=data['priority'],
-                paste_formatted=paste_formatted,
-                language=data['language'],
-                revision=commit
-        )
+            form_files.append(filename)
+            priority_file.write('%s: %s\n' % (filename, 'priority'))
 
     # Create the commit from the index
     intersected = set(form_files).intersection(previous_files)
@@ -513,7 +436,6 @@ def paste_edit(request, pk, paste_set, private_key=None):
             repo_dir,
             f
         ])])
-    priority_file.close()
     index.add([priority_filename])
     new_commit = index.commit('Modified.')
     commit.commit = new_commit
