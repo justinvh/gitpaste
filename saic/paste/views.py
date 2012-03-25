@@ -98,10 +98,10 @@ def paste(request):
     commit_meta_form = CommitMetaForm(request.POST, initial=commit_kwargs)
     set_meta_form = SetMetaForm(request.POST)
 
-    if (not paste_forms.is_valid() or
-            not set_form.is_valid() or
-            not commit_meta_form.is_valid() or
-            not set_meta_form.is_valid()):
+    if not (paste_forms.is_valid() and
+            set_form.is_valid() and
+            commit_meta_form.is_valid() and
+            set_meta_form.is_valid()):
         return render_to_response('paste.html', {
             'forms': paste_forms,
             'set_form': set_form,
