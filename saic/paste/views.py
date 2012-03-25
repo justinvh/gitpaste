@@ -79,6 +79,18 @@ def _git_diff(git_commit_object, repo):
         return None
 
 
+def dirname_from_description(description):
+    return '/'.join((settings.REPO_DIR,
+                     str(description).replace(' ', '_').translate(
+                         None, string.maketrans('', '').translate(
+                             None, string.digits + string.ascii_letters + '_'))))
+
+def get_owner(commit_data, user):
+    if user.is_authenticated() and not commit_data.get('anonymous'):
+        return request.user
+    else:
+        return None
+
 def paste(request):
     commit_kwargs = {}
     if request.user.is_authenticated():
@@ -109,24 +121,14 @@ def paste(request):
             'set_meta_form': set_meta_form,
         }, RequestContext(request))
 
-    # Repositories are just a random sequence of letters and digits
-    # We store the reference repository for editing the pastes.
-    repo_dir = os.sep.join([
-        settings.REPO_DIR,
-        "".join(random.sample(string.letters + string.digits, 15))
-    ])
-
-    anonymous = commit_meta_form.cleaned_data.get('anonymous')
-
-    os.mkdir(repo_dir)
-
-    owner = None
-    if request.user.is_authenticated() and not anonymous:
-        owner = request.user
-
+    owner       = get_owner(commit_meta_form.cleaned_data, request.user)
     description = set_form.cleaned_data.get('description')
-    private = set_meta_form.cleaned_data.get('private')
+    private     = set_meta_form.cleaned_data.get('private')
     allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
+
+    repo_dir = dirname_from_description(description)
+    if os.path.isdir(repo_dir):
+        os.mkdir(repo_dir)
 
     # Calculate expiration time of set if necessary
     exp_option = set_meta_form.cleaned_data.get('expires')
@@ -138,7 +140,8 @@ def paste(request):
     exp_time = datetime.utcnow() + exp_map[exp_option] if exp_option in exp_map else None
 
     # Generate a random hash for private access (20-30 characters from letters & numbers)
-    private_key = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(random.randrange(20,30)))
+    private_key = ''.join(random.sample(string.ascii_letters + string.digits,
+                                    random.randrange(20,30)))
 
     # Create a new paste set so we can reference our paste.
     paste_set = Set.objects.create(
