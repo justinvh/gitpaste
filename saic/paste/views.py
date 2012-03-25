@@ -80,10 +80,8 @@ def _git_diff(git_commit_object, repo):
 
 
 def dirname_from_description(description):
-    return '/'.join((settings.REPO_DIR,
-                     str(description).replace(' ', '_').translate(
-                         None, string.maketrans('', '').translate(
-                             None, string.digits + string.ascii_letters + '_'))))
+    return os.sep.join((settings.REPO_DIR, slugify(description)))
+
 
 def get_owner(commit_data, user):
     if user.is_authenticated() and not commit_data.get('anonymous'):
