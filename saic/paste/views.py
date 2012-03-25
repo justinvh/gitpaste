@@ -213,9 +213,9 @@ def paste(request):
         paste = '\n'.join(cleaned)
 
         # Open the file, write the paste, call it good.
-        f = open(filename_absolute, "w")
-        f.write(paste)
-        f.close()
+        with open(filename_absolute, "w") as f:
+            f.write(paste)
+
         priority_file.write('%s: %s\n' % (filename, data['priority']))
         paste = smart_unicode(paste)
 
@@ -251,13 +251,12 @@ def paste(request):
     # Create the commit from the index
     new_commit = index.commit('Initial paste.')
     commit.commit = new_commit
-
     commit.save()
 
-    if not paste_set.private:
-        return redirect('paste_view', pk=paste_set.pk)
-    else:
+    if paste_set.private:
         return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
+    else:
+        return redirect('paste_view', pk=paste_set.pk)
 
 
 @private(Set)
