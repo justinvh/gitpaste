@@ -312,7 +312,7 @@ def paste_view(request, pk, paste_set, private_key=None):
         'pastes': commit.paste_set.all(),
         'commit_current': commit,
         'favorited': favorited,
-        'editable': editable, 
+        'editable': editable,
         'comment_form': comment_form,
     }, RequestContext(request))
 
@@ -343,7 +343,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
     initial_set_meta = {
         'private': paste_set.private,
         'expires': paste_set.expires or "never",
-        'anyone_can_edit': paste_set.anyone_can_edit 
+        'anyone_can_edit': paste_set.anyone_can_edit
     }
 
     #TODO: turn this into a template tag and allow template to do conversion
@@ -438,7 +438,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
         no_filename = False
         if not len(filename):
             no_filename = True
-            filename = 'paste' 
+            filename = 'paste'
 
         # Construct a more logical filename for our commit
         filename_base, ext = os.path.splitext(filename)
@@ -515,7 +515,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
             repo_dir,
             f
         ])])
-    priority_file.close() 
+    priority_file.close()
     index.add([priority_filename])
     new_commit = index.commit('Modified.')
     commit.commit = new_commit
@@ -640,7 +640,7 @@ def commit_download(request, pk, commit, private_key=None):
     description = commit.parent_set.description
     filename = 'paste %s %s %s' % (commit.email, description, commit.short)
     filename = slugify(filename)
-    return send_zipfile(git_repo.git.archive(sha1, format='zip'), filename) 
+    return send_zipfile(git_repo.git.archive(sha1, format='zip'), filename)
 
 
 def register(request):
@@ -782,7 +782,7 @@ def paste_embed(request, pk, private_key=None):
     theme = request.GET.get('theme', 'tango')
     filtering = {'pk': pk}
     paste = get_object_or_404(Paste, **filtering)
-    if (paste.revision.parent_set.private and 
+    if (paste.revision.parent_set.private and
             paste.revision.parent_set.private_key != private_key):
         raise Http404
     return render_to_response('embed.html',
