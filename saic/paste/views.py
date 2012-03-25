@@ -540,20 +540,23 @@ def paste_favorite(request, pk, paste_set, private_key=None):
         Favorite.objects.create(parent_set=paste_set, user=request.user)
     return HttpResponse()
 
+def get_first_nonexistent_filename(format_string):
+    i = 1
+    while os.path.exists(format_string % i):
+        i+=1
+    return format_string % i
+
 
 @private(Set)
 def paste_fork(request, pk, paste_set, private_key=None):
-    # Create the new repository
-    repo_dir = os.sep.join([
-        settings.REPO_DIR,
-        "".join(random.sample(string.letters + string.digits, 15))
-    ])
-    os.mkdir(repo_dir)
+    owner = request.user if request.user.is_authenticated() else None
 
-    # Set the new owner
-    owner = None
-    if request.user.is_authenticated():
-        owner = request.user
+    repo_dir = get_first_nonexistent_filename(
+        '%s-%s' % (dirname_from_description(paste_set.description),
+                   owner.username if owner else 'anon' ) + '-%d')
+
+    if os.path.isdir(repo_dir):
+        os.mkdir(repo_dir)
 
     # A requested commit allows us to navigate in history
     requested_commit = request.GET.get('commit')
