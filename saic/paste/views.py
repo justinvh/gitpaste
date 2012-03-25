@@ -186,13 +186,9 @@ def paste(request):
 
         # Construct a more logical filename for our commit
         filename_base, ext = os.path.splitext(filename)
-        filename_slugify = slugify(filename[:len(ext)])
-        filename_absolute = os.sep.join([
-            repo_dir,
-            filename
-        ])
-        filename_absolute += ext
-        filename_abs_base, ext = os.path.splitext(filename_absolute)
+        filename_slugify = slugify(filename_base)
+        filename_abs_base = os.sep.join((repo_dir, filename_slugify))
+        filename_absolute = filename_abs_base + ext
 
         # If no extension was specified in the file, then we can append
         # the extension from the lexer.
