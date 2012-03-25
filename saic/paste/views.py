@@ -83,7 +83,7 @@ def dirname_from_description(description):
     return os.sep.join((settings.REPO_DIR, slugify(description)))
 
 
-def get_owner(commit_data, user):
+def get_owner(request, commit_data, user):
     if user.is_authenticated() and not commit_data.get('anonymous'):
         return request.user
     else:
@@ -119,7 +119,7 @@ def paste(request):
             'set_meta_form': set_meta_form,
         }, RequestContext(request))
 
-    owner       = get_owner(commit_meta_form.cleaned_data, request.user)
+    owner       = get_owner(request, commit_meta_form.cleaned_data, request.user)
     description = set_form.cleaned_data.get('description')
     private     = set_meta_form.cleaned_data.get('private')
     allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
