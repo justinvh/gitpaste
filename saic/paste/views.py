@@ -105,10 +105,10 @@ def paste(request):
             'set_meta_form': SetMetaForm(),
         }, RequestContext(request))
 
-    paste_forms = PasteSet(request.POST)
-    set_form = SetForm(request.POST)
+    paste_forms      = PasteSet(request.POST)
+    set_form         = SetForm(request.POST)
     commit_meta_form = CommitMetaForm(request.POST, initial=commit_kwargs)
-    set_meta_form = SetMetaForm(request.POST)
+    set_meta_form    = SetMetaForm(request.POST)
 
     if not (paste_forms.is_valid() and
             set_form.is_valid() and
