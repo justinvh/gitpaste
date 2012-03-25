@@ -126,7 +126,9 @@ def paste(request):
 
     repo_dir = dirname_from_description(description)
     if os.path.isdir(repo_dir):
-        os.mkdir(repo_dir)
+        repo_dir = get_first_nonexistent_filename(repo_dir + '-%d')
+
+    os.mkdir(repo_dir)
 
     # Calculate expiration time of set if necessary
     exp_option = set_meta_form.cleaned_data.get('expires')
