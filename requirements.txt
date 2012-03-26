@@ -10,3 +10,4 @@ django-haystack==1.2.6
 repoze.timeago==0.5
 Markdown==2.1.0
 pytz==2011n
+beautifulsoup==3.2.1
