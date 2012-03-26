@@ -19,15 +19,15 @@
         {% if not owner %}
           <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
         {% else %}
-          <img id='profile-img' alt='Profile' src='{{ owner.preference.gravatar }}'> 
+          <img id='profile-img' alt='Profile' src='{{ owner.preference.gravatar }}'>
         {% endif %}
     {% endif %}
-    {{ count }} Contribution{{ count|pluralize }} by
+    {{ count }} Contribution{{ count|pluralize }}{% if not all %} by
     {% if sets.count %}
-        {% if owner %} 
-          {{ owner.preference.email }} 
-        {% else %} 
-          Anonymous 
+        {% if owner %}
+          {{ owner.preference.email }}
+        {% else %}
+          Anonymous
         {% endif %}
     {% else %}
         {% if owner %}
@@ -35,6 +35,7 @@
         {% else %}
           Anonymous
         {% endif %}
+    {% endif %}
     {% endif %}
   </h1>
   <h2 class='pages'>
@@ -64,7 +65,7 @@
           {{ set.commit_set.all.count }} commit{{ set.commit_set.all.count|pluralize }}
           {% with set.commit_set.latest as latest %}
             <span class='date' title='{{ latest.created|localtime }}'>
-              {{ latest.created|elapsed }} by 
+              {{ latest.created|elapsed }} by
               {% if latest.owner == user %}
                 you.
               {% else %}

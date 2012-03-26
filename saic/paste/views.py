@@ -79,6 +79,16 @@ def _git_diff(git_commit_object, repo):
         return None
 
 
+def dirname_from_description(description):
+    return os.sep.join((settings.REPO_DIR, slugify(description)))
+
+
+def get_owner(request, commit_data, user):
+    if user.is_authenticated() and not commit_data.get('anonymous'):
+        return request.user
+    else:
+        return None
+
 def paste(request):
     commit_kwargs = {}
     if request.user.is_authenticated():
@@ -93,15 +103,15 @@ def paste(request):
             'set_meta_form': SetMetaForm(),
         }, RequestContext(request))
 
-    paste_forms = PasteSet(request.POST)
-    set_form = SetForm(request.POST)
+    paste_forms      = PasteSet(request.POST)
+    set_form         = SetForm(request.POST)
     commit_meta_form = CommitMetaForm(request.POST, initial=commit_kwargs)
-    set_meta_form = SetMetaForm(request.POST)
+    set_meta_form    = SetMetaForm(request.POST)
 
-    if (not paste_forms.is_valid() or
-            not set_form.is_valid() or
-            not commit_meta_form.is_valid() or
-            not set_meta_form.is_valid()):
+    if not (paste_forms.is_valid() and
+            set_form.is_valid() and
+            commit_meta_form.is_valid() and
+            set_meta_form.is_valid()):
         return render_to_response('paste.html', {
             'forms': paste_forms,
             'set_form': set_form,
@@ -109,24 +119,16 @@ def paste(request):
             'set_meta_form': set_meta_form,
         }, RequestContext(request))
 
-    # Repositories are just a random sequence of letters and digits
-    # We store the reference repository for editing the pastes.
-    repo_dir = os.sep.join([
-        settings.REPO_DIR,
-        "".join(random.sample(string.letters + string.digits, 15))
-    ])
+    owner       = get_owner(request, commit_meta_form.cleaned_data, request.user)
+    description = set_form.cleaned_data.get('description')
+    private     = set_meta_form.cleaned_data.get('private')
+    allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
 
-    anonymous = commit_meta_form.cleaned_data.get('anonymous')
+    repo_dir = dirname_from_description(description)
+    if os.path.isdir(repo_dir):
+        repo_dir = get_first_nonexistent_filename(repo_dir + '-%d')
 
     os.mkdir(repo_dir)
-
-    owner = None
-    if request.user.is_authenticated() and not anonymous:
-        owner = request.user
-
-    description = set_form.cleaned_data.get('description')
-    private = set_meta_form.cleaned_data.get('private')
-    allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
 
     # Calculate expiration time of set if necessary
     exp_option = set_meta_form.cleaned_data.get('expires')
@@ -138,7 +140,8 @@ def paste(request):
     exp_time = datetime.utcnow() + exp_map[exp_option] if exp_option in exp_map else None
 
     # Generate a random hash for private access (20-30 characters from letters & numbers)
-    private_key = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(random.randrange(20,30)))
+    private_key = ''.join(random.sample(string.ascii_letters + string.digits,
+                                    random.randrange(20,30)))
 
     # Create a new paste set so we can reference our paste.
     paste_set = Set.objects.create(
@@ -172,95 +175,24 @@ def paste(request):
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
     priority_filename = os.sep.join([repo_dir, 'priority.txt'])
-    priority_file = open(priority_filename, 'w')
-    for form_index, form in enumerate(paste_forms):
-        data = form.cleaned_data
-        filename = data['filename']
-        language_lex, language = data['language'].split(';')
-        paste = data['paste']
+    with open(priority_filename, 'w') as priority_file:
+        for form_index, form in enumerate(paste_forms):
+            priority_file.write('%s: %s\n' % process_pasted_file(form_index,
+                                                                 form,
+                                                                 repo_dir,
+                                                                 index, commit))
 
-        # If we don't specify a filename, then obviously it is lonely
-        if not len(filename):
-            filename = 'paste'
-
-        # Construct a more logical filename for our commit
-        filename_base, ext = os.path.splitext(filename)
-        filename_slugify = slugify(filename[:len(ext)])
-        filename_absolute = os.sep.join([
-            repo_dir,
-            filename
-        ])
-        filename_absolute += ext
-        filename_abs_base, ext = os.path.splitext(filename_absolute)
-
-        # If no extension was specified in the file, then we can append
-        # the extension from the lexer.
-        if not len(ext):
-            filename_absolute += language
-            filename += language
-            ext = language
-
-        # Gists doesn't allow for the same filename, we do.
-        # Just append a number to the filename and call it good.
-        i = 1
-        while os.path.exists(filename_absolute):
-            filename_absolute = '%s-%d%s' % (filename_abs_base, i, ext)
-            filename = '%s-%d%s' % (filename_base, i, ext)
-            i += 1
-
-        cleaned = []
-        paste = paste.encode('UTF-8')
-        for line in paste.split('\n'):
-            line = line.rstrip()
-            cleaned.append(line)
-        paste = '\n'.join(cleaned)
-
-        # Open the file, write the paste, call it good.
-        f = open(filename_absolute, "w")
-        f.write(paste)
-        f.close()
-        priority_file.write('%s: %s\n' % (filename, data['priority']))
-        paste = smart_unicode(paste)
-
-        # This is a bit nasty and a get_by_ext something exist in pygments.
-        # However, globals() is just much more fun.
-        lex = globals()[language_lex]
-        paste_formatted = highlight(
-                paste,
-                lex(),
-                HtmlFormatter(
-                    style='friendly',
-                    linenos='table',
-                    lineanchors='line-%s' % form_index,
-                    anchorlinenos=True)
-        )
-
-        # Add the file to the index and create the paste
-        index.add([filename_absolute])
-        p = Paste.objects.create(
-                filename=filename,
-                absolute_path=filename_absolute,
-                paste=paste,
-                priority=data['priority'],
-                paste_formatted=paste_formatted,
-                language=data['language'],
-                revision=commit
-        )
-
-    # Add a priority file
-    priority_file.close()
     index.add([priority_filename])
 
     # Create the commit from the index
     new_commit = index.commit('Initial paste.')
     commit.commit = new_commit
-
     commit.save()
 
-    if not paste_set.private:
-        return redirect('paste_view', pk=paste_set.pk)
-    else:
+    if paste_set.private:
         return redirect('paste_view', pk=paste_set.pk, private_key=paste_set.private_key)
+    else:
+        return redirect('paste_view', pk=paste_set.pk)
 
 
 @private(Set)
@@ -312,10 +244,71 @@ def paste_view(request, pk, paste_set, private_key=None):
         'pastes': commit.paste_set.all(),
         'commit_current': commit,
         'favorited': favorited,
-        'editable': editable, 
+        'editable': editable,
         'comment_form': comment_form,
     }, RequestContext(request))
 
+def process_pasted_file(form_index, form, repo_dir, index, commit):
+    data = form.cleaned_data
+    filename = data['filename']
+    language_lex, language = data['language'].split(';')
+    paste = data['paste']
+
+    # If we don't specify a filename, then obviously it is lonely
+    if not len(filename):
+        filename = 'paste'
+
+    # Construct a more logical filename for our commit
+    filename_base, ext = os.path.splitext(filename)
+    filename_slugify = slugify(filename_base)
+    filename_abs_base = os.sep.join((repo_dir, filename_slugify))
+    filename_absolute = filename_abs_base + ext
+
+    # If no extension was specified in the file, then we can append
+    # the extension from the lexer.
+    if not len(ext):
+        filename_absolute += language
+        filename += language
+        ext = language
+
+    if os.path.exists(filename_absolute):
+        filename_absolute = \
+                get_first_nonexistent_filename(filename_abs_base + '-%d' + ext)
+        filename = os.path.basename(filename_absolute)
+
+    paste = '\n'.join((line.rstrip()
+                       for line in smart_unicode(paste).splitlines()))
+
+    # Open the file, write the paste, call it good.
+    with open(filename_absolute, "w") as f:
+        f.write(paste)
+
+    # This is a bit nasty and a get_by_ext something exist in pygments.
+    # However, globals() is just much more fun.
+    lex = globals()[language_lex]
+    paste_formatted = highlight(
+            paste,
+            lex(),
+            HtmlFormatter(
+                style='friendly',
+                linenos='table',
+                lineanchors='line-%s' % form_index,
+                anchorlinenos=True)
+    )
+
+    # Add the file to the index and create the paste
+    index.add([filename_absolute])
+    p = Paste.objects.create(
+            filename=filename,
+            absolute_path=filename_absolute,
+            paste=paste,
+            priority=data['priority'],
+            paste_formatted=paste_formatted,
+            language=data['language'],
+            revision=commit
+    )
+
+    return (filename, data['priority'])
 
 @private(Set)
 def paste_edit(request, pk, paste_set, private_key=None):
@@ -343,7 +336,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
     initial_set_meta = {
         'private': paste_set.private,
         'expires': paste_set.expires or "never",
-        'anyone_can_edit': paste_set.anyone_can_edit 
+        'anyone_can_edit': paste_set.anyone_can_edit
     }
 
     #TODO: turn this into a template tag and allow template to do conversion
@@ -427,85 +420,13 @@ def paste_edit(request, pk, paste_set, private_key=None):
     # the line numbers in a unique way relevant to the pastes.
     form_files = []
     priority_filename = os.sep.join([repo_dir, 'priority.txt'])
-    priority_file = open(priority_filename, 'w')
-    for form_index, form in enumerate(forms):
-        data = form.cleaned_data
-        filename = data['filename']
-        language_lex, language = data['language'].split(';')
-        paste = data['paste']
+    with open(priority_filename, 'w') as priority_file:
+        for form_index, form in enumerate(forms):
+            filename, priority = process_pasted_file(form_index, form,
+                                                     repo_dir, index, commit)
 
-        # If we don't specify a filename, then obviously it is lonely
-        no_filename = False
-        if not len(filename):
-            no_filename = True
-            filename = 'paste' 
-
-        # Construct a more logical filename for our commit
-        filename_base, ext = os.path.splitext(filename)
-        filename_slugify = slugify(filename[:len(ext)])
-        filename_absolute = os.sep.join([
-            repo_dir,
-            filename
-        ])
-        filename_absolute += ext
-        filename_abs_base, ext = os.path.splitext(filename_absolute)
-
-        # If no extension was specified in the file, then we can append
-        # the extension from the lexer.
-        if not len(ext):
-            filename_absolute += language
-            filename += language
-            ext = language
-
-        # Gists doesn't allow for the same filename, we do.
-        # Just append a number to the filename and call it good.
-        i = 1
-        if no_filename:
-            while os.path.exists(filename_absolute):
-                filename_absolute = '%s-%d%s' % (filename_abs_base, i, ext)
-                filename = '%s-%d%s'(filename_base, i, ext)
-                i += 1
-
-        form_files.append(os.path.basename(filename_absolute))
-
-        cleaned = []
-        paste = paste.encode('UTF-8')
-        for line in paste.split('\n'):
-            line = line.rstrip()
-            cleaned.append(line)
-        paste = '\n'.join(cleaned)
-
-        # Open the file, write the paste, call it good.
-        f = open(filename_absolute, "w")
-        f.write(paste)
-        f.close()
-        priority_file.write('%s: %s\n' % (filename, data['priority']))
-
-        # This is a bit nasty and a get_by_ext something exist in pygments.
-        # However, globals() is just much more fun.
-        paste = smart_unicode(paste)
-        lex = globals()[language_lex]
-        paste_formatted = highlight(
-                paste,
-                lex(),
-                HtmlFormatter(
-                    style='friendly',
-                    linenos='table',
-                    lineanchors='line-%s' % form_index,
-                    anchorlinenos=True)
-        )
-
-        # Add the file to the index and create the paste
-        index.add([filename_absolute])
-        p = Paste.objects.create(
-                filename=filename,
-                absolute_path=filename_absolute,
-                paste=paste,
-                priority=data['priority'],
-                paste_formatted=paste_formatted,
-                language=data['language'],
-                revision=commit
-        )
+            form_files.append(filename)
+            priority_file.write('%s: %s\n' % (filename, 'priority'))
 
     # Create the commit from the index
     intersected = set(form_files).intersection(previous_files)
@@ -515,7 +436,6 @@ def paste_edit(request, pk, paste_set, private_key=None):
             repo_dir,
             f
         ])])
-    priority_file.close() 
     index.add([priority_filename])
     new_commit = index.commit('Modified.')
     commit.commit = new_commit
@@ -544,20 +464,23 @@ def paste_favorite(request, pk, paste_set, private_key=None):
         Favorite.objects.create(parent_set=paste_set, user=request.user)
     return HttpResponse()
 
+def get_first_nonexistent_filename(format_string):
+    i = 1
+    while os.path.exists(format_string % i):
+        i+=1
+    return format_string % i
+
 
 @private(Set)
 def paste_fork(request, pk, paste_set, private_key=None):
-    # Create the new repository
-    repo_dir = os.sep.join([
-        settings.REPO_DIR,
-        "".join(random.sample(string.letters + string.digits, 15))
-    ])
-    os.mkdir(repo_dir)
+    owner = request.user if request.user.is_authenticated() else None
 
-    # Set the new owner
-    owner = None
-    if request.user.is_authenticated():
-        owner = request.user
+    repo_dir = get_first_nonexistent_filename(
+        '%s-%s' % (dirname_from_description(paste_set.description),
+                   owner.username if owner else 'anon' ) + '-%d')
+
+    if os.path.isdir(repo_dir):
+        os.mkdir(repo_dir)
 
     # A requested commit allows us to navigate in history
     requested_commit = request.GET.get('commit')
@@ -640,7 +563,7 @@ def commit_download(request, pk, commit, private_key=None):
     description = commit.parent_set.description
     filename = 'paste %s %s %s' % (commit.email, description, commit.short)
     filename = slugify(filename)
-    return send_zipfile(git_repo.git.archive(sha1, format='zip'), filename) 
+    return send_zipfile(git_repo.git.archive(sha1, format='zip'), filename)
 
 
 def register(request):
@@ -701,10 +624,10 @@ def favorites(request):
 
 
 def user_pastes(request, owner=None):
-    set_list = Set.objects.filter(owner=owner)
+    set_list = Set.objects.filter(owner=owner) if owner != 'all' else Set.objects
 
     user = None
-    if owner:
+    if owner is not None and owner.isnumeric():
         user = User.objects.get(pk=owner)
     if owner == None or request.user.id == None or request.user.pk != user.pk:
         set_list = set_list.exclude(private=True)
@@ -723,7 +646,8 @@ def user_pastes(request, owner=None):
         sets = paginator.page(paginator.num_pages)
 
     return render_to_response('user-pastes.html',
-            {'sets': sets, 'count': count, 'owner': user}, RequestContext(request))
+                              {'sets': sets, 'count': count, 'owner': user,
+                               'all': owner == 'all'}, RequestContext(request))
 
 
 def users(request):
@@ -782,7 +706,7 @@ def paste_embed(request, pk, private_key=None):
     theme = request.GET.get('theme', 'tango')
     filtering = {'pk': pk}
     paste = get_object_or_404(Paste, **filtering)
-    if (paste.revision.parent_set.private and 
+    if (paste.revision.parent_set.private and
             paste.revision.parent_set.private_key != private_key):
         raise Http404
     return render_to_response('embed.html',
