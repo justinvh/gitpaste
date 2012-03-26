@@ -3,3 +3,6 @@ Luke M. <https://github.com/flags>
 
 Garrett Heel <garrettheel@gmail.com>
 - Private pastes, expired pastes and various bugfixes
+
+rhapsodhy <me@rhapsodhy.hu>
+- All pastes and various fixes, cleanups, and more.
