@@ -248,7 +248,7 @@ def paste_view(request, pk, paste_set, private_key=None):
         'comment_form': comment_form,
     }, RequestContext(request))
 
-def process_pasted_file(form_index, form, repo_dir, index, commit):
+def process_pasted_file(form_index, form, repo_dir, index, commit, edit=False):
     data = form.cleaned_data
     filename = data['filename']
     language_lex, language = data['language'].split(';')
@@ -271,7 +271,7 @@ def process_pasted_file(form_index, form, repo_dir, index, commit):
         filename += language
         ext = language
 
-    if os.path.exists(filename_absolute):
+    if os.path.exists(filename_absolute) and not edit:
         filename_absolute = \
                 get_first_nonexistent_filename(filename_abs_base + '-%d' + ext)
         filename = os.path.basename(filename_absolute)
@@ -423,8 +423,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
     with open(priority_filename, 'w') as priority_file:
         for form_index, form in enumerate(forms):
             filename, priority = process_pasted_file(form_index, form,
-                                                     repo_dir, index, commit)
-
+                                                 repo_dir, index, commit, True)
             form_files.append(filename)
             priority_file.write('%s: %s\n' % (filename, 'priority'))
 
