@@ -66,7 +66,8 @@ def _git_diff(git_commit_object, repo):
         diff = highlight(
                 repo.git.diff(
                     transversed_commit.hexsha,
-                    git_commit_object.hexsha),
+                    git_commit_object.hexsha,
+                    color='never'),
                 DiffLexer(),
                 HtmlFormatter(
                     style='friendly',
