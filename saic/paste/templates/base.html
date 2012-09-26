@@ -15,7 +15,7 @@
               <li><a title='Create a new paste.' href='{% url paste %}'>New Paste</a></li>
               <!--<li><a title='Search for pastes by others.' href='/search/'>Search</a></li>-->
               <li><a title='Views a list of users' href='{% url users %}'>Users</a></li>
-              <li><a title='All pastes' href='{% url all_pastes %}'>All Pastes</a></li>
+              <li><a title='All pastes' href='{% url user_pastes owner='all' %}'>All Pastes</a></li>
               <li>|</li>
               {% if user.is_authenticated %}
               <li><a title='View a list of your contributed pastes.' href='{% url user_pastes owner=user.pk %}'>Contributed ({{ user.set_set.all.count }})</a></li>
