@@ -37,7 +37,7 @@ class Set(models.Model):
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
     description = models.CharField(max_length=255)
     repo = models.CharField(max_length=100)
-    fork = models.ForeignKey('Commit', null=True, blank=True, default=None)
+    fork = models.ForeignKey('Commit', null=True, blank=True, default=None, on_delete=models.SET_NULL)
     private = models.BooleanField(default=False)
     anyone_can_edit = models.BooleanField(default=False)
     private_key = models.CharField(max_length=30)
