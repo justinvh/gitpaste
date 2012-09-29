@@ -31,6 +31,7 @@ from django.contrib import auth
 from django.forms import ValidationError
 from django.core.servers.basehttp import FileWrapper
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 from forms import PasteForm, SetForm, UserCreationForm, CommentForm
 from forms import CommitMetaForm, SetMetaForm, PreferenceForm
@@ -624,13 +625,24 @@ def favorites(request):
 
 
 def user_pastes(request, owner=None):
-    set_list = Set.objects.filter(owner=owner) if owner != 'all' else Set.objects
+    if owner != None and owner == 'all':
+        set_list = Set.objects.all()
+    else:
+        set_list = Set.objects.filter(owner=owner)
 
     user = None
-    if owner is not None and owner.isnumeric():
-        user = User.objects.get(pk=owner)
-    if owner == None or request.user.id == None or request.user.pk != user.pk:
+    if owner != None and owner.isnumeric():
+        try:
+            user = User.objects.get(pk=owner)
+        except:
+            return render_to_response('user-pastes.html',
+                                      {'sets': None, 'count': 0, 'owner': owner,
+                                       'all': owner == 'all'}, RequestContext(request))
+
+    if not request.user.is_authenticated():
         set_list = set_list.exclude(private=True)
+    else:
+        set_list = set_list.exclude(~Q(owner=request.user.pk), private=True)
 
     count = set_list.count()
 
