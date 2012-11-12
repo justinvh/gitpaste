@@ -3,6 +3,7 @@ import settings
 import string
 import random
 import pytz
+import json
 import tempfile
 from datetime import datetime
 from datetime import timedelta
@@ -20,6 +21,8 @@ import git
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.shortcuts import render
+from django.template.defaultfilters import escapejs
+from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.utils.encoding import smart_str, smart_unicode
@@ -68,7 +71,7 @@ def _git_diff(git_commit_object, repo):
                 repo.git.diff(
                     transversed_commit.hexsha,
                     git_commit_object.hexsha,
-                    color='never'),
+                    '--no-color'),
                 DiffLexer(),
                 HtmlFormatter(
                     style='friendly',
@@ -82,7 +85,7 @@ def _git_diff(git_commit_object, repo):
 
 
 def dirname_from_description(description):
-    return os.sep.join((settings.REPO_DIR, slugify(description)))
+    return "%s" % os.sep.join((settings.REPO_DIR, slugify(description)))
 
 
 def get_owner(request, commit_data, user):
@@ -126,7 +129,12 @@ def paste(request):
     private     = set_meta_form.cleaned_data.get('private')
     allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
 
+    
+
     repo_dir = dirname_from_description(description)
+    if not len(description):
+        repo_dir = ''.join(random.sample(string.ascii_letters + string.digits,
+                           random.randrange(20,30)))
     if os.path.isdir(repo_dir):
         repo_dir = get_first_nonexistent_filename(repo_dir + '-%d')
 
@@ -716,13 +724,21 @@ def set_timezone(request):
 
 def paste_embed(request, pk, private_key=None):
     theme = request.GET.get('theme', 'tango')
+    jsonp = request.GET.get('jsonp')
+    args = request.GET.getlist('arg')
     filtering = {'pk': pk}
     paste = get_object_or_404(Paste, **filtering)
     if (paste.revision.parent_set.private and
             paste.revision.parent_set.private_key != private_key):
         raise Http404
-    return render_to_response('embed.html',
-            {'paste': paste, 'theme': theme}, RequestContext(request))
+    if jsonp:
+        data = render_to_string('embed.js', {'paste': paste, 'theme': theme},
+                                RequestContext(request))
+        call = '%s(%s);' % (jsonp, json.dumps({'embed': data, 'args': args}));
+        return HttpResponse(call, mimetype='text/javascript');
+    return render_to_response('embed.js',
+            {'paste': paste, 'theme': theme, 'jsonp': jsonp, 'args': args}, 
+            RequestContext(request), mimetype='text/javascript');
 
 def live_paste(request):
     commit_kwargs = {}
