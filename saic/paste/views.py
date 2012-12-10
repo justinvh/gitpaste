@@ -5,6 +5,7 @@ import random
 import pytz
 import json
 import tempfile
+import codecs
 from datetime import datetime
 from datetime import timedelta
 
@@ -185,7 +186,7 @@ def paste(request):
     # We enumerate over the forms so we can have a way to reference
     # the line numbers in a unique way relevant to the pastes.
     priority_filename = os.sep.join([repo_dir, 'priority.txt'])
-    with open(priority_filename, 'w') as priority_file:
+    with codecs.open(priority_filename, 'w', "utf-8-sig") as priority_file:
         for form_index, form in enumerate(paste_forms):
             priority_file.write('%s: %s\n' % process_pasted_file(form_index,
                                                                  form,
@@ -290,7 +291,7 @@ def process_pasted_file(form_index, form, repo_dir, index, commit, edit=False):
                        for line in smart_unicode(paste).splitlines()))
 
     # Open the file, write the paste, call it good.
-    with open(filename_absolute, "w") as f:
+    with codecs.open(filename_absolute, "w", "utf-8-sig") as f:
         f.write(paste)
 
     # This is a bit nasty and a get_by_ext something exist in pygments.
@@ -430,7 +431,7 @@ def paste_edit(request, pk, paste_set, private_key=None):
     # the line numbers in a unique way relevant to the pastes.
     form_files = []
     priority_filename = os.sep.join([repo_dir, 'priority.txt'])
-    with open(priority_filename, 'w') as priority_file:
+    with codecs.open(priority_filename, 'w', "utf-8-sig") as priority_file:
         for form_index, form in enumerate(forms):
             filename, priority = process_pasted_file(form_index, form,
                                                  repo_dir, index, commit, True)
