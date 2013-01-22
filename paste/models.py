@@ -77,11 +77,16 @@ class Paste(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     fork = models.ForeignKey("Paste", null=True, blank=True)
 
+    def __init__(self, *args, **kwargs):
+        self._git = None
+        super(Paste, self).__init__(*args, **kwargs)
+
     def save(self, *args, **kwargs):
         """save -> Paste
         Saves the Paste object and creates the new repository.
 
         """
+        self._git = None
         if self.pk is None:
             import uuid
             user = self.owner or "anonymous"
@@ -89,8 +94,7 @@ class Paste(models.Model):
             path = os.sep.join([settings.GITPASTE_REPOSITORY, user, folder])
             self.repository = path
             os.makedirs(path, mode=0o777, exist_ok=True)
-            git = Git(self.repository)
-            git.init()
+            self.git.init()
         return super(Paste, self).save(*args, **kwargs)
 
     def add_file(self, filename, content):
@@ -110,9 +114,8 @@ class Paste(models.Model):
         with open(path, "w") as f:
             f.write(content)
 
-        git = Git(self.repository)
-        git.add(path)
-        git.commit(commit_message)
+        self.git.add(path)
+        self.git.commit(commit_message)
 
     def delete_file(self, filename):
         """delete_files -> None
@@ -123,9 +126,8 @@ class Paste(models.Model):
             raise Paste.DoesNotExist
         commit_message = "Removes {0}".format(filename)
         path = os.sep.join([self.repository, filename])
-        git = Git(self.repository)
-        git.rm(path)
-        git.commit(commit_message)
+        self.git.rm(path)
+        self.git.commit(commit_message)
 
     def status(self):
         """status -> string
@@ -134,8 +136,7 @@ class Paste(models.Model):
         """
         if self.pk is None:
             raise Paste.DoesNotExist
-        git = Git(self.repository)
-        return git.status()
+        return self.git.status()
 
     def log(self):
         """status -> string
@@ -144,8 +145,7 @@ class Paste(models.Model):
         """
         if self.pk is None:
             raise Paste.DoesNotExist
-        git = Git(self.repository)
-        return git.log()
+        return self.git.log()
 
     def files(self):
         """files -> [(filename, path, content), ...]
@@ -160,8 +160,7 @@ class Paste(models.Model):
             return memoized
 
         data = []
-        git = Git(self.repository)
-        for filename in git.files():
+        for filename in self.git.files():
             path = os.sep.join([self.repository, filename])
             content = open(path).read()
             data.append((filename, path, content))
@@ -171,5 +170,8 @@ class Paste(models.Model):
 
     @property
     def git(self):
-        git = Git(self.repository)
-        return git
+        if self.pk is None:
+            raise Paste.DoesNotExist
+        if self._git is None:
+            self._git = Git(self.repository)
+        return self._git
