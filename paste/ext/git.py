@@ -1,5 +1,7 @@
+"""Wrapper around Git via sh."""
 import os
 from sh import git
+
 
 class Git:
     def __init__(self, repository):
@@ -36,7 +38,7 @@ class Git:
         full_args = self.pre_args + status_args
         return git(*full_args)
 
-    def  log(self):
+    def log(self):
         log_args = ('log', )
         full_args = self.pre_args + log_args
         return git(*full_args)

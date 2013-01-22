@@ -10,12 +10,16 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 _paste_memoize = defaultdict(lambda: list)
 
 
 def clear_paste_memoization(pk):
+    """clear_paste_memoization -> None
+    Clears a model reference in the cache.
+
+    """
     try:
         global _paste_memoize
         del _paste_memoize[pk]
@@ -24,12 +28,20 @@ def clear_paste_memoization(pk):
 
 
 def add_paste_memoization(pk, data):
+    """add_paste_memoization -> object
+    Adds data to the cache for a given pk.
+
+    """
     global _paste_memoize
     _paste_memoize[pk] = data
     return data
 
 
 def get_paste_memoization(pk):
+    """get_paste_memoization -> object
+    Returns associated content with an object.
+
+    """
     return _paste_memoize[pk]
 
 
