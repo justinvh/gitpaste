@@ -42,3 +42,8 @@ class Git:
         log_args = ('log', )
         full_args = self.pre_args + log_args
         return git(*full_args)
+
+    def files(self):
+        files_args = ('ls-tree', '--name-only', '-r', 'HEAD')
+        full_args = self.pre_args + files_args
+        return git(*full_args).splitlines()

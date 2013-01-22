@@ -12,7 +12,7 @@ from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
-_paste_memoize = defaultdict(lambda: list)
+_paste_memoize = defaultdict(lambda: None)
 
 
 def clear_paste_memoization(pk):
@@ -127,7 +127,6 @@ class Paste(models.Model):
         git.rm(path)
         git.commit(commit_message)
 
-    @property
     def status(self):
         """status -> string
         Retrieves the status of the repository.
@@ -138,7 +137,6 @@ class Paste(models.Model):
         git = Git(self.repository)
         return git.status()
 
-    @property
     def log(self):
         """status -> string
         Retrieves the status of the repository.
@@ -149,7 +147,6 @@ class Paste(models.Model):
         git = Git(self.repository)
         return git.log()
 
-    @property
     def files(self):
         """files -> [(filename, path, content), ...]
         Returns the files associated with the repository.
@@ -159,14 +156,20 @@ class Paste(models.Model):
             raise Paste.DoesNotExist
 
         memoized = get_paste_memoization(self.pk)
-        if memoized:
+        if memoized is not None:
             return memoized
 
-        files = [f for f in os.listdir(self.repository) if '.git' not in f]
         data = []
-        for filename in files:
+        git = Git(self.repository)
+        for filename in git.files():
             path = os.sep.join([self.repository, filename])
             content = open(path).read()
             data.append((filename, path, content))
 
-        return add_paste_memoization(self.pk, data)
+        add_paste_memoization(self.pk, data)
+        return data
+
+    @property
+    def git(self):
+        git = Git(self.repository)
+        return git
