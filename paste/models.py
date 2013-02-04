@@ -8,6 +8,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 from django.conf import settings
 
 
@@ -73,7 +74,7 @@ class Paste(models.Model):
         max_length=5, blank=False,
         help_text=_("A small 5-character hash for private URL access"))
 
-    views = models.IntegerField(help_text=_("The number of views"))
+    views = models.IntegerField(default=0, help_text=_("The number of views"))
     created = models.DateTimeField(auto_now_add=True)
     fork = models.ForeignKey("Paste", null=True, blank=True)
 
@@ -86,16 +87,32 @@ class Paste(models.Model):
         Saves the Paste object and creates the new repository.
 
         """
+        import uuid
         self._git = None
+
+        # Create the repository
         if self.pk is None:
-            import uuid
             user = self.owner or "anonymous"
             folder = slugify(self.description)[:10] + '-' + str(uuid.uuid4())
             path = os.sep.join([settings.GITPASTE_REPOSITORY, user, folder])
             self.repository = path
             os.makedirs(path, mode=0o777, exist_ok=True)
-            self.git.init()
+            Git(self.repository).init()
+
+        # Create the private key
+        if self.pk is None:
+            self.private_key = str(uuid.uuid4())[:5]
+
         return super(Paste, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        kwargs = {'pk': self.pk}
+        if self.private:
+            kwargs['key'] = self.private_key
+        return reverse('paste.views.paste_view', kwargs=kwargs)
+
+    def __unicode__(self):
+        return self.repository
 
     def add_file(self, filename, content):
         """add_file -> None
@@ -163,7 +180,8 @@ class Paste(models.Model):
         for filename in self.git.files():
             path = os.sep.join([self.repository, filename])
             content = open(path).read()
-            data.append((filename, path, content))
+            size = len(content)
+            data.append((filename, path, size, content))
 
         add_paste_memoization(self.pk, data)
         return data
@@ -175,3 +193,5 @@ class Paste(models.Model):
         if self._git is None:
             self._git = Git(self.repository)
         return self._git
+
+
