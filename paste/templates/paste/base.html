@@ -1,0 +1,31 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <script src='{% static "paste/js/jquery-1.9.0.min.js" %}'></script>
+        {% block js %}{% endblock %}
+    </head>
+    <body>
+        <article>
+            <nav>
+                <ul>
+                    <li><a href="{% url "paste_new" %}">New Paste</a></li>
+                    <li><a href="#">Users</a></li>
+                    <li><a href="#">All Pastes</a></li>
+                    <li>|</li>
+                    {% if user.is_authenticated %}
+                    <li><a href="#">My Pastes</a></li>
+                    <li><a href="#">My Preferences</a></li>
+                    {% else %}
+                    <li><a href="#">Login</a></li>
+                    <li><a href="#">Register</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <section>
+                {% block content %}{% endblock %}
+            </section>
+        </article>
+    </body>
+</html>

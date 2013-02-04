@@ -1,0 +1,70 @@
+{% extends "paste/base.html" %}
+
+{% block content %}
+<section>
+    <div class="description">
+        <div class="left">
+            <div class="title">
+                {% if paste.private %}
+                <span class='private'>private</span>
+                {% else %}
+                <span class='public'>public</span>
+                {% endif %}
+
+                <img width="32" src="http://goo.gl/VPr6i" alt="justinvh">
+                {% if user.is_authenticated %}
+                <a href='#'>{{ user.username }}</a> /
+                {% else %}
+                <a href='#'>anonymous</a> / 
+                {% endif %}
+            </div>
+            <div class="metadata">
+                Created {{ paste.created }}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="content">
+        <div class="left">
+            <div class="tab">
+                <h1>Paste Details</h1>
+                <ul>
+                    <li>revisions ({{ paste.revisions|length }})</li>
+                </ul>
+            </div>
+
+            <a class="button" href="#">Download this paste</a>
+
+            <div class="mini-form">
+                <span>Clone this paste</span>
+                <input type="text">
+            </div>
+
+            <div class="mini-form">
+                <span>Embed this paste</span>
+                <input type="text">
+            </div>
+
+            <div class="mini-form">
+                <span>Link this paste</span>
+                <input type="text">
+            </div>
+        </div>
+        <div class="right">
+            {% for filename, path, size, content in paste.files %}
+            <div class="paste">
+                <div class="header">
+                    <span class="title">{{ filename }}</span> |
+                    <span class="size">{{ size }} bytes</span> |
+                </div>
+                <div class="content">
+                    <textarea>{{ content }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

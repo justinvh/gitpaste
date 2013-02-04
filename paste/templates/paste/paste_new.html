@@ -1,0 +1,50 @@
+{% extends "paste/base.html" %}
+{% load staticfiles %}
+
+{% block js %}
+<script src='{% static "paste/js/jquery.formset.js" %}'></script>
+{% endblock %}
+
+{% block content %}
+<section>
+    <form id='form' method='POST' action='{% url "paste_new" %}'>
+        <div class="description">
+            <img width="32" src="http://goo.gl/VPr6i" alt="justinvh">
+            {{ metadata_form }}
+        </div>
+        <ul class="pastes">
+            {% for paste_form in paste_formset %}
+            <li>
+                <div class="title">
+                    {{ paste_form.filename }}
+                    {{ paste_form.language }}
+                </div>
+                <div class="paste">
+                    {{ paste_form.paste }}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="submission">
+            <div class="left">
+                <input type="button" value="Add Another File">
+            </div>
+            <div class="right">
+                <input type="submit" name="submit" value="Create Private Paste">
+                <input type="submit" name="submit" value="Create Public Paste">
+            </div>
+        </div>
+        {% csrf_token %}
+        {{ paste_formset.management_form }}
+    </form>
+</section>
+
+<script>
+$(document).ready(function () {
+    $('ul.pastes').formset({
+        formTemplate: 'ul.pastes > li:first',
+        prefix: 'formset'
+    });
+});
+</script>
+{% endblock %}

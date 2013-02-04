@@ -1,6 +1,10 @@
+from os import path
+
 # Django settings for gitpaste3 project.
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+GITPASTE_REPOSITORY = path.sep.join([path.dirname(__file__), 'repositories'])
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -119,6 +123,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'paste',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
