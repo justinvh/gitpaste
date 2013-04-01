@@ -1,0 +1,67 @@
+@import url(http://fonts.googleapis.com/css?family=Noto+Sans:400,700);
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+nav {
+    background: url(/static/paste/img/paste/logo.png) no-repeat;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #EFEFEF;
+    box-shadow: 0 0 2px 2px #BBB;
+    font-size: 90%;
+    color: #888;
+}
+
+nav a {
+    color: #888;
+    text-decoration: none;
+}
+
+nav ul {
+    margin: 0;
+    list-style: none;
+    text-align: right;
+    width: 90%;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 5px;
+    width: 50px;
+}
+
+nav ul li a:hover,
+nav ul li i:hover {
+    color: green;
+}
+
+nav ul li a {
+    position: relative;
+    width: 50px;
+}
+
+nav ul li a > span {
+    display: none;
+}
+
+nav ul li:hover a > span {
+    display: block;
+    top: 30px;
+    position: absolute;
+    background-color: #666;
+    color: #FFF;
+    font-size: 75%;
+    left: -15px;
+    width: 50px;
+    text-align: center;
+    border-bottom-right-radius: 5px 5px;
+    border-bottom-left-radius: 5px 5px;
+}
+
+.hide {
+    display: none;
+}

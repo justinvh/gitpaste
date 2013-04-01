@@ -11,7 +11,7 @@ class PasteMetadataForm(forms.Form):
 class PasteForm(forms.Form):
     filename = forms.CharField(max_length=255)
     paste = forms.CharField(widget=forms.widgets.Textarea())
-    language = forms.ChoiceField(choices=ext.languages)
+    language = forms.ChoiceField(choices=ext.languages, required=False)
 
 
 PasteFormSet = formset_factory(PasteForm)

@@ -82,7 +82,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = None
+SECRET_KEY = "[09oi32jkwedsc89uihj2nma0s89dui"
 
 if SECRET_KEY is None:
     raise Exception(('Please update gitpaste3/settings.py and add set your '
@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'paste',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',

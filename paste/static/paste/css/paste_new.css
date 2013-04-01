@@ -1,0 +1,153 @@
+section.content {
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 48px;
+    max-width: 1280px;
+}
+
+div.description {
+}
+
+div.description i {
+    display: block;
+    float: left;
+    margin-right: 5px;
+    color: #DDD;
+    border-radius: 4px;
+}
+
+div.description img {
+    vertical-align: top;
+    border-radius: 4px;
+    color: #DDD;
+}
+
+div.description textarea {
+    width: 540px;
+    color: #999;
+    height: 38px;
+    border: 3px solid #EFEFEF;
+    border-left: 8px solid #EFEFEF;
+    font-size: 90%;
+    border-radius: 4px;
+}
+
+div.paste > pre {
+    height: 300px;
+    margin: 0;
+}
+
+div.title {
+    background-color: #EFEFEF;
+    font-size: 90%;
+    color: #888;
+    padding: 5px;
+    border-bottom: 1px solid #DDD;
+}
+
+div.title input {
+    width: 200px;
+    color: #999;
+    border: 3px solid #DDD;
+    border-left: 8px solid #DDD;
+    font-size: 90%;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+
+div.title select {
+    width: 100px;
+}
+
+div.close {
+    position: relative;
+    color: #CCC;
+    float: right;
+    cursor: pointer;
+}
+
+div.close:hover {
+    color: red;
+}
+
+div.close span {
+    position: absolute;
+    display: none;
+}
+
+div.close:hover span {
+    display: block;
+    position: absolute;
+    -webkit-transform: rotate(90deg);
+    right: -30px;
+    background-color: #666;
+    font-size: 75%;
+    padding: 2px;
+    top: 10px;
+    width: 37px;
+    color: #FFF;
+    text-align: center;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+ul.pastes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.pastes li {
+    border: 1px solid #EFEFEF;
+    border-radius: 3px;
+    box-shadow: 0 0 5px 0px #BBB;
+}
+
+ul.pastes li + li {
+    margin-top: 10px;
+}
+
+#add-paste {
+    margin-top: 10px;
+    background-color: #EFEFEF;
+    padding: 5px 2px;
+    cursor: pointer;
+    font-size: 90%;
+    color: #999;
+    border: 1px solid #EFEFEF;
+    border-radius: 3px;
+    box-shadow: 0 0 5px 0px #BBB;
+}
+
+#add-paste:hover i {
+    color: green;
+}
+
+#add-paste:hover {
+    color: #333;
+}
+
+.submission > .right {
+    float: right;
+    margin-top: 10px;
+}
+
+.right button {
+    border: 1px solid #333;
+    background-color: #EFEFEF;
+    border: 1px solid #DDD;
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 75%;
+}
+
+.right button:hover {
+    border: 1px solid #BBB;
+}
+
+.right button:hover i {
+    color: green;
+}
+

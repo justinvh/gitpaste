@@ -3,6 +3,9 @@
 <html lang="en">
     <head>
         <title>{% block title %}{% endblock %}</title>
+        <link rel='stylesheet' href='{% static "paste/css/ext/font-awesome.min.css" %}'>
+        <link rel='stylesheet' href='{% static "paste/css/base.css" %}'>
+        {% block css %}{% endblock %}
         <script src='{% static "paste/js/jquery-1.9.0.min.js" %}'></script>
         {% block js %}{% endblock %}
     </head>
@@ -10,16 +13,15 @@
         <article>
             <nav>
                 <ul>
-                    <li><a href="{% url "paste_new" %}">New Paste</a></li>
-                    <li><a href="#">Users</a></li>
-                    <li><a href="#">All Pastes</a></li>
+                    <li><a href="{% url "paste_new" %}"><i class='icon-file icon-1x'></i><span>New</span></a></li>
+                    <li><a href="#"><i class='icon-group icon-1px'></i><span>All</span></a></li>
                     <li>|</li>
                     {% if user.is_authenticated %}
-                    <li><a href="#">My Pastes</a></li>
-                    <li><a href="#">My Preferences</a></li>
+                    <li><a href="#">Pastes</a></li>
+                    <li><a href="#">Preferences</a></li>
                     {% else %}
-                    <li><a href="#">Login</a></li>
-                    <li><a href="#">Register</a></li>
+                    <li><a href="#"><i class='icon-user icon-1px'></i><span>Login</span></a></li>
+                    <li><a href="#"><i class='icon-cog icon-1px'></i><span>Register</span></a></li>
                     {% endif %}
                 </ul>
             </nav>
