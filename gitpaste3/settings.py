@@ -82,7 +82,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = "[09oi32jkwedsc89uihj2nma0s89dui"
+SECRET_KEY = None
 
 if SECRET_KEY is None:
     raise Exception(('Please update gitpaste3/settings.py and add set your '
