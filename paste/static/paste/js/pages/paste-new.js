@@ -5,11 +5,19 @@ $(document).ready(function () {
     // element and the mode for later reference.
     var editors = {};
     var ace = require(['ace/ace'], function (ace) {
-        $('div.paste > pre').each(function () {
-            var editor = ace.edit(this);
-            editor.setTheme('ace/theme/textmate');
-            editor.getSession().setMode('ace/mode/javascript');
-            editors[this] = editor;
+        $('ul.pastes > li').each(function () {
+            (function (e) {
+                var $pre = $('pre', e);
+                console.log($pre);
+                var $textarea = $('textarea', e);
+                var editor = ace.edit($pre[0]);
+                editor.setTheme('ace/theme/textmate');
+                editor.getSession().setMode('ace/mode/javascript');
+                editor.getSession().on('change', function() {
+                      $textarea.val(editor.getSession().getValue());
+                });
+                editors[$pre[0]] = editor;
+            })(this);
         });
     });
 
@@ -33,8 +41,9 @@ $(document).ready(function () {
             $('option', $this).each(function () {
                 var value = $(this).val().split('|');
                 var regexp = new RegExp(value[1]);
-                $(this).val(value[0]);
-                split.push([regexp, value[0]]);
+                split.push({'regex': regexp,
+                            'value': $(this).val(),
+                            'editor': value[0]});
             });
 
             var active_timer = null;
@@ -43,13 +52,12 @@ $(document).ready(function () {
                 var input_text = $(this).val();
                 active_timer = setTimeout(function () {
                     for (var i = 0; i < split.length; i++) {
-                        var s = split[i];
-                        var re = s[0];
-                        var element = s[1];
-                        if (re.test(input_text)) {
-                            $chosen.val(element).trigger("liszt:updated");
-                            var editor = editors[$pre[0]];
-                            editor.getSession().setMode('ace/mode/' + element);
+                        var data = split[i];
+                        if (data.regex.test(input_text)) {
+                            console.log(data);
+                            var mode = 'ace/mode/' + data.editor;
+                            $chosen.val(data.value).trigger("liszt:updated");
+                            editors[$pre[0]].getSession().setMode(mode);
                             return;
                         }
                     }
@@ -58,7 +66,7 @@ $(document).ready(function () {
                 $(this).keyup();
             });
 
-            $chosen.val('text').trigger('liszt:updated');
+            $chosen.val('text|\\.txt$').trigger('liszt:updated');
         });
     };
 

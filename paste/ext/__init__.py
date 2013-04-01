@@ -1,5 +1,5 @@
 languages = (
-    ("asciidoc|\.txt$", "AsciiDoc"),
+    ("asciidoc|\.ascii$", "AsciiDoc"),
     ("coffee|\.coffee$", "CoffeeScript"),
     ("coldfusion|\.cfc$", "ColdFusion"),
     ("csharp|\.cs$", "C"),

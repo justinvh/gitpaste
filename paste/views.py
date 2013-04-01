@@ -10,6 +10,11 @@ def render_to_response(tmpl, ctxt, request_ctxt):
     return _render_to_response("paste/{0}".format(tmpl), ctxt, request_ctxt)
 
 
+def random_name():
+    import uuid
+    return str(uuid.uuid4())
+
+
 def paste_new(request):
     owner = request.user if request.user.is_authenticated() else None
     metadata_form = PasteMetadataForm(prefix='metadata')
@@ -34,7 +39,7 @@ def paste_new(request):
 
             # Add all the new files to the paste
             for paste_form in paste_formset:
-                filename = paste_form.cleaned_data['filename']
+                filename = paste_form.cleaned_data['filename'] or random_name()
                 content = paste_form.cleaned_data['paste']
                 paste.add_file(filename, content)
 

@@ -26,6 +26,7 @@
         <ul class="pastes">
             {% for paste_form in paste_formset %}
             <li>
+                {{ paste_form.errors }}
                 <div class="close">
                     <i class="icon-remove-sign icon-1x"></i>
                     <span>close</span>

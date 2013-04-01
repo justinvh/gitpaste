@@ -5,12 +5,12 @@ from paste import ext
 
 
 class PasteMetadataForm(forms.Form):
-    description = forms.CharField(widget=forms.widgets.Textarea())
+    description = forms.CharField(widget=forms.widgets.Textarea(), required=False)
 
 
 class PasteForm(forms.Form):
-    filename = forms.CharField(max_length=255)
-    paste = forms.CharField(widget=forms.widgets.Textarea())
+    filename = forms.CharField(max_length=255, required=False)
+    paste = forms.CharField(widget=forms.widgets.Textarea(), required=False)
     language = forms.ChoiceField(choices=ext.languages, required=False)
 
 
