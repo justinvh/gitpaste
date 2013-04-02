@@ -58,7 +58,7 @@ class Paste(models.Model):
                     "anonymous user."))
 
     description = models.CharField(
-        max_length=120, blank=True,
+        max_length=140, blank=True,
         help_text=_("A summary or quick detail of this paste."))
 
     repository = models.FilePathField(

@@ -2,10 +2,12 @@ section.content {
     width: 90%;
     margin: 0 auto;
     margin-top: 48px;
-    max-width: 1280px;
+    max-width: 960px;
+    min-width: 640px;
 }
 
 div.description {
+    text-align: center;
 }
 
 div.description i {
@@ -14,6 +16,17 @@ div.description i {
     margin-right: 5px;
     color: #DDD;
     border-radius: 4px;
+    text-align: right;
+}
+
+div.options {
+    float: right;
+    margin-top: 8px;
+    margin-right: 20px;
+}
+
+div.options label {
+    font-size: 90%;
 }
 
 div.description img {
@@ -22,14 +35,24 @@ div.description img {
     color: #DDD;
 }
 
-div.description textarea {
-    width: 540px;
-    color: #999;
-    height: 38px;
-    border: 3px solid #EFEFEF;
-    border-left: 8px solid #EFEFEF;
+div.description {
+    background-color: #EFEFEF;
     font-size: 90%;
+    color: #888;
+    padding: 5px;
+    border-bottom: 1px solid #DDD;
+    border: 1px solid #EFEFEF;
+    border-radius: 3px;
+    box-shadow: 0 0 5px 0px #BBB;
+}
+
+div.description input {
+    width: 98%;
+    border: 3px solid #DDD;
+    border-left: 8px solid #DDD;
     border-radius: 4px;
+    padding: 2px;
+    font-size: 90%;
 }
 
 div.paste > pre {
@@ -45,7 +68,7 @@ div.title {
     border-bottom: 1px solid #DDD;
 }
 
-div.title input {
+div.title .filename input {
     width: 200px;
     color: #999;
     border: 3px solid #DDD;
@@ -55,10 +78,23 @@ div.title input {
     padding: 2px;
 }
 
+div.title .language {
+    margin-right: 25px;
+}
+
+div.title .tab_size input {
+    width: 20px;
+}
+
 
 div.title select {
     width: 100px;
 }
+
+div.options select {
+    width: 100px;
+}
+
 
 div.close {
     position: relative;
@@ -151,3 +187,19 @@ ul.pastes li + li {
     color: green;
 }
 
+.ui-sortable-helper {
+    box-shadow: 0px 0px 5px 5px #BBB !important;
+}
+
+.paste {
+    position: relative;
+}
+
+.paste .priority {
+    position: absolute;
+    text-align: right;
+    width: 100%;
+    bottom: 0px;
+    font-size: 500%%;
+    color: #F0F0F0;
+}

@@ -13,6 +13,8 @@ $(document).ready(function () {
                 var editor = ace.edit($pre[0]);
                 editor.setTheme('ace/theme/textmate');
                 editor.getSession().setMode('ace/mode/javascript');
+                editor.getSession().setUseSoftTabs(true);
+                editor.setKeyboardHandler('ace/keyboard/vim');
                 editor.getSession().on('change', function() {
                       $textarea.val(editor.getSession().getValue());
                 });
@@ -30,6 +32,8 @@ $(document).ready(function () {
         $('div.close', $li).click(function () {
             $delete_row.click();
         });
+
+        $('select', $li).chosen();
 
         $('div.title', $li).each(function () {
             var $this = $(this);
@@ -88,5 +92,12 @@ $(document).ready(function () {
     // Initial construction of the pages.
     $('ul.pastes > li').each(function (e) {
         build_row(this);
+    });
+
+    $('ul.pastes').sortable({
+        cursor: 'move',
+        distance: 5,
+        helper: 'clone',
+        handle: '.title'
     });
 });

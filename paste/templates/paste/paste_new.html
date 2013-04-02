@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block js %}
+<script src='http://code.jquery.com/ui/1.10.2/jquery-ui.js'></script>
 <script src='{% static "paste/js/require.js" %}'></script>
 <script>require.config({ baseUrl: "/static/paste/js" });</script>
 <script src='{% static "paste/js/jquery.formset.js" %}'></script>
@@ -19,8 +20,6 @@
 <section class='content'>
     <form id='form' method='POST' action='{% url "paste_new" %}'>
         <div class="description">
-            <img height="48px" src="http://goo.gl/VPr6i" alt="justinvh">
-            <!-- <i class='icon-comment-alt icon-3x'></i> -->
             {{ metadata_form.description|attr:"placeholder:add a paste description..." }}
         </div>
         <ul class="pastes">
@@ -31,13 +30,21 @@
                     <i class="icon-remove-sign icon-1x"></i>
                     <span>close</span>
                 </div>
-                <div class="title">
-                    {{ paste_form.filename|attr:"placeholder:add a filename..."}}
-                    {{ paste_form.language }}
+                <div class="options">
+                    <span class="editor_mode">{{ paste_form.editor_mode }}</span>
+                    <span class="hard_tab">{{ paste_form.tab_type }}</span>
+                    <span class="tab_size">{{ paste_form.tab_size }}</span>
                 </div>
+
+                <div class="title">
+                    <span class="filename">{{ paste_form.filename|attr:"placeholder:add a filename..."}}</span>
+                    <span class="language">{{ paste_form.language }}</span>
+                </div>
+
                 <div class="paste">
                     <div class='hide'>{{ paste_form.paste }}</div>
                     <pre></pre>
+                    <div class="priority">{{ forloop.counter }}</div>
                 </div>
             </li>
             {% endfor %}
