@@ -67,6 +67,10 @@ $(document).ready(function () {
             $delete_row.click();
         });
 
+        $('div.minimize', $li).click(function () {
+            $li.toggleClass('resize');
+        });
+
         $('select', $li).chosen();
 
         $('div.title', $li).each(function () {
@@ -135,14 +139,16 @@ $(document).ready(function () {
     $('ul.pastes').sortable({
         cursor: 'move',
         distance: 5,
-        helper: 'clone',
         handle: '.title',
         start: function (event, ui) {
-             ui.placeholder.height(40);
+            $('ul.pastes > li.resize').addClass('already-resized');
             $('ul.pastes > li, .ui-sortable-helper').addClass('resize');
+             ui.item.height(40);
+             $(this).sortable('refreshPositions');
         },
         stop: function (event, ui) {
-            $('ul.pastes > li, .ui-sortable-helper').removeClass('resize');
+            $('ul.pastes > li, .ui-sortable-helper').not('.already-resized').removeClass('resize');
+            $('ul.pastes > li, .ui-sortable-helper').removeClass('already-resized');
         },
         update: function (event, ui) {
             build_priority();

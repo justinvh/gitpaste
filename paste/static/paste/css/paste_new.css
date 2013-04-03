@@ -129,6 +129,38 @@ div.close:hover span {
     border-top-left-radius: 5px;
 }
 
+div.minimize {
+    position: relative;
+    color: #CCC;
+    float: right;
+    cursor: pointer;
+}
+
+div.minimize:hover {
+    color: red;
+}
+
+div.minimize span {
+    position: absolute;
+    display: none;
+}
+
+div.minimize:hover span {
+    display: block;
+    position: absolute;
+    -webkit-transform: rotate(90deg);
+    right: -50px;
+    background-color: #666;
+    font-size: 75%;
+    padding: 2px;
+    top: 10px;
+    width: 37px;
+    color: #FFF;
+    text-align: center;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
 ul.pastes {
     list-style: none;
     margin: 0;
@@ -152,7 +184,7 @@ ul.pastes li + li {
 #add-paste {
     margin-top: 10px;
     background-color: #EFEFEF;
-    padding: 5px 2px;
+    padding: 5px 10px;
     cursor: pointer;
     font-size: 90%;
     color: #999;
