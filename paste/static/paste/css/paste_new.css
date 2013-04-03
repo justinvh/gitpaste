@@ -208,3 +208,8 @@ ul.pastes li + li {
     font-size: 500%%;
     color: #F0F0F0;
 }
+
+.resize {
+    height: 40px !important;
+    overflow: hidden;
+}

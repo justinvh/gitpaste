@@ -4,45 +4,58 @@ $(document).ready(function () {
     // Load the ACE editor and cache the binding between the
     // element and the mode for later reference.
     var editors = {};
-    var ace = require(['ace/ace'], function (ace) {
-        $('ul.pastes > li').each(function () {
-            (function (e) {
-                var $pre = $('pre', e);
-                console.log($pre);
-                var $textarea = $('textarea', e);
-                var editor = ace.edit($pre[0]);
-                editor.setTheme('ace/theme/textmate');
-                editor.getSession().setMode('ace/mode/javascript');
-                editor.getSession().setUseSoftTabs(true);
-                editor.setKeyboardHandler('ace/keyboard/vim');
-                editor.getSession().on('change', function() {
-                      $textarea.val(editor.getSession().getValue());
-                });
+    var ace_loaded = false;
+    var ace;
 
-                $('span.editor_mode > select', e).change(function () {
-                    editor.setKeyboardHandler('ace/keyboard/' + this.value);
-                    editor.focus();
-                }).change();
-
-                $('span.tab_size > select', e).change(function () {
-                    editor.getSession().setTabSize(this.value);
-                    editor.focus();
-                }).change();
-
-                $('span.hard_tab > select', e).change(function () {
-                    if (e.value == 'soft') {
-                        editor.getSession().setUseSoftTabs(true);
-                    } else {
-                        editor.getSession().setUseSoftTabs(false);
-                    }
-                    editor.focus();
-                }).change();
-
-
-                editors[$pre[0]] = editor;
-            })(this);
+    require(['ace/ace'], function (ace_build) {
+        ace = ace_build;
+        $('ul.pastes > li').each(function (i, e) {
+            build_ace(e);
         });
+        ace_loaded = true;
     });
+
+    var build_ace = function (e) {
+        var $pre = $('pre', e);
+        console.log($pre);
+        var $textarea = $('textarea', e);
+        var editor = ace.edit($pre[0]);
+        editor.setTheme('ace/theme/textmate');
+        editor.getSession().setMode('ace/mode/javascript');
+        editor.getSession().setUseSoftTabs(true);
+        editor.setKeyboardHandler('ace/keyboard/vim');
+        editor.getSession().on('change', function() {
+              $textarea.val(editor.getSession().getValue());
+        });
+
+        $('span.editor_mode > select', e).change(function () {
+            editor.setKeyboardHandler('ace/keyboard/' + this.value);
+            editor.focus();
+        }).change();
+
+        $('span.tab_size > select', e).change(function () {
+            editor.getSession().setTabSize(this.value);
+            editor.focus();
+        }).change();
+
+        $('span.hard_tab > select', e).change(function () {
+            if (e.value == 'soft') {
+                editor.getSession().setUseSoftTabs(true);
+            } else {
+                editor.getSession().setUseSoftTabs(false);
+            }
+            editor.focus();
+        }).change();
+
+        editors[$pre[0]] = editor;
+    };
+
+    // Reconstruct the priority list.
+    var build_priority = function () {
+        $('ul.pastes > li').each(function (i, e) {
+            $('.priority', e).html(i + 1);
+        });
+    };
 
     // Logic for building an entry in the paste
     var build_row = function (li) {
@@ -93,6 +106,10 @@ $(document).ready(function () {
 
             $chosen.val('text|\\.txt$').trigger('liszt:updated');
         });
+
+        build_priority();
+        if (ace_loaded)
+            build_ace($li);
     };
 
     // jquery.formset for integration with Django
@@ -119,6 +136,16 @@ $(document).ready(function () {
         cursor: 'move',
         distance: 5,
         helper: 'clone',
-        handle: '.title'
+        handle: '.title',
+        start: function (event, ui) {
+             ui.placeholder.height(40);
+            $('ul.pastes > li, .ui-sortable-helper').addClass('resize');
+        },
+        stop: function (event, ui) {
+            $('ul.pastes > li, .ui-sortable-helper').removeClass('resize');
+        },
+        update: function (event, ui) {
+            build_priority();
+        }
     });
 });
