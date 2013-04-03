@@ -193,5 +193,3 @@ class Paste(models.Model):
         if self._git is None:
             self._git = Git(self.repository)
         return self._git
-
-
