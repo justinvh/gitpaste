@@ -37,7 +37,6 @@ def paste_new(request):
                     paste = Paste(owner=owner,
                                   description=description,
                                   private=private)
-
                     paste.save()
 
                     # Add all the new files to the paste
@@ -48,11 +47,8 @@ def paste_new(request):
                         paste.add_file(filename, content)
                     else:
                         raise EmptyFormSetError
-            except EmptyFormSetError:
-                data['error'] = ('<div class="error"><i class="icon-'
-                                 'exclamation-sign icon-1x"></i> At least '
-                                 'one paste is required. Click the add '
-                                 'button!</div>')
+            except EmptyFormSetError as e:
+                data['error'] = e.message
                 return render_to_response("paste_new.html", data, rcontext)
             return redirect(paste.get_absolute_url())
 

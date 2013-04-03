@@ -6,6 +6,9 @@ from paste import ext
 
 class EmptyFormSetError(Exception):
     """A formset was expected, but there wasn't any"""
+    message = ('<div class="error"><i class="icon-exclamation-sign icon-1x">'
+               '</i> At least one paste is required. '
+               'Click the add button!</div>')
 
 
 PasteEditorModeChoices = (('vim', 'Vim'),
