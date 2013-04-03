@@ -32,6 +32,9 @@ def paste_new(request):
         if metadata_form.is_valid() and paste_formset.is_valid():
             try:
                 with transaction.commit_on_success():
+                    if not paste_formset:
+                        raise EmptyFormSetError
+
                     description = metadata_form.cleaned_data['description']
                     private = 'Private' in request.POST.get('submit')
                     paste = Paste(owner=owner,
@@ -45,8 +48,6 @@ def paste_new(request):
                         filename = filename or random_name()
                         content = paste_form.cleaned_data['paste']
                         paste.add_file(filename, content)
-                    else:
-                        raise EmptyFormSetError
             except EmptyFormSetError as e:
                 data['error'] = e.message
                 return render_to_response("paste_new.html", data, rcontext)

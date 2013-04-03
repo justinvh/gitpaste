@@ -96,7 +96,7 @@ class Paste(models.Model):
             folder = slugify(self.description)[:10] + '-' + str(uuid.uuid4())
             path = os.sep.join([settings.GITPASTE_REPOSITORY, user, folder])
             self.repository = path
-            os.makedirs(path, mode=0o777, exist_ok=True)
+            os.makedirs(path, mode=0o777)
             Git(self.repository).init()
 
         # Create the private key
