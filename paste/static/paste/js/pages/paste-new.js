@@ -21,10 +21,12 @@ $(document).ready(function () {
 
                 $('span.editor_mode > select', e).change(function () {
                     editor.setKeyboardHandler('ace/keyboard/' + this.value);
+                    editor.focus();
                 }).change();
 
                 $('span.tab_size > select', e).change(function () {
                     editor.getSession().setTabSize(this.value);
+                    editor.focus();
                 }).change();
 
                 $('span.hard_tab > select', e).change(function () {
@@ -33,6 +35,7 @@ $(document).ready(function () {
                     } else {
                         editor.getSession().setUseSoftTabs(false);
                     }
+                    editor.focus();
                 }).change();
 
 

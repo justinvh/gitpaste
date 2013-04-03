@@ -38,7 +38,7 @@ div.description img {
 div.description {
     background-color: #EFEFEF;
     font-size: 90%;
-    color: #888;
+    color: #333;
     padding: 5px;
     border: 1px solid #DDD;
     border-radius: 3px;
@@ -53,6 +53,7 @@ div.description input {
     border-radius: 4px;
     padding: 2px;
     font-size: 90%;
+    color: #888;
 }
 
 div.paste > pre {
@@ -70,7 +71,7 @@ div.title {
 
 div.title .filename input {
     width: 200px;
-    color: #999;
+    color: #888;
     border: 3px solid #DDD;
     border-left: 8px solid #DDD;
     font-size: 90%;
@@ -137,6 +138,11 @@ ul.pastes {
 ul.pastes li {
     border: 1px solid #DDD;
     border-radius: 3px;
+}
+
+ul.pastes li:first-child {
+    border-top-left-radius: 0em 0em;
+    border-top-right-radius: 0em 0em;
 }
 
 ul.pastes li + li {
