@@ -18,6 +18,24 @@ $(document).ready(function () {
                 editor.getSession().on('change', function() {
                       $textarea.val(editor.getSession().getValue());
                 });
+
+                $('span.editor_mode > select', e).change(function () {
+                    editor.setKeyboardHandler('ace/keyboard/' + this.value);
+                }).change();
+
+                $('span.tab_size > select', e).change(function () {
+                    editor.getSession().setTabSize(this.value);
+                }).change();
+
+                $('span.hard_tab > select', e).change(function () {
+                    if (e.value == 'soft') {
+                        editor.getSession().setUseSoftTabs(true);
+                    } else {
+                        editor.getSession().setUseSoftTabs(false);
+                    }
+                }).change();
+
+
                 editors[$pre[0]] = editor;
             })(this);
         });

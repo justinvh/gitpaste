@@ -40,10 +40,10 @@ div.description {
     font-size: 90%;
     color: #888;
     padding: 5px;
-    border-bottom: 1px solid #DDD;
-    border: 1px solid #EFEFEF;
+    border: 1px solid #DDD;
     border-radius: 3px;
-    box-shadow: 0 0 5px 0px #BBB;
+    border-bottom-left-radius: 0em 0em;
+    border-bottom-right-radius: 0em 0em;
 }
 
 div.description input {
@@ -135,9 +135,8 @@ ul.pastes {
 }
 
 ul.pastes li {
-    border: 1px solid #EFEFEF;
+    border: 1px solid #DDD;
     border-radius: 3px;
-    box-shadow: 0 0 5px 0px #BBB;
 }
 
 ul.pastes li + li {
@@ -151,7 +150,7 @@ ul.pastes li + li {
     cursor: pointer;
     font-size: 90%;
     color: #999;
-    border: 1px solid #EFEFEF;
+    border: 1px solid #DDD;
     border-radius: 3px;
     box-shadow: 0 0 5px 0px #BBB;
 }

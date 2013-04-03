@@ -11,8 +11,8 @@ PasteTabChoices = ((2, '2'),
                    (4, '4'),
                    (8, '8'))
 
-PasteTabTypeChoices = ((1, 'Soft Tabs'),
-                       (2, 'Hard Tabs'))
+PasteTabTypeChoices = (('soft', 'Soft Tabs'),
+                       ('hard', 'Hard Tabs'))
 
 
 class PasteMetadataForm(forms.Form):
