@@ -18,6 +18,7 @@
 
 {% block content %}
 <section class='content'>
+    {{ error|safe }}
     <form id='form' method='POST' action='{% url "paste_new" %}'>
         <div class="description">
             {{ metadata_form.description|attr:"placeholder:add a paste description..." }}

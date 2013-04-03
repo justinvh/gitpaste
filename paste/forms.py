@@ -4,6 +4,10 @@ from django.forms.formsets import formset_factory
 from paste import ext
 
 
+class EmptyFormSetError(Exception):
+    """A formset was expected, but there wasn't any"""
+
+
 PasteEditorModeChoices = (('vim', 'Vim'),
                           ('emacs', 'Emacs'))
 

@@ -1,3 +1,11 @@
+div.error {
+    font-weight: bold;
+    color: #B24926;
+    font-size: 90%;
+    text-align: center;
+    padding: 10px 0;
+}
+
 section.content {
     width: 90%;
     margin: 0 auto;
