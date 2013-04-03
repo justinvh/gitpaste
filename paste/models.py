@@ -123,8 +123,8 @@ class Paste(models.Model):
             raise Paste.DoesNotExist
 
         path = os.sep.join([self.repository, filename])
-
         commit_message = "Adds {0}".format(filename)
+
         if os.path.exists(path):
             commit_message = "Updates {0}".format(filename)
 
