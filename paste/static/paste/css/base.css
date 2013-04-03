@@ -7,7 +7,6 @@ body {
 }
 
 nav {
-    background: url(/static/paste/img/paste/logo.png) no-repeat;
     width: 100%;
     padding: 10px 0;
     background-color: #EFEFEF;
@@ -60,6 +59,11 @@ nav ul li:hover a > span {
     text-align: center;
     border-bottom-right-radius: 5px 5px;
     border-bottom-left-radius: 5px 5px;
+}
+
+#logo {
+    position: absolute;
+    top: 0px;
 }
 
 .hide {

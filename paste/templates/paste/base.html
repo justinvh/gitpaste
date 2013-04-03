@@ -12,6 +12,9 @@
     <body>
         <article>
             <nav>
+                <a href='{% url "paste_new" %}'>
+                    <img id='logo' src='{% static "paste/img/paste/logo.png" %}'>
+                </a>
                 <ul>
                     <li><a href="{% url "paste_new" %}"><i class='icon-file icon-1x'></i><span>New</span></a></li>
                     <li><a href="#"><i class='icon-group icon-1px'></i><span>All</span></a></li>
@@ -21,7 +24,7 @@
                     <li><a href="#">Preferences</a></li>
                     {% else %}
                     <li><a href="#"><i class='icon-user icon-1px'></i><span>Login</span></a></li>
-                    <li><a href="#"><i class='icon-cog icon-1px'></i><span>Register</span></a></li>
+                    <li><a href="#"><i class='icon-plus icon-1px'></i><span>Register</span></a></li>
                     {% endif %}
                 </ul>
             </nav>
