@@ -15,7 +15,7 @@ def generate_icon(email):
     import hashlib
     import urllib
     size = 40
-    default = 'http://sharp-mist-7719.herokuapp.com/static/img/default-icon.png'
+    default = 'http://gitpaste.com/static/img/default-icon.png'
     gravatar = "http://www.gravatar.com/avatar/%s?%s" % (
             hashlib.md5(email.lower()).hexdigest(),
             urllib.urlencode({'d':default, 's':str(size)}))
@@ -35,11 +35,11 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.sep.join([os.path.dirname(__file__), 'paste.db']),
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'gitpaste',
+        'USER': 'justinvh',
+        'PASSWORD': 'enterthe',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
@@ -51,7 +51,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'None'
+TIME_ZONE = 'UTC'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -126,8 +126,11 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'saic.urls'
+ROOTDIR = os.path.abspath(os.path.dirname(__file__)) 
 
-TEMPLATE_DIRS = ()
+TEMPLATE_DIRS = (
+        os.sep.join([ROOTDIR, 'templates']),
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',

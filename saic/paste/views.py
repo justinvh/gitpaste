@@ -133,8 +133,9 @@ def paste(request):
 
     repo_dir = dirname_from_description(description)
     if not len(description):
-        repo_dir = ''.join(random.sample(string.ascii_letters + string.digits,
-                           random.randrange(20,30)))
+        repo_dir = dirname_from_description(
+            ''.join(random.sample(string.ascii_letters + string.digits,
+                random.randrange(20,30))))
     if os.path.isdir(repo_dir):
         repo_dir = get_first_nonexistent_filename(repo_dir + '-%d')
 
