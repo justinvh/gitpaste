@@ -108,6 +108,7 @@ def paste(request):
 
     if request.method != 'POST':
         return render_to_response('paste.html', {
+            'allow_anonymous_posts': settings.ALLOW_ANONYMOUS_POSTS,
             'forms': PasteSet(),
             'set_form': SetForm(),
             'commit_meta_form': CommitMetaForm(initial=commit_kwargs),
@@ -124,6 +125,7 @@ def paste(request):
             commit_meta_form.is_valid() and
             set_meta_form.is_valid()):
         return render_to_response('paste.html', {
+            'allow_anonymous_posts': settings.ALLOW_ANONYMOUS_POSTS,
             'forms': paste_forms,
             'set_form': set_form,
             'commit_meta_form': commit_meta_form,
@@ -134,8 +136,6 @@ def paste(request):
     description = set_form.cleaned_data.get('description')
     private     = set_meta_form.cleaned_data.get('private')
     allow_edits = set_meta_form.cleaned_data.get('anyone_can_edit')
-
-    
 
     repo_dir = dirname_from_description(description)
     if not len(description):
