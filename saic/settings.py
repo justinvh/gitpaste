@@ -1,5 +1,8 @@
 import os
 
+ALLOW_ANONYMOUS_POSTS = True
+ALLOW_ANONYMOUS_ACCESS = True
+
 REPO_DIR = os.sep.join([os.path.dirname(os.path.abspath(__file__)), 'repositories'])
 
 HAYSTACK_SITECONF = 'saic.search_sites'

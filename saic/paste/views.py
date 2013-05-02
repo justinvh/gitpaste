@@ -97,10 +97,15 @@ def get_owner(request, commit_data, user):
 
 def paste(request):
     commit_kwargs = {}
-    if request.user.is_authenticated():
-        commit_kwargs = {
-                'anonymous': request.user.preference.default_anonymous
-        }
+    user = request.user
+    if user.is_authenticated():
+        if settings.ALLOW_ANONYMOUS_POSTS:
+            commit_kwargs = {'anonymous': user.preference.default_anonymous}
+    elif not settings.ALLOW_ANONYMOUS_POSTS:
+        return redirect('login')
+    elif not settings.ALLOW_ANONYMOUS_ACCESS:
+        return redirect('login')
+
     if request.method != 'POST':
         return render_to_response('paste.html', {
             'forms': PasteSet(),
@@ -210,6 +215,10 @@ def paste(request):
 @private(Set)
 def paste_view(request, pk, paste_set, private_key=None):
     requested_commit = request.GET.get('commit')
+    user = request.user
+
+    if not settings.ALLOW_ANONYMOUS_ACCESS and not user.is_authenticated():
+        return redirect('login')
 
     # Increment the views
     if not paste_set.views:
@@ -635,6 +644,10 @@ def favorites(request):
 
 
 def user_pastes(request, owner=None):
+    user = request.user
+    if not settings.ALLOW_ANONYMOUS_ACCESS and not user.is_authenticated():
+        return redirect('login')
+
     if owner != None and owner == 'all':
         set_list = Set.objects.all()
     else:
@@ -673,6 +686,10 @@ def user_pastes(request, owner=None):
 
 
 def users(request):
+    user = request.user
+    if not settings.ALLOW_ANONYMOUS_ACCESS and not user.is_authenticated():
+        return redirect('login')
+
     users = User.objects.all()
     anons = Set.objects.filter(owner__isnull=True).exclude(private=True)
 
