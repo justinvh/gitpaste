@@ -751,13 +751,13 @@ def paste_embed(request, pk, private_key=None):
             paste.revision.parent_set.private_key != private_key):
         raise Http404
     if jsonp:
-        data = render_to_string('embed.js', {'paste': paste, 'theme': theme},
+        data = render_to_string('embed.html', {'paste': paste, 'theme': theme},
                                 RequestContext(request))
         call = '%s(%s);' % (jsonp, json.dumps({'embed': data, 'args': args}));
-        return HttpResponse(call, mimetype='text/javascript');
-    return render_to_response('embed.js',
+        return HttpResponse(call, mimetype='text/html');
+    return render_to_response('embed.html',
             {'paste': paste, 'theme': theme, 'jsonp': jsonp, 'args': args}, 
-            RequestContext(request), mimetype='text/javascript');
+            RequestContext(request), mimetype='text/html');
 
 def live_paste(request):
     commit_kwargs = {}
