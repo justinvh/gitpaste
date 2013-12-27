@@ -58,10 +58,10 @@ Fork on GitHub: https://github.com/justinvh/gitpaste
 
 GitPaste comes configured to use a Postgres database out of the box. The parameters
 for the database are stored in `saic/config.py` - if you don't want to use Postgres,
-an option is available to use SQLite instead, also in `config.py`. If your operating
-system does not have Postgres (particularly its development libraries) installed,
-you should remove the `psycopg2` line from `requirements.txt` *BEFORE* running the
-install command below.
+an option is available to use SQLite instead, also in `config.py`.
+
+If you wish to do this, you should remove the `psycopg2` line from `requirements.txt` 
+**BEFORE** running the install command below.
     
 
 # Building
