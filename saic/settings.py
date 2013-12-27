@@ -39,6 +39,10 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #If you want to use SQLite instead of Postgres, comment the above ENGINE line
+        #and uncomment the next one. The database file will be stored under saic/
+        #with the NAME given below.
+        #'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'gitpaste',
         'USER': 'justinvh',
         'PASSWORD': 'enterthe',
