@@ -16,15 +16,12 @@ It's not a matter of being able to use github--there's no problem with it. There
 
 ## Dependencies
 
-There's a requirements.txt. If you use pip then just follow the readme. 
+There's a requirements.txt. If you use pip then just continue reading. 
 
 
 ## Forking and Testing
 
 Fork on GitHub: https://github.com/justinvh/gitpaste
-
-You can **try it out** here: http://www.gitpaste.com
-
 
 ## To-do:
 
@@ -57,6 +54,15 @@ You can **try it out** here: http://www.gitpaste.com
     ☐ CSS is a disaster
     ☐ PEP8 everything
 
+# Database
+
+GitPaste comes configured to use a Postgres database out of the box. The parameters
+for the database are stored in `saic/config.py` - if you don't want to use Postgres,
+an option is available to use SQLite instead, also in `config.py`.
+
+If you wish to do this, you should remove the `psycopg2` line from `requirements.txt` 
+**BEFORE** running the install command below.
+    
 
 # Building
 *Optional*: If you have virtualenv then create your desired environment.
