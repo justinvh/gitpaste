@@ -1,11 +1,11 @@
 from django.conf.urls.defaults import patterns, include, url
-from django.views.generic.simple import redirect_to
+from django.views.generic import RedirectView
 
 urlpatterns = patterns('saic.paste.views',
     url(r'^live/$', 'live_paste', name='live_paste'),
-    url(r'^(?P<pk>\d+)/$', redirect_to, {'url': '/paste/%(pk)s/'}),
-    url(r'^(?P<pk>\d+)/(?P<private_key>[a-zA-Z0-9]+)?/?$', redirect_to, {'url': '/paste/%(pk)s/%(private_key)s/'}),
-    url(r'^owner/$', redirect_to, {'url': '/owner/all/'}),
+    url(r'^(?P<pk>\d+)/$', RedirectView.as_view(url= '/paste/%(pk)s/')),
+    url(r'^(?P<pk>\d+)/(?P<private_key>[a-zA-Z0-9]+)?/?$', RedirectView.as_view(url= '/paste/%(pk)s/%(private_key)s/')),
+    url(r'^owner/$', RedirectView.as_view(url= '/owner/all/')),
     url(r'^owner/anonymous/', 'user_pastes', name='anon_pastes'),
     url(r'^owner/(?P<owner>.+)/', 'user_pastes', name='user_pastes'),
     url(r'^paste/(?P<pk>\d+)/adopt/(?P<private_key>[a-zA-Z0-9]+)?/?$', 'paste_adopt', name='paste_adopt'),

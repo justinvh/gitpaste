@@ -35,12 +35,12 @@ gitpaste.com - anonymous paste
       {% else %}
         <li>
       {% endif %}
-      <a title='{{ commit.commit.views }} view{{ commit.commit.views|pluralize }}' href='{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a>
+      <a title='{{ commit.commit.views }} view{{ commit.commit.views|pluralize }}' href='{% url "paste_view" pk=paste_set.pk private_key=paste_set.private_key %}?commit={{ commit.commit }}'>{{ commit.commit|slice:":8"}}</a>
       <span class='author'>
         {% if commit.owner %}
-            <a href='{% url user_pastes owner=commit.owner.pk %}'>{{ commit.email }}</a>
+            <a href='{% url "user_pastes" owner=commit.owner.pk %}'>{{ commit.email }}</a>
         {% else %}
-            <a href='{% url anon_pastes %}'>Anonymous</a>
+            <a href='{% url "anon_pastes" %}'>Anonymous</a>
         {% endif %}
       </span> 
       <span class='date' title="{{ commit.created|localtime }}">
@@ -52,13 +52,13 @@ gitpaste.com - anonymous paste
     {% if not commit_current.parent_set.owner %}
       <div class="sidebar-message">
         <span class='alert'>Hey! This paste is not owned by anyone.
-          <a href='{% url paste_adopt pk=commit_current.parent_set.pk %}'>Adopt it!</a>
+          <a href='{% url "paste_adopt" pk=commit_current.parent_set.pk %}'>Adopt it!</a>
         </span>
       </div>
     {% endif %}
     {% if commit_current.parent_set.owner == user %}
       <div class="sidebar-message">
-        <a class='alert' href='{% url paste_delete pk=commit_current.parent_set.pk %}'>delete this entire paste</a>
+        <a class='alert' href='{% url "paste_delete" pk=commit_current.parent_set.pk %}'>delete this entire paste</a>
       </div>
     {% endif %}
   {% endif %}
@@ -70,7 +70,7 @@ gitpaste.com - anonymous paste
         <span>
           This paste is <strong>private</strong>, you'll need this special URL to
           {% if not paste_set.owner_id or user.id != paste_set.owner_id %}revisit{% else %}share{% endif %} it:
-          <input type="text" size="75" value="{{ site }}{% url paste_view pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
+          <input type="text" size="75" value="{{ site }}{% url "paste_view" pk=paste_set.pk private_key=paste_set.private_key %}" readonly>
         </span>
       </div>
     </div>
@@ -89,28 +89,28 @@ gitpaste.com - anonymous paste
     <span class='header'>
       {% if USE_ICONS %}
         {% if commit_current.owner %}
-        <a href='{% url user_pastes owner=commit_current.owner.pk %}'>
+        <a href='{% url "user_pastes" owner=commit_current.owner.pk %}'>
           <img title='User pastes' class='gravatar-community' alt='User' src='{{ commit_current.owner.preference.gravatar }}'></a>
         {% else %}
-          <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
+          <a href='{% url "anon_pastes" %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
         {% endif %}
       {% endif %}
       paste: {{ paste_set.pk }} / commit: {{ commit_current.commit|slice:":8" }}
       <span class="paste-actions">
       {% if editable %}
-          <a title='Find the bug.' href='{% url paste_edit pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>edit</a>
+          <a title='Find the bug.' href='{% url "paste_edit" pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>edit</a>
       {% else %}
           <span title='This paste is not editable' class='unlink gray'>edit</span>
       {% endif %}
       {% if user.is_authenticated %}
-        <a title='Because you can do much better.' href='{% url paste_fork pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>fork</a>
+        <a title='Because you can do much better.' href='{% url "paste_fork" pk=paste_set.pk private_key=paste_set.active_private_key %}?commit={{ commit_current.commit }}'>fork</a>
       {% else %}
       <span title='Login to fork' class='unlink gray'>fork</span>
       {% endif %}
       {% if user.is_authenticated and not commit_current.owner %}
-          <a title='How would you feel?' href='{% url commit_adopt pk=commit_current.pk private_key=paste_set.active_private_key %}'>adopt</a>
+          <a title='How would you feel?' href='{% url "commit_adopt" pk=commit_current.pk private_key=paste_set.active_private_key %}'>adopt</a>
       {% endif %}
-      <a title='Download paste' href='{% url commit_download pk=commit_current.pk private_key=paste_set.active_private_key %}'>download</a>
+      <a title='Download paste' href='{% url "commit_download" pk=commit_current.pk private_key=paste_set.active_private_key %}'>download</a>
       {% if commit_current.diff %}
         <span id='diff-toggle' class='link' title='You are not to blame'>diff</span>
       {% else %}
@@ -120,7 +120,7 @@ gitpaste.com - anonymous paste
     </span>
       <br>
       {% if paste_set.description %}"{{ paste_set.description }}"{% endif %}
-      {% if commit_current.owner %} by <strong><a href='{% url user_pastes owner=commit_current.owner.pk %}'>{{ commit_current.email }}</a></strong> {% endif %}
+      {% if commit_current.owner %} by <strong><a href='{% url "user_pastes" owner=commit_current.owner.pk %}'>{{ commit_current.email }}</a></strong> {% endif %}
       <span class='date' title="{{ commit_current.created|localtime }}">
         {{ commit_current.created|elapsed }}
         with {{ commit_current.views }} 
@@ -130,11 +130,11 @@ gitpaste.com - anonymous paste
         <br>
         <em class='light'>Fork of                
           {% if paste_set.fork.parent_set.owner %}
-            <a href='{% url user_pastes owner=paste_set.fork.parent_set.owner.pk %}'>{{ paste_set.fork.parent_set.email }}</a>
+            <a href='{% url "user_pastes" owner=paste_set.fork.parent_set.owner.pk %}'>{{ paste_set.fork.parent_set.email }}</a>
           {% else %}
-            <a href='{% url anon_pastes %}'>Anonymous</a>
+            <a href='{% url "anon_pastes" %}'>Anonymous</a>
           {% endif %} at commit 
-          <a href='{% url paste_view pk=paste_set.fork.parent_set.pk %}?commit={{ paste_set.fork.commit }}'>{{ paste_set.fork.commit|slice:":8" }}</a>
+          <a href='{% url "paste_view" pk=paste_set.fork.parent_set.pk %}?commit={{ paste_set.fork.commit }}'>{{ paste_set.fork.commit|slice:":8" }}</a>
         </em>
       {% endif %}
     </div>
@@ -160,12 +160,12 @@ gitpaste.com - anonymous paste
       </div>
       <div class='file'>
         <div class='file-download'>
-            <a title='You should just fork it.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}?download=true'>download</a>
-            <a title='Embedding it.' href='{% url paste_embed pk=paste.pk private_key=paste_set.active_private_key %}'>embed</a>
+            <a title='You should just fork it.' href='{% url "paste_raw" pk=paste.pk private_key=paste_set.active_private_key %}?download=true'>download</a>
+            <a title='Embedding it.' href='{% url "paste_embed" pk=paste.pk private_key=paste_set.active_private_key %}'>embed</a>
         </div>
         <div id='file-{{ paste.pk }}'>
           {{ paste.filename }} <a href='#file-{{ paste.pk }}'>#</a>
-          <a title='Too raw for you.' href='{% url paste_raw pk=paste.pk private_key=paste_set.active_private_key %}'>raw</a>
+          <a title='Too raw for you.' href='{% url "paste_raw" pk=paste.pk private_key=paste_set.active_private_key %}'>raw</a>
         </div>
       </div>
       <div class='paste'>
@@ -186,7 +186,7 @@ gitpaste.com - anonymous paste
           {% else %}
             <h1 class='author {% if comment.owner == commit_current.owner %}committer{% endif %}'> 
           {% endif %}
-            <a href='{% url user_pastes owner=comment.owner.pk %}'>
+            <a href='{% url "user_pastes" owner=comment.owner.pk %}'>
               {{ comment.email }}</a> 
             <a href='#comment-{{ comment.pk }}' id='comment-{{ comment.pk }}'>#</a>
           </h1>
@@ -197,7 +197,7 @@ gitpaste.com - anonymous paste
           {% if user.is_authenticated %}
               <pre>If only there were comments...</pre>
           {% else %}
-              <pre>If only there were comments... Maybe <a href='{% url login %}'>login</a> and add one?</pre>
+              <pre>If only there were comments... Maybe <a href='{% url "login" %}'>login</a> and add one?</pre>
           {% endif %}
         </div>
       {% endfor %}
