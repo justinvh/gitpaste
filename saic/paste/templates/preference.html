@@ -12,7 +12,7 @@
     Your user preference were saved.<br>
     </p>
     {% endif %}
-  <form method='POST' action='{% url preference %}'>
+  <form method='POST' action='{% url "preference" %}'>
     {% csrf_token %}
     <div class='entry'>
     {% if USE_ICONS %}

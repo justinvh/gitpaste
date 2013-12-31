@@ -5,10 +5,15 @@ ALLOW_ANONYMOUS_ACCESS = True
 
 REPO_DIR = os.sep.join([os.path.dirname(os.path.abspath(__file__)), 'repositories'])
 
-HAYSTACK_SITECONF = 'saic.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'whoosh'
-HAYSTACK_WHOOSH_PATH = os.sep.join([os.path.dirname(__file__),
-                        'whoosh', 'search-index'])
+import os
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.sep.join([os.path.dirname(__file__),
+                        'whoosh', 'search-index']),
+    },
+}
+
 
 USE_ICONS = False
 
@@ -38,11 +43,11 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'gitpaste',
-        'USER': 'justinvh',
-        'PASSWORD': 'enterthe',
-        'HOST': 'localhost',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
         'PORT': '',
     }
 }
@@ -87,7 +92,7 @@ STATIC_ROOT = os.sep.join([os.path.dirname(__file__), 'static'])
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static'
+STATIC_URL = '/static/'
 
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.

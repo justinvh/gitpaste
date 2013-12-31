@@ -17,7 +17,7 @@
   <h1>
     {% if USE_ICONS %}
         {% if not owner %}
-          <a href='{% url anon_pastes %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
+          <a href='{% url "anon_pastes" %}'><img class='gravatar-community' alt='Anonymous' src='{{ STATIC_URL }}/img/default-icon.png'></a>
         {% else %}
           <img id='profile-img' alt='Profile' src='{{ owner.preference.gravatar }}'>
         {% endif %}
@@ -58,7 +58,7 @@
             {% if set.private %}
             <img src='{{ STATIC_URL }}/img/icons/key.png' alt='private' title='This paste is private' style='vertical-align: middle'>
             {% endif %}
-            <a href='{% url paste_view pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
+            <a href='{% url "paste_view" pk=set.pk %}'>Paste {{ set.pk }}{% if set.description %}: {{ set.description }}{% endif %}</a>
             {% if set.private %}
             {% endif %}
           <br>
@@ -82,9 +82,9 @@
         <div>
           <h1 class='center'>Your requests echo far, but nothing happens.</h1>
           {% if user == owner %}
-            <p class='tiny gray center'>(a.k.a. you have not <a href='{% url paste %}'>created</a> any pastes)</p>
+            <p class='tiny gray center'>(a.k.a. you have not <a href='{% url "paste" %}'>created</a> any pastes)</p>
           {% else %}
-            <p class='tiny gray center'>(a.k.a. this user has not <a href='{% url paste %}'>created</a> any pastes)</p>
+            <p class='tiny gray center'>(a.k.a. this user has not <a href='{% url "paste" %}'>created</a> any pastes)</p>
           {% endif %}
         </div>
       {% endfor %}

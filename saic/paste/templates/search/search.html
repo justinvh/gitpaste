@@ -27,29 +27,29 @@
 
         {% if result.content_type == "paste.paste" %}
           <li>
-            <a href="{% url paste_view pk=result.object.revision.parent_set.pk %}">"{{ result.paste|slice:":80"}}... "</a> by 
+            <a href="{% url "paste_view" pk=result.object.revision.parent_set.pk %}">"{{ result.paste|slice:":80"}}... "</a> by 
             {% if result.object.owner %}
-              <a href='{% url owner_pastes owner=result.object.owner.pk %}'>{{ result.object.owner }}</a>
+              <a href='{% url "owner_pastes" owner=result.object.owner.pk %}'>{{ result.object.owner }}</a>
             {% else %}
-              <a href='{% url anon_pastes %}'>Anonymous</a>
+              <a href='{% url "anon_pastes" %}'>Anonymous</a>
             {% endif %}
           </li>
         {% endif %}
 
         {% if result.content_type == "paste.commit" %}
           <li>
-            <a href="{% url paste_view pk=result.object.parent_set.pk %}?commit={{ result.object.commit }}">
+            <a href="{% url "paste_view" pk=result.object.parent_set.pk %}?commit={{ result.object.commit }}">
             {{ result.object.commit|slice:":8" }}</a>
           
             {% if result.object.parent_set.description %}
               from
-              <a href='{% url paste_view pk=result.object.parent_set.pk %}'>{{result.object.parent_set.description }}</a>
+              <a href='{% url "paste_view" pk=result.object.parent_set.pk %}'>{{result.object.parent_set.description }}</a>
             {% endif %}
             by
             {% if result.object.owner %}
-              <a href='{% url owner_pastes owner=result.object.owner.pk %}'>{{ result.object.owner }}</a>
+              <a href='{% url "owner_pastes" owner=result.object.owner.pk %}'>{{ result.object.owner }}</a>
             {% else %}
-              <a href='{% url anon_pastes %}'>Anonymous</a>
+              <a href='{% url "anon_pastes" %}'>Anonymous</a>
             {% endif %}
           </li>
         {% endif %}
