@@ -1,5 +1,7 @@
 import os
 import logging
+
+#from paste.ext.dulwich import Git
 from paste.ext.git import Git
 
 from collections import defaultdict
