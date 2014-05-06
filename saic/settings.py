@@ -133,6 +133,10 @@ MIDDLEWARE_CLASSES = (
     'saic.paste.middleware.TimezoneMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'saic.paste.middleware.MyRemoteUserBackend',
+)
+
 ROOT_URLCONF = 'saic.urls'
 ROOTDIR = os.path.abspath(os.path.dirname(__file__)) 
 
