@@ -23,9 +23,6 @@ There's a requirements.txt. If you use pip then just follow the readme.
 
 Fork on GitHub: https://github.com/justinvh/gitpaste
 
-You can **try it out** here: http://www.gitpaste.com
-
-
 ## To-do:
 
     ✓ Add forking (fork anonymously!)
