@@ -1,3 +1,7 @@
+# Hey!
+This project is a bit old and unmaintained. There are tons of alternatives! You're welcome to use GitPaste, but please be aware that I am no longer maintaining it or plan to maintain it for the future. If anything I will provide a rewrite one day.
+
+
 # GitPaste
 GitPaste is a `GitHub Gist` clone.
 
